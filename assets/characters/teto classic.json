@@ -1,0 +1,55 @@
+{
+	"animations": [
+		{
+			"loop": true,
+			"offsets": [-80, -157],
+			"anim": "idle",
+			"fps": 24,
+			"name": "Teto Estandar",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [21, -165],
+			"anim": "singLEFT",
+			"fps": 24,
+			"name": "Teto Classic Left",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [-193, -233],
+			"anim": "singRIGHT",
+			"fps": 24,
+			"name": "Teto Classic Right",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [-117, -124],
+			"anim": "singUP",
+			"fps": 24,
+			"name": "Teto Classic Up",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [-163, -312],
+			"anim": "singDOWN",
+			"fps": 24,
+			"name": "Teto Classic Down",
+			"indices": []
+		}
+	],
+	"vocals_file": "",
+	"no_antialiasing": false,
+	"image": "characters/teto classic",
+	"position": [-1410, -170],
+	"healthicon": "TetoAnim",
+	"flip_x": false,
+	"healthbar_colors": [161, 161, 161],
+	"camera_position": [0, 0],
+	"sing_duration": 4,
+	"scale": 1.7,
+	"_editor_isPlayer": false
+}

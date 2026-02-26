@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Friday Night Funkin': Akage</title>
+  <link rel="icon" href="icon.ico" type="image/png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ページスクロール無効化 */
+    html, body { overflow: hidden; height: 100%; }
+  </style>
+</head>
+<body>
+  <!-- Top UI removed per request: title, score/combo/judge, status, audio tags, and keys text -->
+
+  <div id="viewport">
+  <div id="game" class="game-bg">
+    <div class="lane-group opponent">
+      <div class="lane" data-lane="0"></div>
+      <div class="lane" data-lane="1"></div>
+      <div class="lane" data-lane="2"></div>
+      <div class="lane" data-lane="3"></div>
+    </div>
+
+    <div class="lane-group player">
+      <div class="lane" data-lane="0"></div>
+      <div class="lane" data-lane="1"></div>
+      <div class="lane" data-lane="2"></div>
+      <div class="lane" data-lane="3"></div>
+    </div>
+
+    <img id="intro-image" />
+
+<div id="health-container">
+  <div id="health-bar">
+    <div id="health-fill">
+      <div id="health-opponent-fill"></div>
+      <div id="health-player-fill"></div>
+    </div>
+
+    <div class="health-bar-frame f1"></div>
+    <div class="health-bar-frame f2"></div>
+    <div class="health-bar-frame f3"></div>
+    <div class="health-bar-frame f4"></div>
+  </div>
+
+  <!-- 相手アイコン（これ1つだけ） -->
+  <div id="health-opponent" class="health-icon">
+    <img class="icon-img teto active"
+         src="assets/images/icon/teto/Icon-Teto1.png">
+    <img class="icon-img miku"
+         src="assets/images/icon/miku/Icon-Miku1.png">
+    <img class="icon-img scary"
+         src="assets/images/icon/teto/Icon-Teto-Scary1.png">
+    <img class="icon-img weak"
+         src="assets/images/icon/teto/Icon-Teto-Weak1.png">
+  </div>
+
+  <!-- 自分アイコン -->
+<div id="health-player" class="health-icon">
+  <img class="icon-img bf active"
+       src="assets/images/icon/bf/Icon-BFAnim1.png">
+</div>
+
+
+
+  <div id="scoreboard">
+    <div id="scoreboard-inner">
+      <span id="score-text">Score: 0</span>
+      <span class="sep"> | </span>
+      <span id="misses-text">Misses: 0</span>
+      <span class="sep"> | </span>
+      <span id="rating-text">Rating: ?</span>
+    </div>
+  </div>
+
+      <div id="judge-popup" aria-hidden="true">
+        <div id="judge-ms-fixed"></div>
+        <div id="judge-combo" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+  <!-- 音声要素を復元 -->
+  <audio id="song" src="assets/songs/akage/Inst.ogg" preload="auto"></audio>
+  <audio id="song2" src="assets/songs/akage/Voices.ogg" preload="auto"></audio>
+
+  <!-- イントロ音声 -->
+   <audio id="intro-3" src="assets/sounds/intro3.ogg"></audio>
+<audio id="intro-2" src="assets/sounds/intro2.ogg"></audio>
+<audio id="intro-1" src="assets/sounds/intro1.ogg"></audio>
+<audio id="intro-go" src="assets/sounds/introGo.ogg"></audio>
+
+
+  <script src="stage.js"></script>
+  <script src="character.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

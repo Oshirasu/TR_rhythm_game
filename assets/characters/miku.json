@@ -1,0 +1,55 @@
+{
+	"animations": [
+		{
+			"offsets": [-474, 9],
+			"loop": true,
+			"fps": 24,
+			"anim": "idle",
+			"indices": [],
+			"name": "Miku estandar"
+		},
+		{
+			"offsets": [-498, 7],
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHT",
+			"indices": [],
+			"name": "Miku Right"
+		},
+		{
+			"offsets": [-470, 47],
+			"loop": false,
+			"fps": 24,
+			"anim": "singUP",
+			"indices": [],
+			"name": "Miku Up"
+		},
+		{
+			"offsets": [-415, -57],
+			"loop": false,
+			"fps": 24,
+			"anim": "singDOWN",
+			"indices": [],
+			"name": "Miku Down"
+		},
+		{
+			"offsets": [-343, -26],
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFT",
+			"indices": [],
+			"name": "Miku Left"
+		}
+	],
+	"vocals_file": "",
+	"no_antialiasing": false,
+	"image": "characters/miku",
+	"position": [-790, -170],
+	"healthicon": "Miku",
+	"flip_x": false,
+	"healthbar_colors": [161, 161, 161],
+	"camera_position": [0, 0],
+	"sing_duration": 4,
+	"scale": 1.05,
+	"_editor_isPlayer": false
+}

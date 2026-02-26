@@ -1,0 +1,31 @@
+{
+	"animations": [
+		{
+			"offsets": [119, 281],
+			"indices": [],
+			"fps": 24,
+			"anim": "aishite3",
+			"loop": false,
+			"name": "mikuaishite3"
+		},
+		{
+			"offsets": [119, 279],
+			"indices": [],
+			"fps": 24,
+			"anim": "idle",
+			"loop": false,
+			"name": "idle"
+		}
+	],
+	"vocals_file": "",
+	"no_antialiasing": false,
+	"image": "characters/mikuaishite3",
+	"position": [-470, -170],
+	"healthicon": "Miku",
+	"flip_x": false,
+	"healthbar_colors": [161, 161, 161],
+	"camera_position": [0, 0],
+	"sing_duration": 4,
+	"scale": 0.75,
+	"_editor_isPlayer": false
+}

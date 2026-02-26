@@ -1,0 +1,55 @@
+{
+	"animations": [
+		{
+			"offsets": [-80, -157],
+			"loop": true,
+			"fps": 24,
+			"anim": "idle",
+			"indices": [],
+			"name": "Teto Estandar"
+		},
+		{
+			"offsets": [16, -164],
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFT",
+			"indices": [],
+			"name": "Teto House Left"
+		},
+		{
+			"offsets": [-192, -231],
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHT",
+			"indices": [],
+			"name": "Teto House Right"
+		},
+		{
+			"offsets": [-117, -132],
+			"loop": false,
+			"fps": 24,
+			"anim": "singUP",
+			"indices": [],
+			"name": "Teto House Up"
+		},
+		{
+			"offsets": [-163, -308],
+			"loop": false,
+			"fps": 24,
+			"anim": "singDOWN",
+			"indices": [],
+			"name": "Teto House Down"
+		}
+	],
+	"vocals_file": "",
+	"no_antialiasing": false,
+	"image": "characters/teto house",
+	"position": [-1410, -170],
+	"healthicon": "TetoAnim",
+	"flip_x": false,
+	"healthbar_colors": [161, 161, 161],
+	"camera_position": [0, 0],
+	"sing_duration": 4,
+	"scale": 1.7,
+	"_editor_isPlayer": false
+}

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Teto Chef.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="Teto Chef Down0000" x="676" y="433" width="217" height="317" frameX="-1" frameY="-3" frameWidth="216" frameHeight="318"/>
+	<SubTexture name="Teto Chef Down0001" x="676" y="433" width="217" height="317" frameX="-1" frameY="-3" frameWidth="216" frameHeight="318"/>
+	<SubTexture name="Teto Chef Down0002" x="676" y="433" width="217" height="317" frameX="-1" frameY="-3" frameWidth="216" frameHeight="318"/>
+	<SubTexture name="Teto Chef Down0003" x="1003" y="405" width="214" height="322" frameX="2" frameY="2" frameWidth="216" frameHeight="318"/>
+	<SubTexture name="Teto Chef Down0004" x="1003" y="405" width="214" height="322" frameX="2" frameY="2" frameWidth="216" frameHeight="318"/>
+	<SubTexture name="Teto Chef Down0005" x="1003" y="405" width="214" height="322" frameX="2" frameY="2" frameWidth="216" frameHeight="318"/>
+	<SubTexture name="Teto Chef Down0006" x="1003" y="405" width="214" height="322" frameX="2" frameY="2" frameWidth="216" frameHeight="318"/>
+	<SubTexture name="Teto Chef Down0007" x="1003" y="405" width="214" height="322" frameX="2" frameY="2" frameWidth="216" frameHeight="318"/>
+	<SubTexture name="Teto Chef Down0008" x="1003" y="405" width="214" height="322" frameX="2" frameY="2" frameWidth="216" frameHeight="318"/>
+	<SubTexture name="Teto Chef Down0009" x="1003" y="405" width="214" height="322" frameX="2" frameY="2" frameWidth="216" frameHeight="318"/>
+	<SubTexture name="Teto Chef Down0010" x="1003" y="405" width="214" height="322" frameX="2" frameY="2" frameWidth="216" frameHeight="318"/>
+	<SubTexture name="Teto Chef Down0011" x="1003" y="405" width="214" height="322" frameX="2" frameY="2" frameWidth="216" frameHeight="318"/>
+	<SubTexture name="Teto Chef Down0012" x="1003" y="405" width="214" height="322" frameX="2" frameY="2" frameWidth="216" frameHeight="318"/>
+	<SubTexture name="Teto Chef Down0013" x="1003" y="405" width="214" height="322" frameX="2" frameY="2" frameWidth="216" frameHeight="318"/>
+	<SubTexture name="Teto Chef Down0014" x="1003" y="405" width="214" height="322" frameX="2" frameY="2" frameWidth="216" frameHeight="318"/>
+	<SubTexture name="Teto Chef Left0000" x="1003" y="0" width="218" height="405" frameX="2" frameY="2" frameWidth="227" frameHeight="401"/>
+	<SubTexture name="Teto Chef Left0001" x="1003" y="0" width="218" height="405" frameX="2" frameY="2" frameWidth="227" frameHeight="401"/>
+	<SubTexture name="Teto Chef Left0002" x="1003" y="0" width="218" height="405" frameX="2" frameY="2" frameWidth="227" frameHeight="401"/>
+	<SubTexture name="Teto Chef Left0003" x="452" y="433" width="224" height="403" frameX="-5" frameY="1" frameWidth="227" frameHeight="401"/>
+	<SubTexture name="Teto Chef Left0004" x="452" y="433" width="224" height="403" frameX="-5" frameY="1" frameWidth="227" frameHeight="401"/>
+	<SubTexture name="Teto Chef Left0005" x="452" y="433" width="224" height="403" frameX="-5" frameY="1" frameWidth="227" frameHeight="401"/>
+	<SubTexture name="Teto Chef Left0006" x="452" y="433" width="224" height="403" frameX="-5" frameY="1" frameWidth="227" frameHeight="401"/>
+	<SubTexture name="Teto Chef Left0007" x="452" y="433" width="224" height="403" frameX="-5" frameY="1" frameWidth="227" frameHeight="401"/>
+	<SubTexture name="Teto Chef Left0008" x="452" y="433" width="224" height="403" frameX="-5" frameY="1" frameWidth="227" frameHeight="401"/>
+	<SubTexture name="Teto Chef Left0009" x="452" y="433" width="224" height="403" frameX="-5" frameY="1" frameWidth="227" frameHeight="401"/>
+	<SubTexture name="Teto Chef Left0010" x="452" y="433" width="224" height="403" frameX="-5" frameY="1" frameWidth="227" frameHeight="401"/>
+	<SubTexture name="Teto Chef Left0011" x="452" y="433" width="224" height="403" frameX="-5" frameY="1" frameWidth="227" frameHeight="401"/>
+	<SubTexture name="Teto Chef Left0012" x="452" y="433" width="224" height="403" frameX="-5" frameY="1" frameWidth="227" frameHeight="401"/>
+	<SubTexture name="Teto Chef Left0013" x="452" y="433" width="224" height="403" frameX="-5" frameY="1" frameWidth="227" frameHeight="401"/>
+	<SubTexture name="Teto Chef Left0014" x="452" y="433" width="224" height="403" frameX="-5" frameY="1" frameWidth="227" frameHeight="401"/>
+	<SubTexture name="Teto Chef Right0000" x="234" y="0" width="274" height="363" frameX="-1" frameY="2" frameWidth="273" frameHeight="359"/>
+	<SubTexture name="Teto Chef Right0001" x="234" y="0" width="274" height="363" frameX="-1" frameY="2" frameWidth="273" frameHeight="359"/>
+	<SubTexture name="Teto Chef Right0002" x="234" y="0" width="274" height="363" frameX="-1" frameY="2" frameWidth="273" frameHeight="359"/>
+	<SubTexture name="Teto Chef Right0003" x="739" y="0" width="264" height="361" frameX="2" frameY="2" frameWidth="273" frameHeight="359"/>
+	<SubTexture name="Teto Chef Right0004" x="739" y="0" width="264" height="361" frameX="2" frameY="2" frameWidth="273" frameHeight="359"/>
+	<SubTexture name="Teto Chef Right0005" x="739" y="0" width="264" height="361" frameX="2" frameY="2" frameWidth="273" frameHeight="359"/>
+	<SubTexture name="Teto Chef Right0006" x="739" y="0" width="264" height="361" frameX="2" frameY="2" frameWidth="273" frameHeight="359"/>
+	<SubTexture name="Teto Chef Right0007" x="739" y="0" width="264" height="361" frameX="2" frameY="2" frameWidth="273" frameHeight="359"/>
+	<SubTexture name="Teto Chef Right0008" x="739" y="0" width="264" height="361" frameX="2" frameY="2" frameWidth="273" frameHeight="359"/>
+	<SubTexture name="Teto Chef Right0009" x="739" y="0" width="264" height="361" frameX="2" frameY="2" frameWidth="273" frameHeight="359"/>
+	<SubTexture name="Teto Chef Right0010" x="739" y="0" width="264" height="361" frameX="2" frameY="2" frameWidth="273" frameHeight="359"/>
+	<SubTexture name="Teto Chef Right0011" x="739" y="0" width="264" height="361" frameX="2" frameY="2" frameWidth="273" frameHeight="359"/>
+	<SubTexture name="Teto Chef Right0012" x="739" y="0" width="264" height="361" frameX="2" frameY="2" frameWidth="273" frameHeight="359"/>
+	<SubTexture name="Teto Chef Right0013" x="739" y="0" width="264" height="361" frameX="2" frameY="2" frameWidth="273" frameHeight="359"/>
+	<SubTexture name="Teto Chef Right0014" x="739" y="0" width="264" height="361" frameX="2" frameY="2" frameWidth="273" frameHeight="359"/>
+	<SubTexture name="Teto Chef Up0000" x="0" y="0" width="234" height="433" frameX="2" frameY="2" frameWidth="231" frameHeight="430"/>
+	<SubTexture name="Teto Chef Up0001" x="0" y="0" width="234" height="433" frameX="2" frameY="2" frameWidth="231" frameHeight="430"/>
+	<SubTexture name="Teto Chef Up0002" x="0" y="0" width="234" height="433" frameX="2" frameY="2" frameWidth="231" frameHeight="430"/>
+	<SubTexture name="Teto Chef Up0003" x="508" y="0" width="231" height="426" frameX="-1" frameY="-6" frameWidth="231" frameHeight="430"/>
+	<SubTexture name="Teto Chef Up0004" x="508" y="0" width="231" height="426" frameX="-1" frameY="-6" frameWidth="231" frameHeight="430"/>
+	<SubTexture name="Teto Chef Up0005" x="508" y="0" width="231" height="426" frameX="-1" frameY="-6" frameWidth="231" frameHeight="430"/>
+	<SubTexture name="Teto Chef Up0006" x="508" y="0" width="231" height="426" frameX="-1" frameY="-6" frameWidth="231" frameHeight="430"/>
+	<SubTexture name="Teto Chef Up0007" x="508" y="0" width="231" height="426" frameX="-1" frameY="-6" frameWidth="231" frameHeight="430"/>
+	<SubTexture name="Teto Chef Up0008" x="508" y="0" width="231" height="426" frameX="-1" frameY="-6" frameWidth="231" frameHeight="430"/>
+	<SubTexture name="Teto Chef Up0009" x="508" y="0" width="231" height="426" frameX="-1" frameY="-6" frameWidth="231" frameHeight="430"/>
+	<SubTexture name="Teto Chef Up0010" x="508" y="0" width="231" height="426" frameX="-1" frameY="-6" frameWidth="231" frameHeight="430"/>
+	<SubTexture name="Teto Chef Up0011" x="508" y="0" width="231" height="426" frameX="-1" frameY="-6" frameWidth="231" frameHeight="430"/>
+	<SubTexture name="Teto Chef Up0012" x="508" y="0" width="231" height="426" frameX="-1" frameY="-6" frameWidth="231" frameHeight="430"/>
+	<SubTexture name="Teto Chef Up0013" x="508" y="0" width="231" height="426" frameX="-1" frameY="-6" frameWidth="231" frameHeight="430"/>
+	<SubTexture name="Teto Chef Up0014" x="508" y="0" width="231" height="426" frameX="-1" frameY="-6" frameWidth="231" frameHeight="430"/>
+	<SubTexture name="Teto Estandar0000" x="226" y="433" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0001" x="226" y="433" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0002" x="226" y="433" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0003" x="226" y="433" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0004" x="226" y="433" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0005" x="226" y="433" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0006" x="226" y="433" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0007" x="226" y="433" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0008" x="226" y="433" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0009" x="226" y="433" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0010" x="226" y="433" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0011" x="226" y="433" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0012" x="0" y="433" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0013" x="0" y="433" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0014" x="0" y="433" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0015" x="0" y="433" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0016" x="0" y="433" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0017" x="0" y="433" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0018" x="0" y="433" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0019" x="0" y="433" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0020" x="0" y="433" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0021" x="0" y="433" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0022" x="0" y="433" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0023" x="0" y="433" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0024" x="0" y="433" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+</TextureAtlas>

@@ -1,0 +1,55 @@
+{
+	"animations": [
+		{
+			"loop": true,
+			"offsets": [-80, -157],
+			"anim": "idle",
+			"fps": 24,
+			"name": "Teto Estandar",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [14, -150],
+			"anim": "singLEFT",
+			"fps": 24,
+			"name": "Teto Chef Left",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [-196, -226],
+			"anim": "singRIGHT",
+			"fps": 24,
+			"name": "Teto Chef Right",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [-120, -81],
+			"anim": "singUP",
+			"fps": 24,
+			"name": "Teto Chef Up",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [-163, -282],
+			"anim": "singDOWN",
+			"fps": 24,
+			"name": "Teto Chef Down",
+			"indices": []
+		}
+	],
+	"vocals_file": "",
+	"no_antialiasing": false,
+	"image": "characters/teto chef",
+	"position": [-1410, -170],
+	"healthicon": "TetoAnim",
+	"flip_x": false,
+	"healthbar_colors": [161, 161, 161],
+	"camera_position": [0, 0],
+	"sing_duration": 4,
+	"scale": 1.7,
+	"_editor_isPlayer": false
+}

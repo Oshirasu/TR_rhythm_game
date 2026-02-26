@@ -1,0 +1,31 @@
+{
+	"animations": [
+		{
+			"offsets": [20, 434],
+			"loop": false,
+			"fps": 24,
+			"anim": "idle",
+			"indices": [],
+			"name": "idle"
+		},
+		{
+			"offsets": [22, 434],
+			"loop": false,
+			"fps": 24,
+			"anim": "animation",
+			"indices": [],
+			"name": "animation"
+		}
+	],
+	"vocals_file": "",
+	"no_antialiasing": false,
+	"image": "characters/Bf Animation",
+	"position": [-450, 450],
+	"healthicon": "bf",
+	"flip_x": true,
+	"healthbar_colors": [49, 176, 209],
+	"camera_position": [0, 0],
+	"sing_duration": 4,
+	"scale": 1,
+	"_editor_isPlayer": true
+}

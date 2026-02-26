@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="Hodo.png" width="4488" height="4022">
+        <SubTexture name="idle mi0000" x="646" y="2" width="642" height="910" frameX="-190" frameY="-196" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0001" x="646" y="2" width="642" height="910" frameX="-190" frameY="-196" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0002" x="2" y="2" width="642" height="909" frameX="-190" frameY="-197" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0003" x="2575" y="2" width="642" height="994" frameX="-191" frameY="-105" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0004" x="3219" y="2" width="643" height="994" frameX="-188" frameY="-105" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0005" x="1283" y="1987" width="644" height="1007" frameX="-188" frameY="-92" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0006" x="1929" y="2001" width="643" height="1007" frameX="-188" frameY="-91" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0007" x="2" y="1909" width="637" height="1007" frameX="-192" frameY="-91" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0008" x="2574" y="2001" width="631" height="1007" frameX="-198" frameY="-91" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0009" x="3207" y="2001" width="639" height="1007" frameX="-194" frameY="-91" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0010" x="3848" y="2001" width="638" height="1007" frameX="-194" frameY="-93" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0011" x="2" y="2918" width="639" height="1007" frameX="-194" frameY="-93" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0012" x="643" y="2996" width="641" height="1007" frameX="-191" frameY="-93" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0013" x="641" y="1910" width="640" height="1006" frameX="-192" frameY="-94" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0014" x="1286" y="2996" width="641" height="1010" frameX="-191" frameY="-93" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0015" x="2573" y="3010" width="640" height="1010" frameX="-192" frameY="-93" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0016" x="3215" y="3010" width="643" height="1010" frameX="-190" frameY="-93" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0017" x="1929" y="3010" width="642" height="1007" frameX="-192" frameY="-96" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0018" x="1930" y="997" width="643" height="1002" frameX="-191" frameY="-97" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0019" x="2575" y="998" width="646" height="1001" frameX="-194" frameY="-98" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0020" x="3223" y="998" width="645" height="1001" frameX="-193" frameY="-98" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0021" x="643" y="914" width="644" height="994" frameX="-199" frameY="-105" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0022" x="2" y="913" width="639" height="994" frameX="-204" frameY="-104" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0023" x="1289" y="991" width="639" height="994" frameX="-208" frameY="-104" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0024" x="1289" y="991" width="639" height="994" frameX="-208" frameY="-104" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0025" x="1934" y="2" width="639" height="993" frameX="-207" frameY="-105" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="hodo mi0026" x="1290" y="2" width="642" height="987" frameX="-203" frameY="-112" frameWidth="1010" frameHeight="1156"/>
+</TextureAtlas>

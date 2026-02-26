@@ -1,0 +1,31 @@
+{
+	"animations": [
+		{
+			"offsets": [139, 279],
+			"indices": [],
+			"fps": 24,
+			"anim": "idle",
+			"loop": false,
+			"name": "idle"
+		},
+		{
+			"offsets": [141, 279],
+			"indices": [],
+			"fps": 24,
+			"anim": "motto",
+			"loop": false,
+			"name": "Motto Motto"
+		}
+	],
+	"vocals_file": "",
+	"no_antialiasing": false,
+	"image": "characters/Motto Motto",
+	"position": [-470, -170],
+	"healthicon": "Miku",
+	"flip_x": false,
+	"healthbar_colors": [161, 161, 161],
+	"camera_position": [0, 0],
+	"sing_duration": 4,
+	"scale": 0.75,
+	"_editor_isPlayer": false
+}

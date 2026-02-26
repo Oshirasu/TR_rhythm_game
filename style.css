@@ -1,0 +1,899 @@
+*{box-sizing:border-box;font-family:system-ui,Segoe UI,Helvetica,Arial}
+
+:root{
+  --note-size:110px; /* ノーツの大きさ */
+  --lane-spacing:0px; /* レーン間の横間隔（0で隣接） */
+  --ud-gap:-7px; /* down と up の間だけ広げる */
+  --combo-x:-37px; /* combo 繝弱・繝・のXオフセット */
+  --judge-size:80px; /* 判定矢印のサイズ */
+  --judge-bottom:90px; /* 判定矢印の下からのオフセット（px） */
+  --lane-group-gap:370px; /* 左右のレーン群間のギャップ */
+  --player-shift:-40px; /* player 側の水平シフト */
+  --opponent-shift:60px; /* opponent 側の水平シフト */
+  --bf-size:84px; /* BF アニメ用の領域サイズ（デフォルト） */
+  --bf-tile-size:42px; /* スプライト内の各アイコンサイズ（おおよそ、画像に合わせて調整） */
+  /* BF フレームごとの微調整オフセット（px） */
+  --bf-tl-x: 0px;
+  --bf-tl-y: 0px;
+  --bf-tr-x: 0px;
+  --bf-tr-y: 0px;
+  --bf-bl-x: 0px;
+  --bf-bl-y: 0px;
+  --bf-br-x: 0px;
+  --bf-br-y: 0px;
+  /* 左右アイコンの微調整 */
+  --icon-left-x: 0px;
+  --icon-left-y: 0px;
+  --icon-right-x: 0px;
+  --icon-right-y: 0px;
+
+  --health-icon-gap: 59px; /* ← アイコン同士の間隔 */
+  --judge-line-y: 800px; /* ノーツが判定ラインに到達するY位置 */
+  --judge-line-bottom: 90px;
+  --character-ground: 48px;
+
+  /* center layout */
+  --character-center-player-x: 50%;
+  --character-center-player-y: 50%;
+  --character-center-player-scale: 0.8;
+  --character-center-opponent-x: 50%;
+  --character-center-opponent-y: 48%;
+  --character-center-opponent-scale: 0.76;
+
+  /* split layout (bf right, teto left) */
+  --character-split-player-x: 80%;
+  --character-split-player-y: 68%;
+  --character-split-player-scale: 1.6;
+  --character-split-opponent-x: 17%;
+  --character-split-opponent-y: 65%;
+  --character-split-opponent-scale: 1.55;
+
+  /* gf events character */
+  --character-gf-x: 50%;
+  --character-gf-y: 50%;
+  --character-gf-scale: 0.66;
+  --character-gf-idle-word-width: 605px;
+  --character-gf-idle-word-height: 150px;
+  --character-gf-idle-word-x: 50%;
+  --character-gf-idle-word-y: 27%;
+  --character-gf-idle-word-scale: 0.68;
+  --character-gf-idle-word-float-px: 13px;
+
+  /* active values */
+  --character-player-x: var(--character-center-player-x);
+  --character-player-y: var(--character-center-player-y);
+  --character-player-scale: var(--character-center-player-scale);
+  --character-opponent-x: var(--character-center-opponent-x);
+  --character-opponent-y: var(--character-center-opponent-y);
+  --character-opponent-scale: var(--character-center-opponent-scale);
+  --character-image-rendering: auto;
+  --character-float-distance: 13px;
+  --scene-bg-shift-x: 0px;
+  --scene-bg-shift-y: 0px;
+}
+
+body{
+  background:#ffffff;
+  color:#ffffff;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:18px;
+}
+
+body.character-layout-center{
+  --character-player-x: var(--character-center-player-x);
+  --character-player-y: var(--character-center-player-y);
+  --character-player-scale: var(--character-center-player-scale);
+  --character-opponent-x: var(--character-center-opponent-x);
+  --character-opponent-y: var(--character-center-opponent-y);
+  --character-opponent-scale: var(--character-center-opponent-scale);
+}
+
+body.character-layout-split{
+  --character-player-x: var(--character-split-player-x);
+  --character-player-y: var(--character-split-player-y);
+  --character-player-scale: var(--character-split-player-scale);
+  --character-opponent-x: var(--character-split-opponent-x);
+  --character-opponent-y: var(--character-split-opponent-y);
+  --character-opponent-scale: var(--character-split-opponent-scale);
+}
+
+#ui{
+  width:820px;
+  max-width:95%;
+  margin-bottom:12px;
+}
+
+.info{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+.controls{margin-top:8px}
+.keys{margin-top:6px;color:#bbb}
+
+#game{
+  width:820px;
+  max-width:95%;
+  height:680px;
+  border:2px solid #333;
+  position:relative;
+  background:#ffffff;
+  background-position: var(--scene-bg-shift-x) var(--scene-bg-shift-y);
+  display:flex;
+  padding:12px;
+}
+
+#scene-camera-layer{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  overflow:visible;
+  z-index:0;
+  transform:translate(0px, 0px);
+  will-change:transform;
+}
+
+#character-layer{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  overflow:visible;
+  z-index:1;
+}
+
+.character{
+  position:absolute;
+  bottom:auto;
+  transform-origin:center center;
+  will-change:transform;
+  contain:layout paint;
+  z-index:0;
+}
+
+.character.character--anchor-bottom{
+  transform-origin:center bottom;
+}
+
+.character--opponent{
+  left:var(--character-opponent-x);
+  top:var(--character-opponent-y);
+  transform:translate(-50%, -50%) scale(calc(var(--character-opponent-scale) * var(--character-extra-scale, 1)));
+}
+
+.character--player{
+  left:var(--character-player-x);
+  top:var(--character-player-y);
+  transform:translate(-50%, -50%) scale(calc(var(--character-player-scale) * var(--character-extra-scale, 1)));
+}
+
+.character--gf{
+  left:var(--character-gf-x);
+  top:var(--character-gf-y);
+  transform:translate(-50%, -50%) scale(calc(var(--character-gf-scale) * var(--character-extra-scale, 1)));
+  z-index:-1;
+}
+
+body.character-float-on .character--player{
+  animation:character-float-player 2400ms ease-in-out infinite alternate;
+}
+
+body.character-float-on .character--opponent{
+  animation:character-float-opponent 2400ms ease-in-out infinite alternate;
+}
+
+@keyframes character-float-player{
+  0%{ top:calc(var(--character-player-y) - var(--character-float-distance)); }
+  100%{ top:calc(var(--character-player-y) + var(--character-float-distance)); }
+}
+
+@keyframes character-float-opponent{
+  0%{ top:calc(var(--character-opponent-y) - var(--character-float-distance)); }
+  100%{ top:calc(var(--character-opponent-y) + var(--character-float-distance)); }
+}
+
+.character--gf.character--gf-idle-word::after{
+  content:"";
+  position:absolute;
+  left:var(--character-gf-idle-word-x);
+  top:var(--character-gf-idle-word-y);
+  width:var(--character-gf-idle-word-width);
+  height:var(--character-gf-idle-word-height);
+  transform:translate(-50%, -50%) scale(var(--character-gf-idle-word-scale));
+  background-image:url("assets/images/bg/akageword.png");
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:contain;
+  pointer-events:none;
+  opacity: 1;
+  z-index:2;
+  will-change:transform;
+  animation:character-gf-idle-word-float 1500ms ease-in-out infinite alternate;
+}
+
+@keyframes character-gf-idle-word-float{
+  0%{
+    transform:translate(-50%, calc(-50% - var(--character-gf-idle-word-float-px))) scale(var(--character-gf-idle-word-scale));
+  }
+  100%{
+    transform:translate(-50%, calc(-50% + var(--character-gf-idle-word-float-px))) scale(var(--character-gf-idle-word-scale));
+  }
+}
+
+.character-frame{
+  position:absolute;
+  left:0;
+  top:0;
+  image-rendering:var(--character-image-rendering);
+  background-repeat:no-repeat;
+  background-size:auto;
+  contain:paint;
+  z-index:1;
+}
+
+.lane-group{
+  display:flex;
+  position:relative;
+  z-index:6;
+  gap:var(--lane-spacing);
+  width:calc(4 * var(--note-size) + 3 * var(--lane-spacing) + var(--ud-gap));
+  height:100%;
+}
+
+.lane-group.opponent{transform:translateX(var(--opponent-shift));}
+.lane-group.player{transform:translateX(var(--player-shift));}
+
+.lane{
+  width:var(--note-size);
+  position:relative;
+  border-left:none; /* レーン間の縦の薄い線を非表示 */
+  height:100%;
+  overflow: visible;
+}
+
+/* down (2nd) と up (3rd) の間だけスペース追加 */
+.lane-group .lane:nth-child(3){
+  margin-left:var(--ud-gap);
+}
+
+.lane:first-child{border-left:0}
+
+.lane::after{
+  display:none; /* 判定ラインの薄い横線を非表示 */
+}
+
+.note{
+  position:absolute;
+  width:var(--note-size);
+  height:var(--note-size);
+  left:50%;
+  transform:translateX(-50%);
+  border-radius:6px;
+  top:0;
+}
+
+.note-splash{
+  position:absolute;
+  pointer-events:none;
+  overflow:hidden;
+  opacity: 0.9;
+  z-index:9;
+}
+
+.note-splash-sprite{
+  position:absolute;
+  left:0;
+  top:0;
+  image-rendering:pixelated;
+  background-repeat:no-repeat;
+  background-size:auto;
+}
+.note.player{
+  background:linear-gradient(#9be2ff,#53c7ff)
+}
+
+.note.opponent{
+  background:linear-gradient(#ffb3c7,#ff7aa3)
+}
+
+#gameover-overlay{
+  position:fixed;
+  inset:0;
+  background:#000;
+  z-index:9999;
+  pointer-events:none;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  text-align:center;
+  font-family:"Comic Sans MS","Comic Sans",cursive !important;
+  transform-origin:center;
+  will-change:transform;
+}
+
+#gameover-overlay.gameover-overlay{
+  font-family:"Comic Sans MS","Comic Sans",cursive !important;
+}
+
+#screen-curtain{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  pointer-events:none;
+  transform:translateY(-100%);
+  opacity:0;
+  background:transparent;
+  will-change:transform,opacity;
+}
+
+#screen-curtain.screen-curtain--solid{
+  background:#000;
+}
+
+#screen-curtain.screen-curtain--drop{
+  opacity:1;
+  background:linear-gradient(to bottom,
+    rgba(0,0,0,1) 0%,
+    rgba(0,0,0,0.85) 35%,
+    rgba(0,0,0,0.55) 60%,
+    rgba(0,0,0,0.25) 85%,
+    rgba(0,0,0,0) 100%
+  );
+  animation:screen-curtain-drop var(--curtain-ms,900ms) linear forwards;
+}
+
+#screen-curtain.screen-curtain--hold{
+  transform:translateY(0);
+  opacity:1;
+}
+
+#screen-curtain.screen-curtain--lift{
+  opacity:1;
+  background:linear-gradient(to bottom,
+    rgba(0,0,0,0) 0%,
+    rgba(0,0,0,0.25) 30%,
+    rgba(0,0,0,0.55) 60%,
+    rgba(0,0,0,0.85) 85%,
+    rgba(0,0,0,1) 100%
+  );
+  animation:screen-curtain-lift var(--curtain-ms,450ms) linear forwards;
+}
+
+#screen-curtain.screen-curtain--hidden{
+  opacity:0;
+  transform:translateY(-100%);
+}
+
+#camera-flash-overlay{
+  position:fixed;
+  inset:0;
+  background:#fff;
+  opacity:0;
+  pointer-events:none;
+  z-index:9998;
+  will-change:opacity;
+}
+
+#white-screen-overlay{
+  position:fixed;
+  inset:0;
+  background:#fff;
+  opacity:0;
+  pointer-events:none;
+  z-index:9999;
+  will-change:opacity;
+  display:none;
+}
+
+#show-image-overlay{
+  position:absolute;
+  left:50%;
+  top:50%;
+  pointer-events:none;
+  z-index:2;
+  display:none;
+  transform-origin:center center;
+  max-width:none;
+  max-height:none;
+}
+
+#show-image-fhud-overlay{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  object-fit:cover;
+  pointer-events:none;
+  z-index:9997;
+  display:none;
+}
+
+#gameover-overlay .gameover-title{
+  font-size:100px;
+  font-weight:700;
+  margin-bottom:12px;
+  font-family:"Comic Sans MS","Comic Sans",cursive !important;
+  display:inline-block;
+  transform-origin:center;
+  will-change:transform;
+  position:relative;
+  z-index:2;
+}
+
+#gameover-overlay .gameover-hint{
+  font-size:40px;
+  font-weight:400;
+  font-family:"Comic Sans MS","Comic Sans",cursive !important;
+  display:inline-block;
+  transform-origin:center;
+  will-change:transform;
+  position:relative;
+  z-index:2;
+}
+
+#gameover-overlay.gameover-beat{
+  animation:gameover-screen-beat 0.6s ease-in-out infinite;
+}
+
+#gameover-overlay.gameover-retry .gameover-title{
+  font-size:70px;
+  font-weight:700;
+}
+
+#gameover-overlay.gameover-retry .gameover-hint{
+  font-size:70px;
+  font-weight:700;
+}
+
+#gameover-overlay.gameover-retry{
+  background:#000;
+}
+
+
+@keyframes gameover-screen-beat{
+  0%{transform:scale(1)}
+  2%{transform:scale(1.03)}
+  70%{transform:scale(1)}
+  100%{transform:scale(1)}
+}
+
+@keyframes screen-curtain-drop{
+  0%{transform:translateY(-100%)}
+  100%{transform:translateY(0)}
+}
+
+@keyframes screen-curtain-lift{
+  0%{transform:translateY(0)}
+  100%{transform:translateY(100%)}
+}
+
+#judge{margin-left:12px;font-weight:700}
+
+.health-icon .icon-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.health-icon .icon-img.active {
+  opacity: 1;
+}
+
+#health-opponent .icon-img.active {
+  transform: translate(var(--icon-left-x), var(--icon-left-y));
+}
+
+#health-player .icon-img.active {
+  transform: translate(var(--icon-right-x), var(--icon-right-y));
+}
+
+#health-container{
+  position:absolute;
+  top:43px;
+  left:50%;
+  transform:translateX(-50%);
+  width:1024px;
+  height:64px;
+  pointer-events:none;
+  z-index:9;
+}
+
+#health-bar{
+  position:relative;
+  width:100%;
+  height:100%;
+}
+
+.health-bar-frame{
+  position:absolute;
+  inset:0;
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center;
+  opacity:0;
+  z-index:2;
+}
+
+.health-bar-frame.f1{background-image:url("assets/images/life-bar/Life-Bar-Frame1.png")}
+.health-bar-frame.f2{background-image:url("assets/images/life-bar/Life-Bar-Frame2.png")}
+.health-bar-frame.f3{background-image:url("assets/images/life-bar/Life-Bar-Frame3.png")}
+.health-bar-frame.f4{background-image:url("assets/images/life-bar/Life-Bar-Frame4.png")}
+
+.health-bar-frame{
+  animation: healthbar-anim 1000ms steps(1) infinite;
+}
+
+.health-bar-frame.f1{animation-delay:0ms}
+.health-bar-frame.f2{animation-delay:250ms}
+.health-bar-frame.f3{animation-delay:500ms}
+.health-bar-frame.f4{animation-delay:750ms}
+
+@keyframes healthbar-anim{
+  0%{opacity:1}
+  25%{opacity:0}
+  100%{opacity:0}
+}
+
+.health-icon{
+  position:absolute;
+  top:45%;
+  transform:
+    translate(-50%, -50%)
+    translateX(var(--icon-gap, 0px))
+    translateY(var(--icon-shake-y, 0px));
+  width:130px;
+  height:130px;
+  z-index:3;
+}
+
+#health-opponent{
+  width:180px;
+  height:140px;
+}
+#health-player{
+  left:0;
+}
+
+#health-opponent.scary{
+  width:190px;
+  height:140px;
+}
+
+/* =========================
+   相手が miku のとき専用
+========================= */
+#health-opponent.miku{
+  width: 210px;      /* アイコン全体の大きさ */
+  height:150px;
+
+  --icon-left-y: 0px;
+  left:0;
+
+  --health-icon-gap: 63px; /* ★ ここが重要 */
+}
+
+#health-bar.miku-mode #health-opponent-fill {
+  background: #58d2e5
+}
+/* 判定ラインの矢印（動かさないが表示はする） */
+.lane .judge-image {
+  position: absolute;
+  left: 50%;
+  transform-origin: center center;
+  bottom: calc(var(--judge-bottom) + -5px);
+  image-rendering: pixelated;
+  pointer-events: none;
+  opacity: 0.98;
+  overflow: hidden;
+
+  /* ★ スプライト前提 */
+  background-image: url("assets/images/Akage_Notes.png");
+  background-repeat: no-repeat;
+  background-size: auto;
+}
+
+
+@media (max-width:1200px){
+  :root{
+    --character-center-opponent-scale: 0.64;
+    --character-center-player-scale: 0.68;
+    --character-split-opponent-scale: 0.64;
+    --character-split-player-scale: 0.68;
+    --character-gf-scale: 0.3;
+  }
+}
+
+@media (max-width:600px){
+  #game{height:560px}
+  :root{
+    --character-ground: 36px;
+    --character-center-opponent-scale: 0.5;
+    --character-center-player-scale: 0.54;
+    --character-split-opponent-scale: 0.5;
+    --character-split-player-scale: 0.54;
+    --character-gf-scale: 0.26;
+  }
+}
+
+/* 判定ポップアップ */
+#judge-popup{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  top:400px;
+  font-size:48px;
+  font-weight:800;
+  color:#222;
+  text-shadow:none;
+  pointer-events:none;
+  z-index: 10;
+}
+#judge-popup.show{opacity:1;transform:translateX(-50%) translateY(-10px)}
+#judge-popup.sick{color:#9cff6b}
+#judge-popup.good{color:#7ecbff}
+#judge-popup.bad{color:#ffb86b}
+#judge-popup.shit{color:#ff5c7a}
+#judge-popup.miss{color:#999}
+
+/* 内部のメイン行と ms 行 */
+#judge-popup .judge-main{font-size:48px;line-height:1}
+#judge-popup .judge-ms{font-size:18px;margin-top:6px;opacity:0.9}
+
+/* Play-only view: hide top UI and expand game area to viewport */
+/* Top UI is shown by default; comment out play-only hiding so UI is visible. */
+#ui{display:block !important}
+body{padding:0 !important;align-items:stretch}
+#game{
+  width:100vw;
+  max-width:100%;
+  height:100vh;
+  border:0;
+  margin:0;
+  padding:12px;
+  gap:var(--lane-group-gap);
+}
+
+/* 色バー */
+#health-fill{
+  position:absolute;
+  left:49.3%;
+  height:29.5px;
+  width:975px;
+  top:19.5px;
+  transform:translateX(-50%);
+  overflow:hidden;
+  z-index:1;
+}
+
+
+#health-opponent-fill{
+  position:absolute;
+  left:0;
+  top:0;
+  height:100%;
+  background:#C15E6C;
+}
+
+#health-player-fill{
+  position:absolute;
+  right:0;
+  top:0;
+  height:100%;
+  background:#EEDCDB;
+}
+
+#intro-image {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px; 
+  height: auto; 
+  opacity: 0;                 /* 基本は非表示 */
+  transition: none;
+  pointer-events: none;
+}
+
+#intro-image.show {
+  opacity: 1;                 /* 表示 */
+}
+
+#intro-image.fade {
+  transition: opacity 200ms linear; /* ★ フェードアウト専用 */
+  opacity: 0;
+}
+
+#scoreboard{
+  position:absolute;
+  top:630px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:28px;
+
+  font-family:"Comic Sans MS","Comic Sans",cursive;
+  font-size:23px;
+  font-weight:bold;
+  color:#000000;
+  opacity: 0.8;
+  pointer-events:none;
+  z-index:5;
+}
+
+#scoreboard span{
+  white-space:nowrap;
+}
+
+#scoreboard *{
+  font-family: "Comic Sans MS","Comic Sans",cursive !important;
+}
+
+#scoreboard {
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  font-size: 23px;
+  margin-top: 8px;
+  transform-origin: center;
+  white-space: nowrap;
+}
+
+body.hide-scoreboard #scoreboard{
+  display:none !important;
+}
+
+body.hide-judge #judge-popup .judge-item,
+body.hide-judge #judge-ms-fixed{
+  display:none !important;
+}
+
+body.hide-combo #judge-combo{
+  display:none !important;
+}
+
+#scoreboard-inner {
+  display: inline-flex;       /* ★重要 */
+  transform-origin: center;
+}
+
+#scoreboard-inner.pop {
+  animation: score-pop 150ms ease-out;
+}
+
+@keyframes score-pop {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.sep {
+  margin: 0 6px;
+}
+
+/* ===== 小節ズーム（加速度あり） ===== */
+#game.bar-zoom {
+  animation: barZoomAccel 500ms forwards;
+}
+
+@keyframes barZoomAccel {
+  /* 初期 */
+  0% {
+    transform: scale(1);
+  }
+
+  /* 一瞬で拡大（加速） */
+  5% {
+    transform: scale(1.025);
+  }
+
+  /* ゆっくり戻る（減速） */
+  100% {
+    transform: scale(1);
+  }
+}
+
+.sustain-body,
+.sustain-tail {
+  position: absolute;
+  left: 50%;
+  image-rendering: pixelated;
+  transform: translateX(-50%);
+  background-repeat: no-repeat;
+  pointer-events: none;
+  overflow: hidden;
+}
+/* 相手側レーンを完全に非表示 */
+.lane-group.opponent {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sustain-body,
+.sustain-tail {
+  opacity: 0.85;
+}
+
+#judge-popup img.judge-image {
+  width: 220px;       /* 好きなサイズ */
+  height: auto;
+  image-rendering: pixelated; /* FNF風ならおすすめ */
+}
+
+#judge-popup {
+  position: absolute;
+  left: 40%;
+  top: 200px;
+  transform: translateX(-50%) scale(1.7);
+  pointer-events: none;
+}
+
+#judge-combo{
+  position:absolute;
+  left:0;
+  top:69px;
+  width:100%;
+  height:1px;
+  pointer-events:none;
+}
+
+#judge-combo .combo-pop{
+  position:absolute;
+  left:calc(50% + var(--combo-x));
+  transform:translateX(-50%);
+  display:flex;
+  gap:0;
+  justify-content:center;
+}
+
+#judge-combo img{
+  width:27px;
+  height:auto;
+  image-rendering:pixelated;
+}
+
+#judge-combo img + img{
+  margin-left:-1.5px;
+}
+
+.judge-image {
+  width: 220px;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.judge-ms {
+  text-align: center;
+  font-size: 20px;
+  margin-top: -10px;
+}
+
+/* 判定ごとの大きさ */
+.judge-item.sick img { width: 170px; }
+.judge-item.good img { width: 125px; }
+.judge-item.bad  img { width: 110px; }
+.judge-item.shit img { width: 125px; }
+
+.judge-item {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+#judge-ms-fixed {
+  position: absolute;
+  left: 70px;
+  top: 20px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #000;
+  pointer-events: none;
+  white-space: nowrap;
+}

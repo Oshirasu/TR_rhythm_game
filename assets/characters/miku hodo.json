@@ -1,0 +1,31 @@
+{
+	"animations": [
+		{
+			"offsets": [118, 274],
+			"indices": [],
+			"fps": 24,
+			"anim": "hodo mi",
+			"loop": false,
+			"name": "hodo mi"
+		},
+		{
+			"offsets": [119, 277],
+			"indices": [],
+			"fps": 24,
+			"anim": "idle",
+			"loop": false,
+			"name": "idle"
+		}
+	],
+	"vocals_file": "",
+	"no_antialiasing": false,
+	"image": "characters/hodo",
+	"position": [-470, -170],
+	"healthicon": "Miku",
+	"flip_x": false,
+	"healthbar_colors": [161, 161, 161],
+	"camera_position": [0, 0],
+	"sing_duration": 4,
+	"scale": 0.75,
+	"_editor_isPlayer": false
+}

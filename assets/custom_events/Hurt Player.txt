@@ -1,0 +1,3 @@
+Hurt Player
+
+1: how many damage

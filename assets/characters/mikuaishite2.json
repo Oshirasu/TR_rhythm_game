@@ -1,0 +1,31 @@
+{
+	"animations": [
+		{
+			"loop": false,
+			"offsets": [120, 283],
+			"anim": "aishite2",
+			"fps": 24,
+			"name": "mikuaishi2",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [120, 282],
+			"anim": "idle",
+			"fps": 24,
+			"name": "idle",
+			"indices": []
+		}
+	],
+	"vocals_file": "",
+	"no_antialiasing": false,
+	"image": "characters/mikuaishi2",
+	"position": [-470, -170],
+	"healthicon": "Miku",
+	"flip_x": false,
+	"healthbar_colors": [161, 161, 161],
+	"camera_position": [0, 0],
+	"sing_duration": 4,
+	"scale": 0.75,
+	"_editor_isPlayer": false
+}

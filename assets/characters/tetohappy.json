@@ -1,0 +1,23 @@
+{
+	"animations": [
+		{
+			"offsets": [-523, 81],
+			"indices": [],
+			"fps": 24,
+			"anim": "idle",
+			"loop": true,
+			"name": "happy"
+		}
+	],
+	"vocals_file": "",
+	"no_antialiasing": false,
+	"image": "characters/tetohappy",
+	"position": [-790, -200],
+	"healthicon": "Miku",
+	"flip_x": false,
+	"healthbar_colors": [161, 161, 161],
+	"camera_position": [0, 0],
+	"sing_duration": 4,
+	"scale": 1.16,
+	"_editor_isPlayer": false
+}

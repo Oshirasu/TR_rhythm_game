@@ -1,0 +1,55 @@
+{
+	"animations": [
+		{
+			"loop": true,
+			"offsets": [-80, -157],
+			"anim": "idle",
+			"fps": 24,
+			"name": "Teto Estandar",
+			"indices": []
+		},
+		{
+			"offsets": [-189, -255],
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHT",
+			"indices": [],
+			"name": "Teto Medic Right"
+		},
+		{
+			"offsets": [-125, -119],
+			"loop": false,
+			"fps": 24,
+			"anim": "singUP",
+			"indices": [],
+			"name": "Teto Medic Up"
+		},
+		{
+			"offsets": [-146, -324],
+			"loop": false,
+			"fps": 24,
+			"anim": "singDOWN",
+			"indices": [],
+			"name": "Teto medic Down"
+		},
+		{
+			"offsets": [24, -180],
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFT",
+			"indices": [],
+			"name": "Teto medic left"
+		}
+	],
+	"vocals_file": "",
+	"no_antialiasing": false,
+	"image": "characters/teto medic",
+	"position": [-1410, -170],
+	"healthicon": "TetoAnim",
+	"flip_x": false,
+	"healthbar_colors": [161, 161, 161],
+	"camera_position": [0, 0],
+	"sing_duration": 4,
+	"scale": 1.7,
+	"_editor_isPlayer": false
+}

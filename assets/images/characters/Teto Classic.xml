@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Teto Classic.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="Teto Classic Down0000" x="964" y="387" width="218" height="303" frameX="-7" frameY="-2" frameWidth="223" frameHeight="305"/>
+	<SubTexture name="Teto Classic Down0001" x="964" y="387" width="218" height="303" frameX="-7" frameY="-2" frameWidth="223" frameHeight="305"/>
+	<SubTexture name="Teto Classic Down0002" x="964" y="387" width="218" height="303" frameX="-7" frameY="-2" frameWidth="223" frameHeight="305"/>
+	<SubTexture name="Teto Classic Down0003" x="727" y="394" width="216" height="303" frameX="2" frameY="2" frameWidth="223" frameHeight="305"/>
+	<SubTexture name="Teto Classic Down0004" x="727" y="394" width="216" height="303" frameX="2" frameY="2" frameWidth="223" frameHeight="305"/>
+	<SubTexture name="Teto Classic Down0005" x="727" y="394" width="216" height="303" frameX="2" frameY="2" frameWidth="223" frameHeight="305"/>
+	<SubTexture name="Teto Classic Down0006" x="727" y="394" width="216" height="303" frameX="2" frameY="2" frameWidth="223" frameHeight="305"/>
+	<SubTexture name="Teto Classic Down0007" x="727" y="394" width="216" height="303" frameX="2" frameY="2" frameWidth="223" frameHeight="305"/>
+	<SubTexture name="Teto Classic Down0008" x="727" y="394" width="216" height="303" frameX="2" frameY="2" frameWidth="223" frameHeight="305"/>
+	<SubTexture name="Teto Classic Down0009" x="727" y="394" width="216" height="303" frameX="2" frameY="2" frameWidth="223" frameHeight="305"/>
+	<SubTexture name="Teto Classic Down0010" x="727" y="394" width="216" height="303" frameX="2" frameY="2" frameWidth="223" frameHeight="305"/>
+	<SubTexture name="Teto Classic Down0011" x="727" y="394" width="216" height="303" frameX="2" frameY="2" frameWidth="223" frameHeight="305"/>
+	<SubTexture name="Teto Classic Down0012" x="727" y="394" width="216" height="303" frameX="2" frameY="2" frameWidth="223" frameHeight="305"/>
+	<SubTexture name="Teto Classic Down0013" x="727" y="394" width="216" height="303" frameX="2" frameY="2" frameWidth="223" frameHeight="305"/>
+	<SubTexture name="Teto Classic Down0014" x="727" y="394" width="216" height="303" frameX="2" frameY="2" frameWidth="223" frameHeight="305"/>
+	<SubTexture name="Teto Classic Left0000" x="0" y="751" width="224" height="386" frameX="2" frameY="2" frameWidth="232" frameHeight="386"/>
+	<SubTexture name="Teto Classic Left0001" x="0" y="751" width="224" height="386" frameX="2" frameY="2" frameWidth="232" frameHeight="386"/>
+	<SubTexture name="Teto Classic Left0002" x="0" y="751" width="224" height="386" frameX="2" frameY="2" frameWidth="232" frameHeight="386"/>
+	<SubTexture name="Teto Classic Left0003" x="964" y="0" width="224" height="387" frameX="-10" frameY="-1" frameWidth="232" frameHeight="386"/>
+	<SubTexture name="Teto Classic Left0004" x="964" y="0" width="224" height="387" frameX="-10" frameY="-1" frameWidth="232" frameHeight="386"/>
+	<SubTexture name="Teto Classic Left0005" x="964" y="0" width="224" height="387" frameX="-10" frameY="-1" frameWidth="232" frameHeight="386"/>
+	<SubTexture name="Teto Classic Left0006" x="964" y="0" width="224" height="387" frameX="-10" frameY="-1" frameWidth="232" frameHeight="386"/>
+	<SubTexture name="Teto Classic Left0007" x="964" y="0" width="224" height="387" frameX="-10" frameY="-1" frameWidth="232" frameHeight="386"/>
+	<SubTexture name="Teto Classic Left0008" x="964" y="0" width="224" height="387" frameX="-10" frameY="-1" frameWidth="232" frameHeight="386"/>
+	<SubTexture name="Teto Classic Left0009" x="964" y="0" width="224" height="387" frameX="-10" frameY="-1" frameWidth="232" frameHeight="386"/>
+	<SubTexture name="Teto Classic Left0010" x="964" y="0" width="224" height="387" frameX="-10" frameY="-1" frameWidth="232" frameHeight="386"/>
+	<SubTexture name="Teto Classic Left0011" x="964" y="0" width="224" height="387" frameX="-10" frameY="-1" frameWidth="232" frameHeight="386"/>
+	<SubTexture name="Teto Classic Left0012" x="964" y="0" width="224" height="387" frameX="-10" frameY="-1" frameWidth="232" frameHeight="386"/>
+	<SubTexture name="Teto Classic Left0013" x="964" y="0" width="224" height="387" frameX="-10" frameY="-1" frameWidth="232" frameHeight="386"/>
+	<SubTexture name="Teto Classic Left0014" x="964" y="0" width="224" height="387" frameX="-10" frameY="-1" frameWidth="232" frameHeight="386"/>
+	<SubTexture name="Teto Classic Right0000" x="0" y="0" width="275" height="347" frameX="2" frameY="-1" frameWidth="271" frameHeight="347"/>
+	<SubTexture name="Teto Classic Right0001" x="0" y="0" width="275" height="347" frameX="2" frameY="-1" frameWidth="271" frameHeight="347"/>
+	<SubTexture name="Teto Classic Right0002" x="0" y="0" width="275" height="347" frameX="2" frameY="-1" frameWidth="271" frameHeight="347"/>
+	<SubTexture name="Teto Classic Right0003" x="224" y="751" width="244" height="351" frameX="-17" frameY="2" frameWidth="271" frameHeight="347"/>
+	<SubTexture name="Teto Classic Right0004" x="224" y="751" width="244" height="351" frameX="-17" frameY="2" frameWidth="271" frameHeight="347"/>
+	<SubTexture name="Teto Classic Right0005" x="224" y="751" width="244" height="351" frameX="-17" frameY="2" frameWidth="271" frameHeight="347"/>
+	<SubTexture name="Teto Classic Right0006" x="224" y="751" width="244" height="351" frameX="-17" frameY="2" frameWidth="271" frameHeight="347"/>
+	<SubTexture name="Teto Classic Right0007" x="224" y="751" width="244" height="351" frameX="-17" frameY="2" frameWidth="271" frameHeight="347"/>
+	<SubTexture name="Teto Classic Right0008" x="224" y="751" width="244" height="351" frameX="-17" frameY="2" frameWidth="271" frameHeight="347"/>
+	<SubTexture name="Teto Classic Right0009" x="224" y="751" width="244" height="351" frameX="-17" frameY="2" frameWidth="271" frameHeight="347"/>
+	<SubTexture name="Teto Classic Right0010" x="224" y="751" width="244" height="351" frameX="-17" frameY="2" frameWidth="271" frameHeight="347"/>
+	<SubTexture name="Teto Classic Right0011" x="224" y="751" width="244" height="351" frameX="-17" frameY="2" frameWidth="271" frameHeight="347"/>
+	<SubTexture name="Teto Classic Right0012" x="224" y="751" width="244" height="351" frameX="-17" frameY="2" frameWidth="271" frameHeight="347"/>
+	<SubTexture name="Teto Classic Right0013" x="224" y="751" width="244" height="351" frameX="-17" frameY="2" frameWidth="271" frameHeight="347"/>
+	<SubTexture name="Teto Classic Right0014" x="224" y="751" width="244" height="351" frameX="-17" frameY="2" frameWidth="271" frameHeight="347"/>
+	<SubTexture name="Teto Classic Up0000" x="0" y="347" width="236" height="404" frameX="-1" frameY="2" frameWidth="235" frameHeight="402"/>
+	<SubTexture name="Teto Classic Up0001" x="0" y="347" width="236" height="404" frameX="-1" frameY="2" frameWidth="235" frameHeight="402"/>
+	<SubTexture name="Teto Classic Up0002" x="0" y="347" width="236" height="404" frameX="-1" frameY="2" frameWidth="235" frameHeight="402"/>
+	<SubTexture name="Teto Classic Up0003" x="727" y="0" width="237" height="394" frameX="2" frameY="-10" frameWidth="235" frameHeight="402"/>
+	<SubTexture name="Teto Classic Up0004" x="727" y="0" width="237" height="394" frameX="2" frameY="-10" frameWidth="235" frameHeight="402"/>
+	<SubTexture name="Teto Classic Up0005" x="727" y="0" width="237" height="394" frameX="2" frameY="-10" frameWidth="235" frameHeight="402"/>
+	<SubTexture name="Teto Classic Up0006" x="727" y="0" width="237" height="394" frameX="2" frameY="-10" frameWidth="235" frameHeight="402"/>
+	<SubTexture name="Teto Classic Up0007" x="727" y="0" width="237" height="394" frameX="2" frameY="-10" frameWidth="235" frameHeight="402"/>
+	<SubTexture name="Teto Classic Up0008" x="727" y="0" width="237" height="394" frameX="2" frameY="-10" frameWidth="235" frameHeight="402"/>
+	<SubTexture name="Teto Classic Up0009" x="727" y="0" width="237" height="394" frameX="2" frameY="-10" frameWidth="235" frameHeight="402"/>
+	<SubTexture name="Teto Classic Up0010" x="727" y="0" width="237" height="394" frameX="2" frameY="-10" frameWidth="235" frameHeight="402"/>
+	<SubTexture name="Teto Classic Up0011" x="727" y="0" width="237" height="394" frameX="2" frameY="-10" frameWidth="235" frameHeight="402"/>
+	<SubTexture name="Teto Classic Up0012" x="727" y="0" width="237" height="394" frameX="2" frameY="-10" frameWidth="235" frameHeight="402"/>
+	<SubTexture name="Teto Classic Up0013" x="727" y="0" width="237" height="394" frameX="2" frameY="-10" frameWidth="235" frameHeight="402"/>
+	<SubTexture name="Teto Classic Up0014" x="727" y="0" width="237" height="394" frameX="2" frameY="-10" frameWidth="235" frameHeight="402"/>
+	<SubTexture name="Teto Estandar0000" x="501" y="0" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0001" x="501" y="0" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0002" x="501" y="0" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0003" x="501" y="0" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0004" x="501" y="0" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0005" x="501" y="0" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0006" x="501" y="0" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0007" x="501" y="0" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0008" x="501" y="0" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0009" x="501" y="0" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0010" x="501" y="0" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0011" x="501" y="0" width="226" height="415" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0012" x="275" y="0" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0013" x="275" y="0" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0014" x="275" y="0" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0015" x="275" y="0" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0016" x="275" y="0" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0017" x="275" y="0" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0018" x="275" y="0" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0019" x="275" y="0" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0020" x="275" y="0" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0021" x="275" y="0" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0022" x="275" y="0" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0023" x="275" y="0" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+	<SubTexture name="Teto Estandar0024" x="275" y="0" width="226" height="419" frameX="2" frameY="2" frameWidth="222" frameHeight="415"/>
+</TextureAtlas>

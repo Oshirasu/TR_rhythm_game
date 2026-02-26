@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="Miiii.png" width="5166" height="4855">
+        <SubTexture name="idle0000" x="1940" y="3878" width="641" height="975" frameX="-205" frameY="-98" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0001" x="1940" y="3878" width="641" height="975" frameX="-205" frameY="-98" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0002" x="2583" y="3878" width="642" height="975" frameX="-204" frameY="-98" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0003" x="1288" y="968" width="641" height="966" frameX="-201" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0004" x="1931" y="969" width="643" height="966" frameX="-200" frameY="-106" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0005" x="1942" y="1937" width="643" height="967" frameX="-200" frameY="-107" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0006" x="1938" y="2" width="644" height="965" frameX="-199" frameY="-107" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0007" x="2584" y="2" width="643" height="965" frameX="-200" frameY="-107" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0008" x="2" y="2" width="646" height="963" frameX="-196" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0009" x="2587" y="1937" width="645" height="967" frameX="-196" frameY="-106" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0010" x="2580" y="2906" width="645" height="970" frameX="-194" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0011" x="3227" y="2906" width="644" height="970" frameX="-195" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0012" x="3873" y="2906" width="645" height="970" frameX="-194" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0013" x="4520" y="2906" width="644" height="970" frameX="-195" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0014" x="3234" y="1937" width="640" height="967" frameX="-199" frameY="-108" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0015" x="3876" y="1937" width="640" height="967" frameX="-200" frameY="-108" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0016" x="4518" y="1937" width="640" height="967" frameX="-199" frameY="-108" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0017" x="2576" y="969" width="640" height="966" frameX="-200" frameY="-108" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0018" x="3229" y="2" width="642" height="965" frameX="-197" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0019" x="3873" y="2" width="642" height="965" frameX="-197" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0020" x="4517" y="2" width="642" height="965" frameX="-197" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0021" x="2" y="967" width="642" height="965" frameX="-197" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0022" x="3218" y="969" width="645" height="966" frameX="-195" frameY="-106" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0023" x="3865" y="969" width="645" height="966" frameX="-196" frameY="-106" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0024" x="4512" y="969" width="645" height="966" frameX="-195" frameY="-106" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0025" x="1933" y="2906" width="645" height="969" frameX="-196" frameY="-106" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0026" x="2" y="1934" width="645" height="966" frameX="-194" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0027" x="649" y="1936" width="644" height="966" frameX="-195" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0028" x="649" y="1936" width="644" height="966" frameX="-195" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0029" x="1295" y="1937" width="645" height="966" frameX="-194" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0030" x="2" y="2902" width="640" height="967" frameX="-200" frameY="-108" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0031" x="644" y="2904" width="640" height="967" frameX="-199" frameY="-108" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0032" x="644" y="2904" width="640" height="967" frameX="-199" frameY="-108" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0033" x="646" y="967" width="640" height="965" frameX="-200" frameY="-108" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0034" x="1294" y="2" width="642" height="964" frameX="-197" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0035" x="650" y="2" width="642" height="963" frameX="-197" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0036" x="650" y="2" width="642" height="963" frameX="-197" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0037" x="2" y="3873" width="642" height="970" frameX="-197" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0038" x="646" y="3875" width="645" height="973" frameX="-196" frameY="-106" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0039" x="1293" y="3877" width="645" height="973" frameX="-195" frameY="-106" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0040" x="1293" y="3877" width="645" height="973" frameX="-195" frameY="-106" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0041" x="1286" y="2905" width="645" height="968" frameX="-196" frameY="-106" frameWidth="1010" frameHeight="1156"/>
+	<SubTexture name="Miii0042" x="2" y="1934" width="645" height="966" frameX="-194" frameY="-109" frameWidth="1010" frameHeight="1156"/>
+</TextureAtlas>

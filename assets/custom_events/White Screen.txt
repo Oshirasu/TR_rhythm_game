@@ -1,0 +1,4 @@
+White Screen
+
+Value 1: on/off
+value 2: speed

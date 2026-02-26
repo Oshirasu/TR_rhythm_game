@@ -1,0 +1,55 @@
+{
+	"animations": [
+		{
+			"offsets": [-5, -49],
+			"loop": false,
+			"fps": 24,
+			"anim": "idle",
+			"indices": [],
+			"name": "Teto Shadow"
+		},
+		{
+			"offsets": [-58, -71],
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHT",
+			"indices": [],
+			"name": "teto right"
+		},
+		{
+			"offsets": [-6, -42],
+			"loop": false,
+			"fps": 24,
+			"anim": "singUP",
+			"indices": [],
+			"name": "teto up"
+		},
+		{
+			"offsets": [-4, -73],
+			"loop": false,
+			"fps": 24,
+			"anim": "singDOWN",
+			"indices": [],
+			"name": "teto down"
+		},
+		{
+			"offsets": [43, -59],
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFT",
+			"indices": [],
+			"name": "teto left"
+		}
+	],
+	"vocals_file": "",
+	"no_antialiasing": false,
+	"image": "characters/Teto Shadow",
+	"position": [-1, -103],
+	"healthicon": "TetoAnim",
+	"flip_x": false,
+	"healthbar_colors": [49, 176, 209],
+	"camera_position": [-120, 150],
+	"sing_duration": 4,
+	"scale": 0.8,
+	"_editor_isPlayer": false
+}

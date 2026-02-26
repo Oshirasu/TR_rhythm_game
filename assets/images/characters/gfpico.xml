@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="gfpico.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+        <SubTexture name="idle0000" x="443" y="0" width="209" height="310" frameX="2" frameY="-23" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="Pico0001" x="443" y="0" width="209" height="310" frameX="2" frameY="-23" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="Pico0002" x="443" y="0" width="209" height="310" frameX="2" frameY="-23" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="Pico0003" x="443" y="0" width="209" height="310" frameX="2" frameY="-13" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="Pico0004" x="443" y="0" width="209" height="310" frameX="2" frameY="-13" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="Pico0005" x="443" y="0" width="209" height="310" frameX="2" frameY="-1" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="Pico0006" x="443" y="0" width="209" height="310" frameX="2" frameY="-1" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="Pico0007" x="443" y="0" width="209" height="310" frameX="2" frameY="1" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="Pico0008" x="443" y="0" width="209" height="310" frameX="2" frameY="1" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="Pico0009" x="443" y="0" width="209" height="310" frameX="2" frameY="2" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="Pico0010" x="443" y="0" width="209" height="310" frameX="2" frameY="2" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="GF0000" x="0" y="0" width="226" height="342" frameX="2" frameY="-23" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="GF0001" x="0" y="0" width="226" height="342" frameX="2" frameY="-23" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="GF0002" x="0" y="0" width="226" height="342" frameX="2" frameY="-13" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="GF0003" x="0" y="0" width="226" height="342" frameX="2" frameY="-13" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="GF0004" x="0" y="0" width="226" height="342" frameX="2" frameY="-2" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="GF0005" x="0" y="0" width="226" height="342" frameX="2" frameY="-2" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="GF0006" x="0" y="0" width="226" height="342" frameX="2" frameY="0" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="GF0007" x="0" y="0" width="226" height="342" frameX="2" frameY="0" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="GF0008" x="0" y="0" width="226" height="342" frameX="2" frameY="2" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="GF0009" x="0" y="0" width="226" height="342" frameX="2" frameY="2" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="BF0000" x="226" y="0" width="217" height="313" frameX="-4" frameY="-42" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="BF0001" x="226" y="0" width="217" height="313" frameX="-4" frameY="-42" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="BF0002" x="226" y="0" width="217" height="313" frameX="-4" frameY="-32" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="BF0003" x="226" y="0" width="217" height="313" frameX="-4" frameY="-32" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="BF0004" x="226" y="0" width="217" height="313" frameX="-4" frameY="-21" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="BF0005" x="226" y="0" width="217" height="313" frameX="-4" frameY="-21" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="BF0006" x="226" y="0" width="217" height="313" frameX="-4" frameY="-19" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="BF0007" x="226" y="0" width="217" height="313" frameX="-4" frameY="-19" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="BF0008" x="226" y="0" width="217" height="313" frameX="-4" frameY="-17" frameWidth="256" frameHeight="512"/>
+	<SubTexture name="BF0009" x="226" y="0" width="217" height="313" frameX="-4" frameY="-17" frameWidth="256" frameHeight="512"/>
+</TextureAtlas>
