@@ -55,7 +55,7 @@
   --character-gf-idle-word-width: 605px;
   --character-gf-idle-word-height: 150px;
   --character-gf-idle-word-x: 50%;
-  --character-gf-idle-word-y: 27%;
+  --character-gf-idle-word-y: 29%;
   --character-gf-idle-word-scale: 0.68;
   --character-gf-idle-word-float-px: 13px;
 
@@ -696,7 +696,7 @@ body{padding:0 !important;align-items:stretch}
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 500px; 
+  width: 550px; 
   height: auto; 
   opacity: 0;                 /* 基本は非表示 */
   transition: none;

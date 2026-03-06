@@ -317,7 +317,7 @@ function playIntroAndStartSong(){
       img.style.opacity = 0;
 
       song.currentTime = 0;
-      song2.currentTime = 0;
+      if (song2) song2.currentTime = 0;
 
       Promise.all([
         waitCanPlay(song),

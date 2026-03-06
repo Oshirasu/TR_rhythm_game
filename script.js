@@ -1361,7 +1361,7 @@ const lossSfx = new Audio("assets/sounds/fnf_loss_sfx.ogg");
 const gameOverBgm = new Audio("assets/music/gameOver.ogg");
 const gameOverEndBgm = new Audio("assets/music/gameOverEnd.ogg");
 const MASTER_VOLUME_STORAGE_KEY = "tr_master_volume";
-const DEFAULT_MASTER_VOLUME = 1;
+const DEFAULT_MASTER_VOLUME = 0.1;
 let masterVolume = DEFAULT_MASTER_VOLUME;
 let gameOverTriggered = false;
 let gameOverEnding = false;
@@ -1778,28 +1778,28 @@ window.getVoicesSyncOffsetSec = getVoicesSyncOffsetSec;
 window.forceSyncSongTracksNow = forceSyncSongTracksNow;
 
 function installTrackSyncEventHooks() {
-  if (syncEventHooksInstalled || !song || !song2) return;
+  if (syncEventHooksInstalled || !song) return;
   syncEventHooksInstalled = true;
 
   song.addEventListener("seeking", () => {
     setSongTimelineTime(song.currentTime || 0);
-    syncSong2Immediate(false);
+    if (song2) syncSong2Immediate(false);
   });
   song.addEventListener("seeked", () => {
     setSongTimelineTime(song.currentTime || 0);
-    syncSong2Immediate(false);
+    if (song2) syncSong2Immediate(false);
   });
   song.addEventListener("ratechange", () => {
     setSongTimelineRate(song.playbackRate || 1);
-    song2.playbackRate = song.playbackRate || 1;
+    if (song2) song2.playbackRate = song.playbackRate || 1;
   });
   song.addEventListener("pause", () => {
     pauseSongTimeline();
-    if (!song2.paused) song2.pause();
+    if (song2 && !song2.paused) song2.pause();
   });
   song.addEventListener("play", () => {
     startSongTimeline(song.currentTime || 0);
-    if (song2.paused) {
+    if (song2 && song2.paused) {
       song2.playbackRate = song.playbackRate || 1;
       const p = song2.play();
       if (p && typeof p.catch === "function") p.catch(() => {});

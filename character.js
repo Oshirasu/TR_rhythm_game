@@ -1,7 +1,7 @@
 const CHARACTER_LANE_TO_ANIM = ["left", "down", "up", "right"];
 const CHARACTER_IDLE_DELAY_MS = 440;
 const CHARACTER_FRAME_MS = 1000 / 24;
-let HOLD_FINAL_RUN_SECONDS = 0.05;
+let HOLD_FINAL_RUN_SECONDS = 1 / 16;
 
 const CHARACTER_PRESETS = {
   shadow: {
@@ -311,6 +311,16 @@ const OPPONENT_TIMELINE_ONLY_PRESETS = new Set([
   "miku_hodo",
   "miku_miiii"
 ]);
+const OPPONENT_MIKU_WARM_POOL_PRESETS = new Set([
+  "aishite1",
+  "mikuaishite2",
+  "mikuaishi3",
+  "miku_motto",
+  "miku_kuroshi",
+  "miku_hodo",
+  "miku_miiii",
+  "miku"
+]);
 const PLAYER_TIMELINE_ONLY_PRESETS = new Set([
   "gfpico",
   "bf_animation"
@@ -330,22 +340,22 @@ const GF_CHARACTER_PRESETS = {
 const CHARACTER_PRESET_OFFSETS = {
   player: {
     // gfpico: global Y tuning (positive=down, negative=up).
-    gfpico: { x: 30, y: 165 }
+    gfpico: { x: 30, y: 170 }
   },
   opponent: {
     // Teto Animation atlas has a much taller frame box; shift up to keep stage Y consistent.
     animation: { x: 275, y: -145 },
     // Tetohappy: tune Y here (positive=down, negative=up).
-    tetohappy: { x: 0, y: 75 },
+    tetohappy: { x: 0, y: 60 },
     // Miku variants: per-skin vertical normalization (same dad anchor).
-    aishite1: { x: 20, y: 65 },
-    mikuaishite2: { x: 20, y: 65 },
-    mikuaishi3: { x: 0, y: 69 },
-    miku_motto: { x: -20, y: 69 },
-    miku_kuroshi: { x: 0, y: 65 },
-    miku_hodo: { x: 0, y: 65 },
-    miku_miiii: { x: 0, y: 75 },
-    miku: { x: 0, y: 65 }
+    aishite1: { x: 20, y: 50 },
+    mikuaishite2: { x: 20, y: 50 },
+    mikuaishi3: { x: 0, y: 54 },
+    miku_motto: { x: -20, y: 54 },
+    miku_kuroshi: { x: 0, y: 50 },
+    miku_hodo: { x: 0, y: 50 },
+    miku_miiii: { x: 0, y: 60 },
+    miku: { x: 0, y: 50 }
   }
 };
 
@@ -363,8 +373,9 @@ const CHARACTER_PRESET_SCALE_MULTIPLIERS = {
   }
 };
 
-// Fine-tune only Miku down-lane Y offset (px). + = down, - = up.
-let MIKU_DOWN_EXTRA_OFFSET_Y = 20;
+// Fine-tune only Miku lane Y offsets (px). + = down, - = up.
+let MIKU_DOWN_EXTRA_OFFSET_Y = 40;
+let MIKU_LEFT_EXTRA_OFFSET_Y = 20;
 
 const characterTransientOffsets = {
   player: { x: 0, y: 0 },
@@ -392,6 +403,7 @@ const characterRuntime = {
     timer: null,
     holdAdvanceTimer: null,
     holdAdvancePerf: 0,
+    holdAdvanceStarted: false,
     holdEnded: false,
     releaseRequested: false,
     holdReadyPerf: 0
@@ -402,6 +414,7 @@ const characterRuntime = {
     timer: null,
     holdAdvanceTimer: null,
     holdAdvancePerf: 0,
+    holdAdvanceStarted: false,
     holdEnded: false,
     releaseRequested: false,
     holdReadyPerf: 0
@@ -412,6 +425,7 @@ const characterRuntime = {
     timer: null,
     holdAdvanceTimer: null,
     holdAdvancePerf: 0,
+    holdAdvanceStarted: false,
     holdEnded: false,
     releaseRequested: false,
     holdReadyPerf: 0
@@ -459,6 +473,11 @@ const characterSpritePools = {
 const characterAtlasPromises = {};
 const characterMetaPromises = {};
 const characterImagePromises = {};
+const characterImageRenderUrlBySrc = {};
+const characterImageBlobUrlBySrc = {};
+const MIKU_IMAGE_RENDER_MAX_DIMENSION = 4096;
+const MIKU_IMAGE_PATH_RE =
+  /(?:^|\/)(?:aishite 1|mikuaishi2|mikuaishite3|motto motto|kuroshi|hodo|miiii|miku)\.png$/i;
 const characterConfigRuntimeCache = new Map();
 const characterConfigRuntimeBuildPromises = {};
 const characterRuntimePrewarmPromises = {};
@@ -492,15 +511,24 @@ const characterPendingPlayAnimationBySide = {
   opponent: "",
   gf: ""
 };
+const characterSkipIdleApplyOnSwitchBySide = {
+  player: false,
+  opponent: false,
+  gf: false
+};
 let characterRenderRafId = 0;
 let activeCharacterSide = null;
 const CHARACTER_CHART_PATH = "data/akage/akage-chart.json";
+const EARLY_SWITCH_PREWARM_WINDOW_MS = 15000;
+const EARLY_SWITCH_PREWARM_MAX_PER_SIDE = 4;
 let characterChangeEvents = [];
 let characterChangeEventsReady = false;
 let characterChangeEventIndex = 0;
 let characterChangeLastSongMs = 0;
 let characterFloatEnabled = false;
 let characterChartBatchApplying = false;
+let deferredOpponentPresetLoad = "";
+let deferredOpponentPresetLoadRafId = 0;
 let characterRefreshDeferred = false;
 let characterAssetsReadyPromise = null;
 let characterChangeEventsLoadPromise = null;
@@ -558,6 +586,7 @@ const JUMP_IMAGE_FALL_DELAY_MS = 250;
 const JUMP_IMAGE_FALL_MS = 180;
 const JUMP_IMAGE_REMOVE_DELAY_MS = 250;
 const JUMP_IMAGE_JUMP_Y_OFFSET = 340;
+const JUMP_IMAGE_WARM_OPACITY = 0.001;
 const jumpImageState = {
   imagePromises: {},
   spritesByPath: new Map()
@@ -870,21 +899,125 @@ function preloadCharacterImage(src) {
     };
 
     const img = new Image();
-    img.onload = () => finish(img);
+    img.decoding = "async";
+    let loadHandled = false;
+    const handleLoaded = () => {
+      if (loadHandled) return;
+      loadHandled = true;
+
+      let settled = false;
+      const settle = () => {
+        if (settled) return;
+        settled = true;
+        optimizeCharacterImageForRender(src, img)
+          .catch(() => src)
+          .finally(() => finish(img));
+      };
+
+      if (typeof img.decode === "function") {
+        img.decode()
+          .then(() => settle())
+          .catch(() => settle());
+      } else {
+        settle();
+      }
+      setTimeout(() => settle(), 1500);
+    };
+
+    img.onload = () => handleLoaded();
     img.onerror = () => {
       console.warn("character image load failed:", src);
       finish(null);
     };
     img.src = src;
 
-    if (typeof img.decode === "function") {
-      img.decode()
-        .then(() => finish(img))
-        .catch(() => {});
+    if (img.complete && img.naturalWidth > 0) {
+      handleLoaded();
     }
   });
 
   return characterImagePromises[src];
+}
+
+function getCharacterRenderImageUrl(src) {
+  const key = String(src || "");
+  return characterImageRenderUrlBySrc[key] || key;
+}
+
+function shouldOptimizeMikuImageSource(src, img) {
+  return false;
+}
+
+function createDownscaledCharacterImageUrl(src, img, maxDimension = MIKU_IMAGE_RENDER_MAX_DIMENSION) {
+  return new Promise((resolve) => {
+    try {
+      const naturalW = Number(img?.naturalWidth) || 0;
+      const naturalH = Number(img?.naturalHeight) || 0;
+      if (naturalW <= 0 || naturalH <= 0) {
+        resolve(src);
+        return;
+      }
+
+      const maxSide = Math.max(naturalW, naturalH);
+      if (maxSide <= maxDimension) {
+        resolve(src);
+        return;
+      }
+
+      const scale = maxDimension / maxSide;
+      const drawW = Math.max(1, Math.round(naturalW * scale));
+      const drawH = Math.max(1, Math.round(naturalH * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = drawW;
+      canvas.height = drawH;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        resolve(src);
+        return;
+      }
+      ctx.drawImage(img, 0, 0, drawW, drawH);
+
+      if (typeof canvas.toBlob === "function") {
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            resolve(src);
+            return;
+          }
+          const prevBlobUrl = characterImageBlobUrlBySrc[src];
+          if (prevBlobUrl) {
+            try {
+              URL.revokeObjectURL(prevBlobUrl);
+            } catch (err) {}
+          }
+          const blobUrl = URL.createObjectURL(blob);
+          characterImageBlobUrlBySrc[src] = blobUrl;
+          resolve(blobUrl);
+        }, "image/png");
+        return;
+      }
+
+      resolve(canvas.toDataURL("image/png"));
+    } catch (err) {
+      resolve(src);
+    }
+  });
+}
+
+function optimizeCharacterImageForRender(src, img) {
+  const key = String(src || "");
+  if (!key) return Promise.resolve("");
+  if (characterImageRenderUrlBySrc[key]) {
+    return Promise.resolve(characterImageRenderUrlBySrc[key]);
+  }
+  if (!shouldOptimizeMikuImageSource(key, img)) {
+    characterImageRenderUrlBySrc[key] = key;
+    return Promise.resolve(key);
+  }
+  return createDownscaledCharacterImageUrl(key, img).then((optimized) => {
+    const resolved = optimized || key;
+    characterImageRenderUrlBySrc[key] = resolved;
+    return resolved;
+  });
 }
 
 function getSiblingPngNameFromXmlPath(xmlPath) {
@@ -918,7 +1051,7 @@ async function resolveCharacterAtlasImageUrl(xmlPath, atlasImagePath) {
   const candidates = buildCharacterAtlasImageCandidates(xmlPath, atlasImagePath);
   for (const candidate of candidates) {
     const loaded = await preloadCharacterImage(candidate);
-    if (loaded) return candidate;
+    if (loaded) return getCharacterRenderImageUrl(candidate);
   }
 
   if (candidates.length > 0) {
@@ -1359,6 +1492,95 @@ function collectCharacterChangePresetsForSide(side, events = []) {
   return ordered;
 }
 
+function collectEarlyCharacterChangePresetsBySide(
+  events = [],
+  maxTimeMs = EARLY_SWITCH_PREWARM_WINDOW_MS,
+  maxPerSide = EARLY_SWITCH_PREWARM_MAX_PER_SIDE
+) {
+  const result = {
+    player: [],
+    opponent: [],
+    gf: []
+  };
+  const seenBySide = {
+    player: new Set(),
+    opponent: new Set(),
+    gf: new Set()
+  };
+
+  if (!Array.isArray(events) || events.length <= 0) return result;
+
+  const limitMs = Number(maxTimeMs);
+  const timeLimit = Number.isFinite(limitMs) ? limitMs : EARLY_SWITCH_PREWARM_WINDOW_MS;
+  const capRaw = Number(maxPerSide);
+  const cap = Number.isFinite(capRaw) ? Math.max(1, Math.round(capRaw)) : EARLY_SWITCH_PREWARM_MAX_PER_SIDE;
+
+  for (const evt of events) {
+    if (!evt || evt.type !== "change_character") continue;
+    const evtTimeMs = Number(evt.timeMs);
+    if (Number.isFinite(evtTimeMs) && evtTimeMs > timeLimit) break;
+
+    const side = sideFromChartSlot(normalizeName(evt.slot));
+    if (!side) continue;
+    const preset = resolvePresetFromCharacterName(side, evt.character);
+    const key = normalizeCharacterPresetKey(preset);
+    if (!key) continue;
+
+    const seen = seenBySide[side];
+    const list = result[side];
+    if (!seen || !list) continue;
+    if (seen.has(key)) continue;
+    if (list.length >= cap) continue;
+
+    seen.add(key);
+    list.push(key);
+  }
+
+  return result;
+}
+
+function collectPlayAnimationsByPresetForSide(side, events = []) {
+  if (!Array.isArray(events) || events.length <= 0) return new Map();
+  const normalizedSide = normalizeName(side);
+  if (!normalizedSide) return new Map();
+
+  const activePresetBySide = {
+    player: normalizeCharacterPresetKey(characterPresetBySide.player),
+    opponent: normalizeCharacterPresetKey(characterPresetBySide.opponent),
+    gf: normalizeCharacterPresetKey(characterPresetBySide.gf)
+  };
+  const animationsByPreset = new Map();
+
+  events.forEach((evt) => {
+    if (!evt || !evt.type) return;
+
+    if (evt.type === "change_character") {
+      const evtSide = sideFromChartSlot(normalizeName(evt.slot));
+      if (!evtSide) return;
+      const preset = resolvePresetFromCharacterName(evtSide, evt.character);
+      activePresetBySide[evtSide] = normalizeCharacterPresetKey(preset);
+      return;
+    }
+
+    if (evt.type !== "play_animation") return;
+    const evtSide = sideFromChartSlot(normalizeName(evt.slot));
+    if (evtSide !== normalizedSide) return;
+
+    const activePreset = activePresetBySide[evtSide];
+    if (!activePreset) return;
+    const animName = normalizeName(evt.animation);
+    if (!animName) return;
+
+    const list = animationsByPreset.get(activePreset) || [];
+    if (!list.includes(animName)) {
+      list.push(animName);
+      animationsByPreset.set(activePreset, list);
+    }
+  });
+
+  return animationsByPreset;
+}
+
 async function waitForCharacterSpriteReady(side, timeoutMs = 8000) {
   const deadline = performance.now() + Math.max(0, Number(timeoutMs) || 0);
   while (performance.now() < deadline) {
@@ -1369,24 +1591,68 @@ async function waitForCharacterSpriteReady(side, timeoutMs = 8000) {
   return null;
 }
 
-async function prewarmCharacterSpritePaint(sprite) {
+async function prewarmCharacterSpritePaint(sprite, options = {}) {
   if (!sprite || !sprite.rootEl) return;
   const rootEl = sprite.rootEl;
   const prevDisplay = rootEl.style.display;
+  const prevVisibility = rootEl.style.visibility;
   const prevOpacity = rootEl.style.opacity;
   const prevPointerEvents = rootEl.style.pointerEvents;
   const prevTransition = rootEl.style.transition;
+  const prevAnim = normalizeName(sprite.currentAnim) || "idle";
+  const prevLoop = Boolean(sprite.loop);
+  const prevFreezeOnFirstFrame = Boolean(sprite.freezeOnFirstFrame);
+  const prevFrameDurationMsRaw = Number(sprite.frameDurationMs);
+  const prevFrameDurationMs =
+    Number.isFinite(prevFrameDurationMsRaw) && prevFrameDurationMsRaw > 0
+      ? prevFrameDurationMsRaw
+      : CHARACTER_FRAME_MS;
 
   rootEl.style.display = "";
-  rootEl.style.opacity = "0";
+  rootEl.style.visibility = "visible";
+  // Non-zero opacity helps force an actual paint upload without visible flicker.
+  rootEl.style.opacity = "0.001";
   rootEl.style.pointerEvents = "none";
   rootEl.style.transition = "none";
   rootEl.getBoundingClientRect();
-
   await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+
+  const requestedAnimationNames = Array.isArray(options.animationNames)
+    ? options.animationNames
+    : [];
+  const warmAnimationNames = [];
+  const seenResolvedAnims = new Set();
+  requestedAnimationNames.forEach((animName) => {
+    const normalizedAnim = normalizeName(animName);
+    if (!normalizedAnim) return;
+    const resolvedAnim = sprite.resolveAnimName(normalizedAnim);
+    if (!resolvedAnim || resolvedAnim === "idle") return;
+    if (seenResolvedAnims.has(resolvedAnim)) return;
+    seenResolvedAnims.add(resolvedAnim);
+    warmAnimationNames.push(resolvedAnim);
+  });
+
+  for (const animName of warmAnimationNames) {
+    sprite.play(animName, {
+      loop: false,
+      restart: true,
+      freezeOnFirstFrame: false
+    });
+    rootEl.getBoundingClientRect();
+    await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+  }
+
+  const restoreAnim = sprite.animations?.[prevAnim] ? prevAnim : "idle";
+  sprite.play(restoreAnim, {
+    loop: restoreAnim === prevAnim ? prevLoop : true,
+    restart: true,
+    freezeOnFirstFrame: restoreAnim === prevAnim ? prevFreezeOnFirstFrame : false,
+    frameDurationMs: prevFrameDurationMs
+  });
   await new Promise((resolve) => requestAnimationFrame(() => resolve()));
 
   rootEl.style.display = prevDisplay;
+  rootEl.style.visibility = prevVisibility;
   rootEl.style.opacity = prevOpacity;
   rootEl.style.pointerEvents = prevPointerEvents;
   rootEl.style.transition = prevTransition;
@@ -1399,6 +1665,44 @@ function getPooledCharacterSprite(side, preset) {
   if (!key) return null;
   const sprite = pool.get(key);
   return sprite || null;
+}
+
+function shouldKeepPooledSpriteWarm(side, preset) {
+  if (normalizeName(side) !== "opponent") return false;
+  const key = normalizeCharacterPresetKey(preset);
+  if (!key) return false;
+  return OPPONENT_MIKU_WARM_POOL_PRESETS.has(key);
+}
+
+function shouldDeferOpponentPresetLoadForSwitch(preset) {
+  const key = normalizeCharacterPresetKey(preset);
+  if (!key) return false;
+  return OPPONENT_MIKU_WARM_POOL_PRESETS.has(key);
+}
+
+function setPooledSpriteActiveState(sprite, active, side = "", preset = "") {
+  if (!sprite || !sprite.rootEl) return;
+  const root = sprite.rootEl;
+  if (active) {
+    root.style.display = "";
+    root.style.visibility = "visible";
+    root.style.opacity = "";
+    root.style.pointerEvents = "";
+    return;
+  }
+  if (shouldKeepPooledSpriteWarm(side, preset)) {
+    // Keep heavy Miku sprites in render tree with near-zero alpha.
+    // visibility:hidden can defer paint work until shown, causing switch stalls.
+    root.style.display = "";
+    root.style.visibility = "visible";
+    root.style.opacity = "0.0001";
+    root.style.pointerEvents = "none";
+    return;
+  }
+  root.style.display = "none";
+  root.style.visibility = "";
+  root.style.opacity = "";
+  root.style.pointerEvents = "";
 }
 
 function cacheCharacterSprite(side, preset, sprite) {
@@ -1425,13 +1729,15 @@ async function ensurePooledCharacterSprite(side, preset, options = {}) {
     }
     setCharacterAnchorModeForSprite(side, key, pooled);
     if (options.prewarm) {
-      await prewarmCharacterSpritePaint(pooled);
+      await prewarmCharacterSpritePaint(pooled, {
+        animationNames: options.animationNames
+      });
     }
     return pooled;
   }
 
   const sprite = new CharacterSprite(side, config, hostEl);
-  sprite.rootEl.style.display = "none";
+  setPooledSpriteActiveState(sprite, false, side, key);
   const loaded = await sprite.load(key);
   if (!loaded) {
     if (sprite.rootEl && sprite.rootEl.isConnected) {
@@ -1443,8 +1749,10 @@ async function ensurePooledCharacterSprite(side, preset, options = {}) {
   setCharacterAnchorModeForSprite(side, key, sprite);
   cacheCharacterSprite(side, key, sprite);
   if (options.prewarm) {
-    await prewarmCharacterSpritePaint(sprite);
-    sprite.rootEl.style.display = "none";
+    await prewarmCharacterSpritePaint(sprite, {
+      animationNames: options.animationNames
+    });
+    setPooledSpriteActiveState(sprite, false, side, key);
   }
   return sprite;
 }
@@ -1453,7 +1761,7 @@ function activatePooledCharacterSprite(side, preset, sprite) {
   if (!sprite || !sprite.rootEl) return false;
   const current = characterSprites[side];
   if (current && current !== sprite && current.rootEl) {
-    current.rootEl.style.display = "none";
+    setPooledSpriteActiveState(current, false, side, characterPresetBySide[side]);
   }
 
   const hostEl = ensureCharacterLayer();
@@ -1464,16 +1772,18 @@ function activatePooledCharacterSprite(side, preset, sprite) {
   characterSprites[side] = sprite;
   characterPresetBySide[side] = preset;
   setCharacterAnchorModeForSprite(side, preset, sprite);
-  sprite.rootEl.style.display = "";
+  applyCharacterExtraScaleForSprite(side, preset, sprite);
+  applyCharacterRenderOffset(side);
+  setPooledSpriteActiveState(sprite, true, side, preset);
   return true;
 }
 
 function hideAllPooledCharacterSprites(side) {
   const pool = getCharacterSpritePool(side);
   if (!pool) return;
-  pool.forEach((sprite) => {
+  pool.forEach((sprite, key) => {
     if (!sprite || !sprite.rootEl) return;
-    sprite.rootEl.style.display = "none";
+    setPooledSpriteActiveState(sprite, false, side, key);
   });
 }
 
@@ -1486,39 +1796,77 @@ async function prewarmCharacterPresetSwitchesForGameplay() {
     await loadCharacterChangeEvents();
     await prewarmCharacterPresetsFromEvents(characterChangeEvents);
 
-    // Warm real preset swaps on the live opponent sprite before gameplay starts.
-    // This avoids first-use hitches when switching heavy Miku atlases mid-song.
+    // Warm real preset swaps before gameplay starts.
+    // Keep this focused on heavy Miku family presets to avoid side effects.
     const side = "opponent";
-    const sprite = await waitForCharacterSpriteReady(side, 12000);
-    if (sprite && sprite.rootEl) {
-      const presets = collectCharacterChangePresetsForSide(side, characterChangeEvents);
-      const originalPreset = characterPresetBySide[side] || "shadow";
-      const originalSlotPreset = characterSlotState[side]?.preset ?? null;
-      const originalDisplayState = {
-        ...(characterDisplayState[side] || { anim: "idle", loop: true, freeze: false })
-      };
+    const sprite = characterSprites[side];
+    const activeSprite = sprite && sprite.ready ? sprite : null;
+    const originalPreset = characterPresetBySide[side] || "shadow";
+    const originalSlotPreset = characterSlotState[side]?.preset ?? null;
+    const originalDisplayState = {
+      ...(characterDisplayState[side] || { anim: "idle", loop: true, freeze: false })
+    };
 
-      cacheCharacterSprite(side, originalPreset, sprite);
-      const orderedPresets = [];
-      const seenPresets = new Set();
-      const pushPreset = (value) => {
-        const key = normalizeCharacterPresetKey(value);
-        if (!key || seenPresets.has(key)) return;
-        seenPresets.add(key);
-        orderedPresets.push(key);
-      };
-      pushPreset(originalPreset);
-      presets.forEach((preset) => pushPreset(preset));
+    if (activeSprite && activeSprite.rootEl) {
+      cacheCharacterSprite(side, originalPreset, activeSprite);
+    }
 
-      for (const preset of orderedPresets) {
-        await ensurePooledCharacterSprite(side, preset, { prewarm: true });
+    const presets = collectCharacterChangePresetsForSide(side, characterChangeEvents);
+    const orderedPresets = [];
+    const seenPresets = new Set();
+    const pushPreset = (value) => {
+      const key = normalizeCharacterPresetKey(value);
+      if (!key || seenPresets.has(key)) return;
+      seenPresets.add(key);
+      orderedPresets.push(key);
+    };
+    pushPreset(originalPreset);
+    presets.forEach((preset) => pushPreset(preset));
+
+    const warmPresets = orderedPresets.filter((preset) =>
+      shouldKeepPooledSpriteWarm(side, preset)
+    );
+    const warmAnimationsByPreset = collectPlayAnimationsByPresetForSide(
+      side,
+      characterChangeEvents
+    );
+    for (const preset of warmPresets) {
+      await ensurePooledCharacterSprite(side, preset, {
+        prewarm: true,
+        animationNames:
+          warmAnimationsByPreset.get(normalizeCharacterPresetKey(preset)) || []
+      });
+    }
+
+    const earlyPresetsBySide = collectEarlyCharacterChangePresetsBySide(
+      characterChangeEvents,
+      EARLY_SWITCH_PREWARM_WINDOW_MS,
+      EARLY_SWITCH_PREWARM_MAX_PER_SIDE
+    );
+    const playAnimationsBySide = {
+      player: collectPlayAnimationsByPresetForSide("player", characterChangeEvents),
+      opponent: warmAnimationsByPreset,
+      gf: collectPlayAnimationsByPresetForSide("gf", characterChangeEvents)
+    };
+    for (const warmSide of ["player", "opponent", "gf"]) {
+      const presetList = Array.isArray(earlyPresetsBySide[warmSide])
+        ? earlyPresetsBySide[warmSide]
+        : [];
+      for (const presetKey of presetList) {
+        await ensurePooledCharacterSprite(warmSide, presetKey, {
+          prewarm: true,
+          animationNames:
+            playAnimationsBySide[warmSide]?.get(normalizeCharacterPresetKey(presetKey)) || []
+        });
       }
+    }
 
+    if (activeSprite && activeSprite.rootEl) {
       const restorePreset = normalizeCharacterPresetKey(originalPreset) || "shadow";
       const restoreSprite =
         getPooledCharacterSprite(side, restorePreset) ||
         characterSprites[side] ||
-        sprite;
+        activeSprite;
       hideAllPooledCharacterSprites(side);
       activatePooledCharacterSprite(side, restorePreset, restoreSprite);
       characterSlotState[side].preset = originalSlotPreset;
@@ -1541,6 +1889,45 @@ async function prewarmCharacterPresetSwitchesForGameplay() {
     });
 
   return characterPresetSwitchPrewarmPromise;
+}
+
+function annotateImmediatePlayAfterChangeEvents(events = []) {
+  if (!Array.isArray(events) || events.length <= 1) return events;
+
+  const dropIndexes = new Set();
+
+  for (let i = 0; i < events.length; i += 1) {
+    const evt = events[i];
+    if (!evt || evt.type !== "change_character") continue;
+
+    evt.hasImmediatePlayAnimation = false;
+    evt.immediatePlayAnimation = "";
+
+    const evtSide = sideFromChartSlot(normalizeName(evt.slot));
+    if (!evtSide) continue;
+
+    const evtTime = Number(evt.timeMs);
+    for (let j = i + 1; j < events.length; j += 1) {
+      const next = events[j];
+      if (!next) continue;
+      if (Number(next.timeMs) !== evtTime) break;
+      if (next.type !== "play_animation") continue;
+
+      const nextSide = sideFromChartSlot(normalizeName(next.slot));
+      if (nextSide !== evtSide) continue;
+
+      const immediateAnim = normalizeName(next.animation);
+      if (!immediateAnim) continue;
+
+      evt.hasImmediatePlayAnimation = true;
+      evt.immediatePlayAnimation = immediateAnim;
+      dropIndexes.add(j);
+      break;
+    }
+  }
+
+  if (dropIndexes.size <= 0) return events;
+  return events.filter((_, index) => !dropIndexes.has(index));
 }
 
 function parseCharacterChartEvents(chartJson) {
@@ -1749,7 +2136,9 @@ function parseCharacterChartEvents(chartJson) {
     return a.order - b.order;
   });
 
-  return parsed;
+  const optimized = annotateImmediatePlayAfterChangeEvents(parsed);
+
+  return optimized;
 }
 
 function sideFromChartSlot(slot) {
@@ -1827,6 +2216,18 @@ function isPlayerTimelineOnlyPreset(preset) {
   return PLAYER_TIMELINE_ONLY_PRESETS.has(normalized);
 }
 
+function shouldSkipOpponentPresentationRefreshOnPresetSwap(prevPreset, nextPreset) {
+  const prev = normalizeCharacterPresetKey(prevPreset);
+  const next = normalizeCharacterPresetKey(nextPreset);
+  if (!prev || !next) return false;
+  if (prev === next) return false;
+  if (prev === "shadow" || next === "shadow") return false;
+  if (isOpponentPresetInSplitLayout(prev) || isOpponentPresetInSplitLayout(next)) {
+    return false;
+  }
+  return true;
+}
+
 function getCharacterPresetScaleMultiplier(side, preset) {
   const normalizedPreset = normalizeName(preset);
   if (!normalizedPreset) return 1;
@@ -1847,6 +2248,9 @@ function getCharacterPresetAnimOffset(side, preset, animName) {
   }
 
   const anim = normalizeName(animName);
+  if (anim === "sing-left" || anim === "hold-left" || anim === "miss-left") {
+    return { x: 0, y: MIKU_LEFT_EXTRA_OFFSET_Y };
+  }
   if (anim === "sing-down" || anim === "hold-down" || anim === "miss-down") {
     return { x: 0, y: MIKU_DOWN_EXTRA_OFFSET_Y };
   }
@@ -2187,14 +2591,18 @@ function preloadJumpImage(imagePath) {
     };
 
     const img = new Image();
-    img.onload = () => finish(img);
+    img.decoding = "async";
+    img.onload = () => {
+      if (typeof img.decode === "function") {
+        img.decode()
+          .then(() => finish(img))
+          .catch(() => finish(img));
+        return;
+      }
+      finish(img);
+    };
     img.onerror = () => finish(null);
     img.src = imagePath;
-    if (typeof img.decode === "function") {
-      img.decode()
-        .then(() => finish(img))
-        .catch(() => {});
-    }
   });
 
   return jumpImageState.imagePromises[imagePath];
@@ -2202,12 +2610,15 @@ function preloadJumpImage(imagePath) {
 
 function preloadJumpImageFromEvents(events = []) {
   if (!Array.isArray(events) || events.length <= 0) return;
+  const seenPaths = new Set();
   events.forEach((evt) => {
     if (!evt || evt.type !== "jump_image") return;
     const path = resolveJumpImagePath(evt.imageName);
-    if (!path) return;
+    if (!path || seenPaths.has(path)) return;
+    seenPaths.add(path);
     preloadJumpImage(path).then((img) => {
-      ensureJumpImageSprite(path, img);
+      const entry = ensureJumpImageSprite(path, img);
+      prewarmJumpImageSprite(entry);
     });
   });
 }
@@ -2248,14 +2659,15 @@ function ensureJumpImageSprite(path, loadedImg = null) {
   el.style.top = "0px";
   el.style.pointerEvents = "none";
   el.style.zIndex = `${JUMP_IMAGE_Z_INDEX}`;
-  el.style.opacity = "1";
-  el.style.willChange = "transform";
+  el.style.opacity = "0";
+  el.style.willChange = "transform, opacity";
   el.style.transition = "none";
   el.style.transform = "translate3d(0px, 0px, 0)";
   el.style.transformOrigin = "left top";
   el.style.backfaceVisibility = "hidden";
   el.style.contain = "layout paint style";
-  el.style.display = "none";
+  el.style.display = "block";
+  el.style.visibility = "hidden";
   document.body.appendChild(el);
 
   const entry = {
@@ -2271,7 +2683,9 @@ function ensureJumpImageSprite(path, loadedImg = null) {
     viewportW: 0,
     viewportH: 0,
     fallTimer: 0,
-    hideTimer: 0
+    hideTimer: 0,
+    prewarmed: false,
+    prewarmPromise: null
   };
   jumpImageState.spritesByPath.set(path, entry);
   return entry;
@@ -2315,6 +2729,45 @@ function layoutJumpImageSprite(entry) {
   return { posX, startY, jumpY };
 }
 
+function hideJumpImageSprite(entry) {
+  if (!entry || !entry.el) return;
+  clearJumpImageTimers(entry);
+  entry.el.style.transition = "none";
+  entry.el.style.opacity = "0";
+  entry.el.style.visibility = "hidden";
+}
+
+function prewarmJumpImageSprite(entry) {
+  if (!entry || !entry.el || !entry.el.isConnected) return Promise.resolve(false);
+  if (entry.prewarmed) return Promise.resolve(true);
+  if (entry.prewarmPromise) return entry.prewarmPromise;
+
+  entry.prewarmPromise = (async () => {
+    const layout = layoutJumpImageSprite(entry);
+    if (!layout) return false;
+
+    const warmOpacity = `${JUMP_IMAGE_WARM_OPACITY}`;
+    entry.el.style.display = "block";
+    entry.el.style.transition = "none";
+    entry.el.style.visibility = "visible";
+    entry.el.style.opacity = warmOpacity;
+    entry.el.style.transform =
+      `translate3d(${layout.posX}px, ${layout.startY}px, 0)`;
+    entry.el.getBoundingClientRect();
+    await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+    entry.el.style.opacity = "0";
+    entry.el.style.visibility = "hidden";
+    entry.prewarmed = true;
+    return true;
+  })()
+    .catch(() => false)
+    .finally(() => {
+      entry.prewarmPromise = null;
+    });
+
+  return entry.prewarmPromise;
+}
+
 function clearJumpImages(remove = true) {
   const entries = Array.from(jumpImageState.spritesByPath.values());
   entries.forEach((entry) => {
@@ -2324,7 +2777,7 @@ function clearJumpImages(remove = true) {
         entry.el.remove();
       }
     } else if (entry.el) {
-      entry.el.style.display = "none";
+      hideJumpImageSprite(entry);
     }
   });
   if (remove) {
@@ -2338,11 +2791,14 @@ function startJumpImageAnimation(entry) {
   if (!layout) return;
 
   clearJumpImageTimers(entry);
+  entry.prewarmed = true;
   entry.el.style.display = "block";
+  entry.el.style.visibility = "visible";
   entry.el.style.opacity = "1";
   entry.el.style.transition = "none";
   entry.el.style.transform =
     `translate3d(${layout.posX}px, ${layout.startY}px, 0)`;
+  entry.el.getBoundingClientRect();
 
   requestAnimationFrame(() => {
     if (!entry.el || !entry.el.isConnected) return;
@@ -2363,7 +2819,10 @@ function startJumpImageAnimation(entry) {
   entry.hideTimer = setTimeout(() => {
     if (!entry.el || !entry.el.isConnected) return;
     entry.el.style.transition = "none";
-    entry.el.style.display = "none";
+    entry.el.style.opacity = "0";
+    entry.el.style.visibility = "hidden";
+    entry.el.style.transform =
+      `translate3d(${layout.posX}px, ${layout.startY}px, 0)`;
   }, JUMP_IMAGE_FALL_DELAY_MS + JUMP_IMAGE_REMOVE_DELAY_MS);
 }
 
@@ -2373,13 +2832,21 @@ function runJumpImageEvent(imageName) {
 
   const prepared = jumpImageState.spritesByPath.get(path);
   if (prepared && prepared.el?.isConnected) {
-    startJumpImageAnimation(prepared);
+    if (prepared.prewarmed) {
+      startJumpImageAnimation(prepared);
+      return;
+    }
+    prewarmJumpImageSprite(prepared).finally(() => {
+      startJumpImageAnimation(prepared);
+    });
     return;
   }
 
   preloadJumpImage(path).then((img) => {
     const entry = ensureJumpImageSprite(path, img);
-    startJumpImageAnimation(entry);
+    prewarmJumpImageSprite(entry).finally(() => {
+      startJumpImageAnimation(entry);
+    });
   });
 }
 
@@ -3443,6 +3910,36 @@ function applyCharacterPositionOverride(side, options = {}) {
   }
 }
 
+function shouldApplyCharacterPositionOverrideNow(side) {
+  const sprite = characterSprites[side];
+  const root = sprite?.rootEl || null;
+  const override = characterPositionOverrides[side] || {};
+  const hasOverride =
+    Number.isFinite(Number(override.x)) || Number.isFinite(Number(override.y));
+  if (hasOverride) return true;
+  if (!root) return false;
+  return Boolean(root.style.left || root.style.top);
+}
+
+function applyCharacterPositionOnPresetSwitch(side) {
+  if (!side) return;
+
+  if (side === "opponent") {
+    const remainingMs = getGhostEchoDadReturnRemainingMs();
+    if (remainingMs > 0) {
+      applyCharacterPositionOverride(side, {
+        durationMs: remainingMs,
+        easing: ghostEchoState.dadReturnEasing,
+        instant: false
+      });
+      return;
+    }
+  }
+
+  if (shouldApplyCharacterPositionOverrideNow(side)) {
+    applyCharacterPositionOverride(side, { instant: true });
+  }
+}
 function setCharacterBounceOffset(side, yPx) {
   const state = characterTransientOffsets[side];
   if (!state) return;
@@ -3539,6 +4036,30 @@ function updateCharacterBounce(nowMs) {
   runCharacterBounce("opponent");
 }
 
+function clearDeferredOpponentPresetLoad() {
+  deferredOpponentPresetLoad = "";
+  if (deferredOpponentPresetLoadRafId) {
+    cancelAnimationFrame(deferredOpponentPresetLoadRafId);
+    deferredOpponentPresetLoadRafId = 0;
+  }
+}
+
+function requestDeferredOpponentPresetLoad(preset) {
+  const normalizedPreset = normalizeCharacterPresetKey(preset);
+  if (!normalizedPreset) return;
+
+  deferredOpponentPresetLoad = normalizedPreset;
+  if (deferredOpponentPresetLoadRafId) return;
+
+  deferredOpponentPresetLoadRafId = requestAnimationFrame(() => {
+    deferredOpponentPresetLoadRafId = 0;
+    const pendingPreset = normalizeCharacterPresetKey(deferredOpponentPresetLoad);
+    deferredOpponentPresetLoad = "";
+    if (!pendingPreset) return;
+    queueCharacterPresetLoad("opponent", pendingPreset);
+  });
+}
+
 function getCharacterPresetLoadQueue(side) {
   if (side === "player") return characterPresetLoadQueueState.player;
   if (side === "opponent") return characterPresetLoadQueueState.opponent;
@@ -3546,9 +4067,47 @@ function getCharacterPresetLoadQueue(side) {
   return null;
 }
 
+function isCharacterPresetLoadPending(side) {
+  const queue = getCharacterPresetLoadQueue(side);
+  if (!queue) return false;
+  if (queue.running || queue.pendingPreset) return true;
+
+  const activePreset = normalizeCharacterPresetKey(characterPresetBySide[side]);
+  const targetPreset = normalizeCharacterPresetKey(characterSlotState[side]?.preset);
+  if (!targetPreset) return false;
+  return activePreset !== targetPreset;
+}
+
+function tryActivateCharacterPresetImmediate(side, preset) {
+  const normalizedPreset = normalizeCharacterPresetKey(preset);
+  if (!normalizedPreset) return false;
+  const sprite = getPooledCharacterSprite(side, normalizedPreset);
+  if (!sprite || !sprite.ready) return false;
+
+  if (!activatePooledCharacterSprite(side, normalizedPreset, sprite)) {
+    return false;
+  }
+
+  const skipIdleApply = Boolean(characterSkipIdleApplyOnSwitchBySide[side]);
+  characterSkipIdleApplyOnSwitchBySide[side] = false;
+
+  updateCharacterAnchorMode(side);
+  if (!skipIdleApply) {
+    applyCharacterDisplayState(side, true);
+  }
+  applyCharacterPositionOnPresetSwitch(side);
+
+  flushQueuedCharacterPlayAnimation(side);
+  return true;
+}
+
 async function performCharacterPresetLoad(side, preset) {
   const normalizedPreset = normalizeCharacterPresetKey(preset);
   if (!normalizedPreset) return;
+
+  const previousActivePreset = normalizeCharacterPresetKey(characterPresetBySide[side]);
+  const skipIdleApply = Boolean(characterSkipIdleApplyOnSwitchBySide[side]);
+  characterSkipIdleApplyOnSwitchBySide[side] = false;
 
   const sprite = characterSprites[side];
   const config = getPresetConfig(side, normalizedPreset);
@@ -3574,30 +4133,24 @@ async function performCharacterPresetLoad(side, preset) {
     return;
   }
 
-  hideAllPooledCharacterSprites(side);
   if (!activatePooledCharacterSprite(side, normalizedPreset, nextSprite)) {
     characterPendingPlayAnimationBySide[side] = "";
     return;
   }
 
   updateCharacterAnchorMode(side);
-  applyCharacterDisplayState(side, true);
-  if (side === "opponent") {
-    const remainingMs = getGhostEchoDadReturnRemainingMs();
-    if (remainingMs > 0) {
-      applyCharacterPositionOverride(side, {
-        durationMs: remainingMs,
-        easing: ghostEchoState.dadReturnEasing,
-        instant: false
-      });
-    } else {
-      applyCharacterPositionOverride(side, { instant: true });
-    }
-  } else {
-    applyCharacterPositionOverride(side, { instant: true });
+  if (!skipIdleApply) {
+    applyCharacterDisplayState(side, true);
   }
+  applyCharacterPositionOnPresetSwitch(side);
   flushQueuedCharacterPlayAnimation(side);
-  refreshCharacterPresentation();
+
+  const skipPresentationRefresh =
+    side === "opponent" &&
+    shouldSkipOpponentPresentationRefreshOnPresetSwap(previousActivePreset, normalizedPreset);
+  if (!skipPresentationRefresh) {
+    refreshCharacterPresentation();
+  }
 }
 
 function queueCharacterPresetLoad(side, preset) {
@@ -3605,6 +4158,12 @@ function queueCharacterPresetLoad(side, preset) {
   if (!queue) return;
   const normalizedPreset = normalizeName(preset);
   if (!normalizedPreset) return;
+
+  if (!queue.running && !queue.pendingPreset) {
+    if (tryActivateCharacterPresetImmediate(side, normalizedPreset)) {
+      return;
+    }
+  }
 
   queue.pendingPreset = normalizedPreset;
   if (queue.running) return;
@@ -3635,6 +4194,7 @@ function resetCharacterChangeTimelinePlayback() {
   characterChangeLastSongMs = 0;
   characterChartBatchApplying = false;
   characterRefreshDeferred = false;
+  clearDeferredOpponentPresetLoad();
   activeCharacterSide = null;
   characterSlotState.player.name = "";
   characterSlotState.player.preset = null;
@@ -3645,6 +4205,9 @@ function resetCharacterChangeTimelinePlayback() {
   characterPendingPlayAnimationBySide.player = "";
   characterPendingPlayAnimationBySide.opponent = "";
   characterPendingPlayAnimationBySide.gf = "";
+  characterSkipIdleApplyOnSwitchBySide.player = false;
+  characterSkipIdleApplyOnSwitchBySide.opponent = false;
+  characterSkipIdleApplyOnSwitchBySide.gf = false;
   characterPresetLoadQueueState.player.pendingPreset = "";
   characterPresetLoadQueueState.opponent.pendingPreset = "";
   characterPresetLoadQueueState.gf.pendingPreset = "";
@@ -3694,7 +4257,10 @@ function applyCharacterChangeEvent(evt) {
   if (!side) return;
   const characterName = normalizeName(evt?.character);
   const preset = resolvePresetFromCharacterName(side, characterName);
-  characterPendingPlayAnimationBySide[side] = "";
+  const previousSlotPreset = characterSlotState[side]?.preset || null;
+  const immediatePlayAnimation = normalizeName(evt?.immediatePlayAnimation);
+  characterPendingPlayAnimationBySide[side] = immediatePlayAnimation;
+  characterSkipIdleApplyOnSwitchBySide[side] = Boolean(immediatePlayAnimation);
 
   characterSlotState[side].name = characterName;
   characterSlotState[side].preset = preset;
@@ -3730,10 +4296,33 @@ function applyCharacterChangeEvent(evt) {
     characterDisplayState[side] = { anim: "idle", loop: true, freeze: false };
   }
 
+  let deferredPresetLoad = false;
   if (preset) {
-    queueCharacterPresetLoad(side, preset);
+    let shouldDeferPresetLoad =
+      side === "opponent" &&
+      characterChartBatchApplying &&
+      !immediatePlayAnimation &&
+      shouldDeferOpponentPresetLoadForSwitch(preset);
+    if (shouldDeferPresetLoad) {
+      deferredPresetLoad = true;
+      requestDeferredOpponentPresetLoad(preset);
+    } else {
+      if (side === "opponent") {
+        clearDeferredOpponentPresetLoad();
+      }
+      queueCharacterPresetLoad(side, preset);
+    }
+  } else if (side === "opponent") {
+    clearDeferredOpponentPresetLoad();
   }
-  requestCharacterPresentationRefresh();
+
+  const skipPresentationRefresh =
+    (side === "opponent" &&
+      shouldSkipOpponentPresentationRefreshOnPresetSwap(previousSlotPreset, preset)) ||
+    deferredPresetLoad;
+  if (!skipPresentationRefresh) {
+    requestCharacterPresentationRefresh();
+  }
 }
 
 function applyCharacterPlayAnimationEvent(evt) {
@@ -3757,7 +4346,11 @@ function tryPlayCharacterAnimationEvent(side, animName) {
   if (!sprite || !sprite.ready) return "not_ready";
 
   const resolvedAnim = sprite.resolveAnimName(animName);
-  if (!resolvedAnim || resolvedAnim === "idle") return "invalid";
+  if (!resolvedAnim || resolvedAnim === "idle") {
+    // If a character swap is still in-flight, replay this command after load completes.
+    if (isCharacterPresetLoadPending(side)) return "not_ready";
+    return "invalid";
+  }
 
   clearCharacterTimer(side);
   const runtime = characterRuntime[side];
@@ -3853,7 +4446,14 @@ function applyShowImageFhudEvent(evt) {
 
 function applyJumpImageEvent(evt) {
   if (!evt) return;
-  runJumpImageEvent(evt.imageName);
+  const imageName = evt.imageName;
+  if (characterChartBatchApplying) {
+    requestAnimationFrame(() => {
+      runJumpImageEvent(imageName);
+    });
+    return;
+  }
+  runJumpImageEvent(imageName);
 }
 
 function applyGhostEchoChartEvent(evt) {
@@ -4106,6 +4706,19 @@ function prepareCharacterAssetsForGameplay() {
   return characterAssetsReadyPromise;
 }
 
+function applyCharacterExtraScaleForSprite(side, preset, sprite) {
+  if (!sprite || !sprite.rootEl) return;
+  const useJsonScale = Boolean(sprite.config?.applyCharacterJsonScale);
+  const metaScale = Number(sprite.meta?.scale);
+  const baseScale =
+    useJsonScale && Number.isFinite(metaScale) && metaScale > 0
+      ? metaScale
+      : 1;
+  const presetScale = getCharacterPresetScaleMultiplier(side, preset);
+  const appliedScale = baseScale * presetScale;
+  sprite.rootEl.style.setProperty("--character-extra-scale", `${appliedScale}`);
+}
+
 class CharacterSprite {
   constructor(side, config, hostEl) {
     this.side = side;
@@ -4151,12 +4764,7 @@ class CharacterSprite {
 
   async load(presetForScale = null) {
     this.ready = false;
-    const useJsonScale = Boolean(this.config?.applyCharacterJsonScale);
     const scalePreset = presetForScale || characterPresetBySide[this.side];
-    const presetScale = getCharacterPresetScaleMultiplier(
-      this.side,
-      scalePreset
-    );
     const runtime = await buildCharacterConfigRuntimeCache(this.config);
     if (!runtime) {
       this.rootEl.style.display = "none";
@@ -4164,16 +4772,7 @@ class CharacterSprite {
     }
 
     this.meta = cloneCharacterMeta(runtime.meta);
-    const metaScale = Number(this.meta.scale);
-    const baseScale =
-      useJsonScale && Number.isFinite(metaScale) && metaScale > 0
-        ? metaScale
-        : 1;
-    const appliedScale = baseScale * presetScale;
-    this.rootEl.style.setProperty(
-      "--character-extra-scale",
-      `${appliedScale}`
-    );
+    applyCharacterExtraScaleForSprite(this.side, scalePreset, this);
     this.frameEl.style.imageRendering = this.meta.noAntialiasing ? "pixelated" : "";
     this.frameEl.style.backgroundImage = runtime.imageUrl ? `url('${runtime.imageUrl}')` : "";
     this.animations = runtime.animations || {};
@@ -4403,6 +5002,12 @@ window.setMikuDownOffsetY = (value) => {
   applyCharacterRenderOffset("opponent");
   return MIKU_DOWN_EXTRA_OFFSET_Y;
 };
+window.setMikuLeftOffsetY = (value) => {
+  const next = Number(value);
+  MIKU_LEFT_EXTRA_OFFSET_Y = Number.isFinite(next) ? next : 0;
+  applyCharacterRenderOffset("opponent");
+  return MIKU_LEFT_EXTRA_OFFSET_Y;
+};
 window.setTetohappyOffsetY = (value) => {
   const next = Number(value);
   const y = Number.isFinite(next) ? next : 0;
@@ -4447,7 +5052,15 @@ function startCharacterRenderLoop() {
 function setCharacterVisibility(side, visible) {
   const sprite = characterSprites[side];
   if (!sprite || !sprite.rootEl) return;
-  sprite.rootEl.style.display = visible ? "" : "none";
+  const root = sprite.rootEl;
+  if (visible) {
+    root.style.display = "";
+    root.style.visibility = "visible";
+    root.style.opacity = "";
+    root.style.pointerEvents = "";
+    return;
+  }
+  root.style.display = "none";
 }
 
 function showOnlyCharacterSide(side) {
@@ -4528,9 +5141,13 @@ function getHoldRemainingMs(side, extra = {}) {
 
 function shouldUseMikuHoldTiming(side) {
   const normalizedSide = normalizeName(side);
-  if (normalizedSide !== "player" && normalizedSide !== "opponent") {
+  if (normalizedSide !== "opponent") {
     return false;
   }
+
+  const preset = normalizeCharacterPresetKey(characterSlotState.opponent?.preset);
+  if (!preset) return false;
+  return OPPONENT_MIKU_WARM_POOL_PRESETS.has(preset);
 }
 
 function getHoldFinalRunPlan(side, holdAnim, extra = {}) {
@@ -4590,6 +5207,7 @@ function scheduleHoldFinalRun(side, lane, holdAnim, extra = {}) {
 
     const activeLane = runtime.lane == null ? lane : runtime.lane;
     const laneAnim = CHARACTER_LANE_TO_ANIM[activeLane] || "left";
+    runtime.holdAdvanceStarted = true;
     setCharacterVisual(side, "hold", activeLane, {
       ...extra,
       lane: activeLane,
@@ -4687,6 +5305,7 @@ function resetHoldRuntime(runtime) {
     runtime.holdAdvanceTimer = null;
   }
   runtime.holdAdvancePerf = 0;
+  runtime.holdAdvanceStarted = false;
   runtime.holdEnded = false;
   runtime.releaseRequested = false;
   runtime.holdReadyPerf = 0;
@@ -4777,15 +5396,12 @@ function characterOnNoteEvent(side, lane, type, extra = {}) {
     runtime.lane = lane;
     resetHoldRuntime(runtime);
     const holdAnim = `hold-${laneAnim}`;
-    const useMikuTiming = shouldUseMikuHoldTiming(side);
     setCharacterVisual(side, "hold", lane, {
       ...base,
       anim: holdAnim,
       holdFreeze: true
     });
-    if (!useMikuTiming) {
-      scheduleHoldFinalRun(side, lane, holdAnim, extra);
-    }
+    scheduleHoldFinalRun(side, lane, holdAnim, extra);
     return;
   }
 
@@ -4821,7 +5437,7 @@ function characterOnNoteEvent(side, lane, type, extra = {}) {
     const releaseLane = runtime.lane == null ? lane : runtime.lane;
     const releaseLaneAnim = CHARACTER_LANE_TO_ANIM[releaseLane] || "left";
     const holdAnim = `hold-${releaseLaneAnim}`;
-    const useMikuTiming = shouldUseMikuHoldTiming(side);
+    const hadPendingAdvance = Boolean(runtime.holdAdvanceTimer);
     if (runtime.holdAdvanceTimer) {
       clearTimeout(runtime.holdAdvanceTimer);
       runtime.holdAdvanceTimer = null;
@@ -4829,22 +5445,15 @@ function characterOnNoteEvent(side, lane, type, extra = {}) {
     }
     runtime.holdEnded = true;
     runtime.holdReadyPerf = performance.now() + getCharacterSettleDelayMs(side, holdAnim);
-    if (useMikuTiming) {
+
+    if (!runtime.holdAdvanceStarted || hadPendingAdvance) {
+      runtime.holdAdvanceStarted = true;
       setCharacterVisual(side, "hold", releaseLane, {
         ...extra,
         lane: releaseLane,
         laneAnim: releaseLaneAnim,
         anim: holdAnim,
         holdFreeze: false
-      });
-    } else {
-      setCharacterVisual(side, "hold", releaseLane, {
-        ...extra,
-        lane: releaseLane,
-        laneAnim: releaseLaneAnim,
-        anim: holdAnim,
-        holdFreeze: false,
-        forceLastFrame: true
       });
     }
 

@@ -1894,7 +1894,7 @@
 			]
 		],
 		[
-			11384.6153846154,
+			11076.9230769231,
 			[
 				["move dad", "225", "0.1"],
 				["Move Characters", "bf", "1050"]
@@ -2723,7 +2723,8 @@
 				["Flash Camera", "1", ""],
 				["Show Miku Ghost", "off", ""],
 				["Enemy Bar color", "on", ""],
-				["Change Character", "dad", "aishite1"]
+				["Change Character", "dad", "aishite1"],
+				["Play Animation", "aishite1", "dad"]
 			]
 		],
 		[
@@ -3219,6 +3220,7 @@
 		[
 			133846.153846154,
 			[
+				["Move Characters", "bf", "1125"],
 				["Change Character", "dad", "nothing"],
 				["Change Character", "gf", "nothing"],
 				["Change Character", "bf", "bfdraw"],
