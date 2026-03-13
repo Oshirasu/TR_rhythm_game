@@ -1,11 +1,11 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Friday Night Funkin': Akage</title>
   <link rel="icon" href="Icon-Teto.ico" type="image/png">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20260312a">
   <style>
     /* ページスクロール無効化 */
     html, body { overflow: hidden; height: 100%; }
@@ -62,9 +62,12 @@
   <img class="icon-img bf active"
        src="assets/images/icon/bf/Icon-BFAnim1.png">
 </div>
-
-
-
+      <div id="judge-popup" aria-hidden="true">
+        <div id="judge-ms-fixed"></div>
+        <div id="judge-combo" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
   <div id="scoreboard">
     <div id="scoreboard-inner">
       <span id="score-text">Score: 0</span>
@@ -74,14 +77,73 @@
       <span id="rating-text">Rating: ?</span>
     </div>
   </div>
-
-      <div id="judge-popup" aria-hidden="true">
-        <div id="judge-ms-fixed"></div>
-        <div id="judge-combo" aria-hidden="true"></div>
+  <!-- 音声要素を復元 -->
+  <div id="song-result-overlay" aria-hidden="true">
+    <div class="song-result-card" role="dialog" aria-modal="true" aria-label="Song result">
+      <div class="song-result-header">
+        <h2 class="song-result-title">RESULT</h2>
+        <div class="song-result-hint">Press Enter to return to start</div>
+      </div>
+      <div class="song-result-layout">
+        <section class="song-result-panel song-result-panel--stats" aria-label="Result stats">
+          <h3 class="song-result-section-title">Performance</h3>
+          <div class="song-result-summary">
+            <div class="song-result-row"><span>Score</span><strong id="result-score">0</strong></div>
+            <div class="song-result-row"><span>Misses</span><strong id="result-misses">0</strong></div>
+            <div class="song-result-row"><span>Accuracy</span><strong id="result-accuracy">N/A</strong></div>
+            <div class="song-result-row"><span>Max Combo</span><strong id="result-max-combo">0</strong></div>
+          </div>
+          <div class="song-result-judges">
+            <div class="song-result-judge song-result-judge--sick"><span>SICK :</span><strong id="result-judge-sick">0</strong></div>
+            <div class="song-result-judge song-result-judge--good"><span>GOOD :</span><strong id="result-judge-good">0</strong></div>
+            <div class="song-result-judge song-result-judge--bad"><span>BAD :</span><strong id="result-judge-bad">0</strong></div>
+            <div class="song-result-judge song-result-judge--shit"><span>SHIT :</span><strong id="result-judge-shit">0</strong></div>
+          </div>
+        </section>
+        <aside class="song-result-panel song-result-panel--credits" aria-label="Credits">
+          <h3 class="song-result-section-title">Credits</h3>
+          <div class="song-result-credit-stack">
+            <div class="song-result-credit-block">
+              <span class="song-result-credit-label">Inspired by</span>
+              <strong class="song-result-credit-value">AKAGE: Reimagined (Demo)</strong>
+            </div>
+            <div class="song-result-credit-block">
+              <span class="song-result-credit-label">Original mod page</span>
+              <strong class="song-result-credit-value">gamebanana.com/mods/601637</strong>
+            </div>
+            <div class="song-result-credit-block">
+              <span class="song-result-credit-label">Reference engine</span>
+              <strong class="song-result-credit-value">Psych Engine</strong>
+            </div>
+          </div>
+          <div class="song-result-video-block">
+            <span class="song-result-credit-label">Featured song</span>
+            <div class="song-result-video-frame">
+              <iframe
+                id="song-result-video"
+                width="560"
+                height="315"
+                data-src="https://www.youtube.com/embed/D50L4EeBHOs?si=N4mrws29RqManlG4"
+                title="AKAGE [赤毛] (feat. Kasane Teto) | Smily's Originals"
+                frameborder="0"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen></iframe>
+            </div>
+            <div class="song-result-song-meta">
+              <strong class="song-result-song-title">AKAGE [赤毛]</strong>
+              <span class="song-result-song-artist">(feat. Kasane Teto) || Smily's Originals</span>
+            </div>
+          </div>
+          <p class="song-result-credit-note">
+            Unofficial fan recreation. Not affiliated with the original creators.
+          </p>
+        </aside>
       </div>
     </div>
   </div>
-  <!-- 音声要素を復元 -->
+
   <audio id="song" src="assets/songs/akage/Akage.ogg" preload="auto"></audio>
 
   <!-- イントロ音声 -->
@@ -91,8 +153,8 @@
 <audio id="intro-go" src="assets/sounds/introGo.ogg"></audio>
 
 
-  <script src="stage.js"></script>
-  <script src="character.js"></script>
-  <script src="script.js"></script>
+  <script src="stage.js?v=20260312a"></script>
+  <script src="character.js?v=20260312a"></script>
+  <script src="script.js?v=20260312a"></script>
 </body>
 </html>

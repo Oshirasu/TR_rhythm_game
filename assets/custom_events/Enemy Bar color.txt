@@ -1,3 +1,0 @@
-Enemy Bar Color
-
-1: on/off

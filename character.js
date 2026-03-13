@@ -1,7 +1,7 @@
 const CHARACTER_LANE_TO_ANIM = ["left", "down", "up", "right"];
-const CHARACTER_IDLE_DELAY_MS = 440;
+const CHARACTER_IDLE_DELAY_MS = 380;
 const CHARACTER_FRAME_MS = 1000 / 24;
-let HOLD_FINAL_RUN_SECONDS = 1 / 16;
+let HOLD_FINAL_RUN_SECONDS = 1 / 60;
 
 const CHARACTER_PRESETS = {
   shadow: {
@@ -66,7 +66,7 @@ const CHARACTER_PRESETS = {
       characterJsonPath: "assets/characters/gfpico.json",
       applyCharacterJsonMeta: true,
       applyCharacterJsonScale: true,
-      applyCharacterJsonAnimOffsets: false,
+      applyCharacterJsonAnimOffsets: true,
       animationAliases: {
         idle: ["idle"],
         pico: ["pico"],
@@ -81,7 +81,7 @@ const CHARACTER_PRESETS = {
       characterJsonPath: "assets/characters/bfdraw.json",
       applyCharacterJsonMeta: true,
       applyCharacterJsonScale: true,
-      applyCharacterJsonAnimOffsets: false,
+      applyCharacterJsonAnimOffsets: true,
       animationAliases: {
         idle: ["bf bad draw", "idle"],
         "sing-left": ["left"],
@@ -101,7 +101,7 @@ const CHARACTER_PRESETS = {
       characterJsonPath: "assets/characters/bf animation.json",
       applyCharacterJsonMeta: true,
       applyCharacterJsonScale: true,
-      applyCharacterJsonAnimOffsets: false,
+      applyCharacterJsonAnimOffsets: true,
       animationAliases: {
         idle: ["idle"],
         animation: ["animation"]
@@ -113,7 +113,7 @@ const CHARACTER_PRESETS = {
       atlasXmlPath: "assets/images/characters/Teto Animation.xml",
       characterJsonPath: "assets/characters/teto animation.json",
       applyCharacterJsonMeta: true,
-      applyCharacterJsonAnimOffsets: false,
+      applyCharacterJsonAnimOffsets: true,
       animationAliases: {
         idle: ["ani gif"]
       }
@@ -177,7 +177,7 @@ const CHARACTER_PRESETS = {
       characterJsonPath: "assets/characters/tetohappy.json",
       applyCharacterJsonMeta: true,
       applyCharacterJsonScale: true,
-      applyCharacterJsonAnimOffsets: false,
+      applyCharacterJsonAnimOffsets: true,
       animationAliases: {
         idle: ["happy", "idle"]
       }
@@ -189,7 +189,7 @@ const CHARACTER_PRESETS = {
       characterJsonPath: "assets/characters/aishite1.json",
       applyCharacterJsonMeta: true,
       applyCharacterJsonScale: true,
-      applyCharacterJsonAnimOffsets: false,
+      applyCharacterJsonAnimOffsets: true,
       animationAliases: {
         idle: ["aishite"],
         aishite1: ["aishite"]
@@ -202,7 +202,7 @@ const CHARACTER_PRESETS = {
       characterJsonPath: "assets/characters/mikuaishite2.json",
       applyCharacterJsonMeta: true,
       applyCharacterJsonScale: true,
-      applyCharacterJsonAnimOffsets: false,
+      applyCharacterJsonAnimOffsets: true,
       animationAliases: {
         idle: ["idle", "mikuaishi2"],
         aishite2: ["mikuaishi2"]
@@ -215,7 +215,7 @@ const CHARACTER_PRESETS = {
       characterJsonPath: "assets/characters/mikuaishi3.json",
       applyCharacterJsonMeta: true,
       applyCharacterJsonScale: true,
-      applyCharacterJsonAnimOffsets: false,
+      applyCharacterJsonAnimOffsets: true,
       animationAliases: {
         idle: ["idle", "mikuaishite3"],
         aishite3: ["mikuaishite3"]
@@ -228,7 +228,7 @@ const CHARACTER_PRESETS = {
       characterJsonPath: "assets/characters/miku motto.json",
       applyCharacterJsonMeta: true,
       applyCharacterJsonScale: true,
-      applyCharacterJsonAnimOffsets: false,
+      applyCharacterJsonAnimOffsets: true,
       animationAliases: {
         idle: ["idle", "motto motto"],
         motto: ["motto motto"]
@@ -241,7 +241,7 @@ const CHARACTER_PRESETS = {
       characterJsonPath: "assets/characters/miku kuroshi.json",
       applyCharacterJsonMeta: true,
       applyCharacterJsonScale: true,
-      applyCharacterJsonAnimOffsets: false,
+      applyCharacterJsonAnimOffsets: true,
       animationAliases: {
         idle: ["idle", "kuruoshi"],
         kuroushi: ["kuruoshi", "kuroshi"]
@@ -254,7 +254,7 @@ const CHARACTER_PRESETS = {
       characterJsonPath: "assets/characters/miku hodo.json",
       applyCharacterJsonMeta: true,
       applyCharacterJsonScale: true,
-      applyCharacterJsonAnimOffsets: false,
+      applyCharacterJsonAnimOffsets: true,
       animationAliases: {
         idle: ["idle mi", "hodo mi", "idle"],
         "hodo mi": ["hodo mi"]
@@ -267,7 +267,7 @@ const CHARACTER_PRESETS = {
       characterJsonPath: "assets/characters/miku miiii.json",
       applyCharacterJsonMeta: true,
       applyCharacterJsonScale: true,
-      applyCharacterJsonAnimOffsets: false,
+      applyCharacterJsonAnimOffsets: true,
       animationAliases: {
         idle: ["idle", "miii"],
         mi: ["miii", "mi"]
@@ -280,7 +280,7 @@ const CHARACTER_PRESETS = {
       characterJsonPath: "assets/characters/miku.json",
       applyCharacterJsonMeta: true,
       applyCharacterJsonScale: true,
-      applyCharacterJsonAnimOffsets: false,
+      applyCharacterJsonAnimOffsets: true,
       animationAliases: {
         idle: ["miku estandar", "idle"],
         "sing-left": ["miku left"],
@@ -312,6 +312,7 @@ const OPPONENT_TIMELINE_ONLY_PRESETS = new Set([
   "miku_miiii"
 ]);
 const OPPONENT_MIKU_WARM_POOL_PRESETS = new Set([
+  "animation",
   "aishite1",
   "mikuaishite2",
   "mikuaishi3",
@@ -319,8 +320,10 @@ const OPPONENT_MIKU_WARM_POOL_PRESETS = new Set([
   "miku_kuroshi",
   "miku_hodo",
   "miku_miiii",
-  "miku"
+  "miku",
+  "tetohappy"
 ]);
+const OPPONENT_STARTUP_PREWARM_PRESETS = Array.from(OPPONENT_MIKU_WARM_POOL_PRESETS);
 const PLAYER_TIMELINE_ONLY_PRESETS = new Set([
   "gfpico",
   "bf_animation"
@@ -339,8 +342,9 @@ const GF_CHARACTER_PRESETS = {
 
 const CHARACTER_PRESET_OFFSETS = {
   player: {
-    // gfpico: global Y tuning (positive=down, negative=up).
-    gfpico: { x: 30, y: 170 }
+    // gfpico: align with bf animation baseline under center-anchor renderer.
+    gfpico: { x: 73, y: 134 },
+    bf_animation: { x: 0, y: -34 }
   },
   opponent: {
     // Teto Animation atlas has a much taller frame box; shift up to keep stage Y consistent.
@@ -354,28 +358,37 @@ const CHARACTER_PRESET_OFFSETS = {
     miku_motto: { x: -20, y: 54 },
     miku_kuroshi: { x: 0, y: 50 },
     miku_hodo: { x: 0, y: 50 },
-    miku_miiii: { x: 0, y: 60 },
-    miku: { x: 0, y: 50 }
+    miku_miiii: { x: 0, y: 65 },
+    miku: { x: 0, y: 90 }
   }
 };
 
 const CHARACTER_PRESET_SCALE_MULTIPLIERS = {
   opponent: {
     // Miku variants: per-skin size normalization.
-    aishite1: 1.15,
-    mikuaishite2: 1.15,
-    mikuaishi3: 1.15,
-    miku_motto: 1.15,
-    miku_kuroshi: 1.15,
-    miku_hodo: 1.15,
-    miku_miiii: 1.15,
-    miku: 1.16
+    aishite1: 1.12,
+    mikuaishite2: 1.12,
+    mikuaishi3: 1.12,
+    miku_motto: 1.12,
+    miku_kuroshi: 1.12,
+    miku_hodo: 1.12,
+    miku_miiii: 1.12,
+    miku: 1.12
+  }
+};
+
+const CHARACTER_JSON_ANIM_OFFSET_MULTIPLIERS = {
+  player: {
+    estandar: 0.55
+  },
+  opponent: {
+    estandar: 0.68
   }
 };
 
 // Fine-tune only Miku lane Y offsets (px). + = down, - = up.
-let MIKU_DOWN_EXTRA_OFFSET_Y = 40;
-let MIKU_LEFT_EXTRA_OFFSET_Y = 20;
+let MIKU_DOWN_EXTRA_OFFSET_Y = 0;
+let MIKU_LEFT_EXTRA_OFFSET_Y = 0;
 
 const characterTransientOffsets = {
   player: { x: 0, y: 0 },
@@ -458,6 +471,11 @@ const characterPositionOverrides = {
   opponent: { x: null, y: null },
   gf: { x: null, y: null }
 };
+const characterSlotLastKnownPx = {
+  player: { x: Number.NaN, y: Number.NaN },
+  opponent: { x: Number.NaN, y: Number.NaN },
+  gf: { x: Number.NaN, y: Number.NaN }
+};
 
 const characterSprites = {
   player: null,
@@ -474,8 +492,13 @@ const characterAtlasPromises = {};
 const characterMetaPromises = {};
 const characterImagePromises = {};
 const characterImageRenderUrlBySrc = {};
+const characterImageSourceSizeBySrc = {};
 const characterImageBlobUrlBySrc = {};
-const MIKU_IMAGE_RENDER_MAX_DIMENSION = 4096;
+const MIKU_IMAGE_RENDER_MAX_DIMENSION = 3072;
+// Even when optional downscale is off, clamp extremely large Miku-family atlases.
+// 5K-6K textures can cause switch-time stalls in browser renderers.
+const MIKU_IMAGE_HARD_LIMIT_DIMENSION = 4096;
+let CHARACTER_ATLAS_DOWNSCALE_ENABLED = false;
 const MIKU_IMAGE_PATH_RE =
   /(?:^|\/)(?:aishite 1|mikuaishi2|mikuaishite3|motto motto|kuroshi|hodo|miiii|miku)\.png$/i;
 const characterConfigRuntimeCache = new Map();
@@ -501,6 +524,32 @@ const characterPositionTransitionRestoreToken = {
   opponent: 0,
   gf: 0
 };
+const characterPositionTweenState = {
+  player: {
+    active: false,
+    startPerf: 0,
+    endPerf: 0,
+    easing: "",
+    toX: Number.NaN,
+    toY: Number.NaN
+  },
+  opponent: {
+    active: false,
+    startPerf: 0,
+    endPerf: 0,
+    easing: "",
+    toX: Number.NaN,
+    toY: Number.NaN
+  },
+  gf: {
+    active: false,
+    startPerf: 0,
+    endPerf: 0,
+    easing: "",
+    toX: Number.NaN,
+    toY: Number.NaN
+  }
+};
 const characterPresetBySide = {
   player: "shadow",
   opponent: "shadow",
@@ -516,11 +565,26 @@ const characterSkipIdleApplyOnSwitchBySide = {
   opponent: false,
   gf: false
 };
+const characterSkipPositionApplyOnSwitchBySide = {
+  player: false,
+  opponent: false,
+  gf: false
+};
+const characterBridgePositionOnSwitchBySide = {
+  player: false,
+  opponent: false,
+  gf: false
+};
 let characterRenderRafId = 0;
 let activeCharacterSide = null;
 const CHARACTER_CHART_PATH = "data/akage/akage-chart.json";
 const EARLY_SWITCH_PREWARM_WINDOW_MS = 15000;
 const EARLY_SWITCH_PREWARM_MAX_PER_SIDE = 4;
+const CHARACTER_RUNTIME_PREWARM_WINDOW_MS = 12000;
+const OPPONENT_PRESET_LOOKAHEAD_PREWARM_MS = 12000;
+const OPPONENT_PRESET_LOOKAHEAD_MAX = 5;
+const OPPONENT_WARM_POOL_MAX_SPRITES = OPPONENT_MIKU_WARM_POOL_PRESETS.size;
+const CHARACTER_PRESENTATION_PREWARM_NUDGE_PX = 1;
 let characterChangeEvents = [];
 let characterChangeEventsReady = false;
 let characterChangeEventIndex = 0;
@@ -532,10 +596,43 @@ let deferredOpponentPresetLoadRafId = 0;
 let characterRefreshDeferred = false;
 let characterAssetsReadyPromise = null;
 let characterChangeEventsLoadPromise = null;
+let characterPresentationPrewarmed = false;
+let characterPresentationPrewarmPromise = null;
+const characterSpriteActivatedOnce = new WeakSet();
+const characterActivationSerialBySide = {
+  player: 0,
+  opponent: 0,
+  gf: 0
+};
+const characterSlotEls = {
+  player: null,
+  opponent: null,
+  gf: null
+};
+const opponentWarmPresetUseByKey = new Map();
+let opponentWarmPresetUseTick = 0;
+let opponentPresetLookaheadPrewarmRunning = false;
+const opponentPresetLookaheadPrewarmQueue = [];
+const opponentPresetLookaheadPrewarmQueuedKeys = new Set();
+let opponentPlayAnimationsByPreset = new Map();
 const sceneCameraFollow = { x: 0, y: 0 };
 const SCENE_CAMERA_MOVE_MS = 1000;
 // Fast at start, then decelerates (negative acceleration feel).
 const SCENE_CAMERA_EASING = "cubic-bezier(0.16, 1, 0.3, 1)";
+const MOVE_CHARACTERS_DEFAULT_DURATION_SEC = 0.4;
+const MOVE_CHARACTERS_EASING = "cubic-bezier(0.33, 1, 0.68, 1)";
+// Psych's Move Characters tween starts at the event time (not arrival-time).
+const MOVE_CHARACTERS_USE_ARRIVAL_TIME = false;
+const MOVE_CHARACTERS_INSTANT_EPSILON_MS = 0.6;
+const MOVE_CHARACTERS_INSTANT_EPSILON_PX = 0.6;
+// Psych events are driven by raw song time, not input judge offset.
+const CHARACTER_CHART_USE_JUDGE_OFFSET = false;
+const PSYCH_CHART_BASE_WIDTH = 1280;
+const PSYCH_CHART_BASE_HEIGHT = 720;
+const MOVE_CHARACTERS_FORCE_INSTANT = [
+  { slot: "bf", timeMs: 11076.9230769231, x: 1020 },
+  { slot: "bf", timeMs: 133846.153846154, x: 1125 }
+];
 const STAGE_BACKGROUND_BASE_PATH = "assets/images/bg/";
 const STAGE_BACKGROUND_STAGE_TEST_NAME = "otherbg";
 const STAGE_BACKGROUND_COLORBG_NAME = "tetobg";
@@ -561,7 +658,7 @@ const MEME_APPEAR_CONFIG = {
   imagePath: "assets/images/meme.png",
   startX: -400,
   targetX: -450,
-  y: 250,
+  y: 220,
   scale: 0.28,
   durationMs: 600,
   easing: "cubic-bezier(0.22, 1, 0.36, 1)"
@@ -579,22 +676,38 @@ const showImageImagePromises = {};
 const SHOW_IMAGE_FHUD_BASE_PATH = "assets/images/";
 let showImageFhudOverlayEl = null;
 const showImageFhudImagePromises = {};
+const showImageFhudSwappedImagePromises = {};
+const showImageFhudSwappedResolvedPaths = {};
+const showImageFhudLastEnabledTimeByName = {};
+const SHOW_IMAGE_FHUD_AKAGE_SWAP_RED_RGB = [195, 95, 109];
+const SHOW_IMAGE_FHUD_AKAGE_SWAP_WHITE_RGB = [255, 255, 255];
+const SHOW_IMAGE_FHUD_AKAGE_SWAP_RED_DISTANCE = 110;
+const SHOW_IMAGE_FHUD_AKAGE_SWAP_RED_SOFT_DISTANCE = 200;
+const SHOW_IMAGE_FHUD_AKAGE_SWAP_WHITE_MIN = 236;
+const SHOW_IMAGE_FHUD_AKAGE_SWAP_WHITE_DISTANCE = 56;
+const SHOW_IMAGE_FHUD_AKAGE_SWAP_WHITE_SOFT_DISTANCE = 126;
 const JUMP_IMAGE_BASE_PATH = "assets/images/";
 const JUMP_IMAGE_Z_INDEX = 9996;
-const JUMP_IMAGE_JUMP_MS = 200;
-const JUMP_IMAGE_FALL_DELAY_MS = 250;
-const JUMP_IMAGE_FALL_MS = 180;
-const JUMP_IMAGE_REMOVE_DELAY_MS = 250;
+const JUMP_IMAGE_JUMP_MS = 230;
+const JUMP_IMAGE_FALL_DELAY_MS = 290;
+const JUMP_IMAGE_FALL_MS = 190;
+const JUMP_IMAGE_REMOVE_DELAY_MS = 280;
 const JUMP_IMAGE_JUMP_Y_OFFSET = 340;
 const JUMP_IMAGE_WARM_OPACITY = 0.001;
+const JUMP_IMAGE_GHOST_ECHO_PAUSE_EXTRA_MS = 90;
+const JUMP_IMAGE_NOGHOST_DELAY_WINDOW_MS = 56;
+const JUMP_IMAGE_MAX_DRAW_WIDTH = 1400;
+const JUMP_IMAGE_MAX_DRAW_HEIGHT = 900;
+const JUMP_IMAGE_PREWARM_MOVE_MS = 56;
 const jumpImageState = {
   imagePromises: {},
-  spritesByPath: new Map()
+  spritesByPath: new Map(),
+  ghostPauseUntilPerf: 0
 };
 const MIKU_GHOST_XML_PATH = "assets/images/Miku Ghost.xml";
 const MIKU_GHOST_FRAME_MS = 1000 / 24;
-const MIKU_GHOST_EXTRA_SCALE = 0.69;
-const MIKU_GHOST_X_PX = 231;
+const MIKU_GHOST_EXTRA_SCALE = 0.67;
+const MIKU_GHOST_X_PX = 239;
 const mikuGhostState = {
   enabled: false,
   visible: false,
@@ -605,7 +718,19 @@ const mikuGhostState = {
   frameIndex: 0,
   lastFrameTime: 0,
   lockedTop: "",
-  lockedMarginTop: "0px"
+  lockedMarginTop: "0px",
+  appliedFrameStyle: {
+    rootWidth: "",
+    rootHeight: "",
+    frameWidth: "",
+    frameHeight: "",
+    left: "",
+    top: "",
+    backgroundImage: "",
+    backgroundPosition: "",
+    backgroundSize: "",
+    backgroundRepeat: ""
+  }
 };
 const GHOST_ECHO_CLONE_COUNT = 3;
 const GHOST_ECHO_DAD_RETURN_MS = 200;
@@ -619,9 +744,14 @@ const ghostEchoState = {
   noGhostCount: 0,
   baseDadX: null,
   dadReturnUntilPerf: 0,
-  dadReturnEasing: SCENE_CAMERA_EASING
+  dadReturnEasing: SCENE_CAMERA_EASING,
+  dadReturnStartPerf: 0,
+  dadReturnFromX: Number.NaN,
+  dadReturnToX: Number.NaN,
+  dadReturnDurationMs: 0
 };
 const ghostEchoSprites = [null, null, null];
+let lastGhostEchoNoGhostPerf = -Infinity;
 
 function toInt(value, fallback = 0) {
   const n = parseInt(value || "0", 10);
@@ -944,8 +1074,59 @@ function getCharacterRenderImageUrl(src) {
   return characterImageRenderUrlBySrc[key] || key;
 }
 
-function shouldOptimizeMikuImageSource(src, img) {
-  return false;
+function getCharacterSourceImageSize(src) {
+  const key = String(src || "");
+  const size = characterImageSourceSizeBySrc[key];
+  const w = Number(size?.w);
+  const h = Number(size?.h);
+  return {
+    w: Number.isFinite(w) && w > 0 ? w : 0,
+    h: Number.isFinite(h) && h > 0 ? h : 0
+  };
+}
+
+function resolveMikuImageRenderMaxDimension(src, img) {
+  const key = String(src || "").toLowerCase();
+  if (!key || !key.endsWith(".png")) return 0;
+
+  const naturalW = Number(img?.naturalWidth) || 0;
+  const naturalH = Number(img?.naturalHeight) || 0;
+  const maxSide = Math.max(naturalW, naturalH);
+  if (maxSide <= 0) return 0;
+
+  // Restrict optimization to heavy Miku-family textures.
+  if (!key.includes("/images/")) return 0;
+  const isMikuFamily =
+    MIKU_IMAGE_PATH_RE.test(key) ||
+    key.includes("miku ghost") ||
+    key.includes("mikuaishi") ||
+    key.includes("aishite") ||
+    key.includes("motto") ||
+    key.includes("kuroshi") ||
+    key.includes("hodo") ||
+    key.includes("miii");
+  if (!isMikuFamily) return 0;
+
+  const hardLimitRaw = Number(MIKU_IMAGE_HARD_LIMIT_DIMENSION);
+  const hardLimit =
+    Number.isFinite(hardLimitRaw) && hardLimitRaw > 0
+      ? hardLimitRaw
+      : 4096;
+  const aggressiveAishiteLimit = Math.min(hardLimit, MIKU_IMAGE_RENDER_MAX_DIMENSION);
+  const isAishiteHeavySet =
+    key.includes("/aishite 1.png") ||
+    key.includes("/mikuaishi2.png") ||
+    key.includes("/mikuaishite3.png");
+  if (isAishiteHeavySet && maxSide > aggressiveAishiteLimit) {
+    return aggressiveAishiteLimit;
+  }
+  if (maxSide > hardLimit) {
+    return hardLimit;
+  }
+
+  if (!CHARACTER_ATLAS_DOWNSCALE_ENABLED) return 0;
+  if (maxSide <= MIKU_IMAGE_RENDER_MAX_DIMENSION) return 0;
+  return MIKU_IMAGE_RENDER_MAX_DIMENSION;
 }
 
 function createDownscaledCharacterImageUrl(src, img, maxDimension = MIKU_IMAGE_RENDER_MAX_DIMENSION) {
@@ -954,33 +1135,70 @@ function createDownscaledCharacterImageUrl(src, img, maxDimension = MIKU_IMAGE_R
       const naturalW = Number(img?.naturalWidth) || 0;
       const naturalH = Number(img?.naturalHeight) || 0;
       if (naturalW <= 0 || naturalH <= 0) {
-        resolve(src);
+        resolve({ url: src, sourceWidth: 0, sourceHeight: 0 });
         return;
       }
 
       const maxSide = Math.max(naturalW, naturalH);
       if (maxSide <= maxDimension) {
-        resolve(src);
+        resolve({ url: src, sourceWidth: naturalW, sourceHeight: naturalH });
         return;
       }
 
       const scale = maxDimension / maxSide;
       const drawW = Math.max(1, Math.round(naturalW * scale));
       const drawH = Math.max(1, Math.round(naturalH * scale));
-      const canvas = document.createElement("canvas");
-      canvas.width = drawW;
-      canvas.height = drawH;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        resolve(src);
-        return;
+
+      const setupCtx = (canvas) => {
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return null;
+        ctx.imageSmoothingEnabled = true;
+        if ("imageSmoothingQuality" in ctx) {
+          ctx.imageSmoothingQuality = "high";
+        }
+        return ctx;
+      };
+
+      let srcImage = img;
+      let srcW = naturalW;
+      let srcH = naturalH;
+      let canvas = null;
+
+      // Multi-pass downscale keeps edges cleaner than one-shot resize for large atlases.
+      while (srcW > drawW * 1.5 || srcH > drawH * 1.5) {
+        const nextW = Math.max(drawW, Math.round(srcW * 0.5));
+        const nextH = Math.max(drawH, Math.round(srcH * 0.5));
+        const stepCanvas = document.createElement("canvas");
+        stepCanvas.width = nextW;
+        stepCanvas.height = nextH;
+        const stepCtx = setupCtx(stepCanvas);
+        if (!stepCtx) {
+          resolve({ url: src, sourceWidth: naturalW, sourceHeight: naturalH });
+          return;
+        }
+        stepCtx.drawImage(srcImage, 0, 0, srcW, srcH, 0, 0, nextW, nextH);
+        canvas = stepCanvas;
+        srcImage = stepCanvas;
+        srcW = nextW;
+        srcH = nextH;
       }
-      ctx.drawImage(img, 0, 0, drawW, drawH);
+
+      if (!canvas || srcW !== drawW || srcH !== drawH) {
+        canvas = document.createElement("canvas");
+        canvas.width = drawW;
+        canvas.height = drawH;
+        const ctx = setupCtx(canvas);
+        if (!ctx) {
+          resolve({ url: src, sourceWidth: naturalW, sourceHeight: naturalH });
+          return;
+        }
+        ctx.drawImage(srcImage, 0, 0, srcW, srcH, 0, 0, drawW, drawH);
+      }
 
       if (typeof canvas.toBlob === "function") {
         canvas.toBlob((blob) => {
           if (!blob) {
-            resolve(src);
+            resolve({ url: src, sourceWidth: naturalW, sourceHeight: naturalH });
             return;
           }
           const prevBlobUrl = characterImageBlobUrlBySrc[src];
@@ -991,14 +1209,14 @@ function createDownscaledCharacterImageUrl(src, img, maxDimension = MIKU_IMAGE_R
           }
           const blobUrl = URL.createObjectURL(blob);
           characterImageBlobUrlBySrc[src] = blobUrl;
-          resolve(blobUrl);
+          resolve({ url: blobUrl, sourceWidth: naturalW, sourceHeight: naturalH });
         }, "image/png");
         return;
       }
 
-      resolve(canvas.toDataURL("image/png"));
+      resolve({ url: canvas.toDataURL("image/png"), sourceWidth: naturalW, sourceHeight: naturalH });
     } catch (err) {
-      resolve(src);
+      resolve({ url: src, sourceWidth: 0, sourceHeight: 0 });
     }
   });
 }
@@ -1009,13 +1227,26 @@ function optimizeCharacterImageForRender(src, img) {
   if (characterImageRenderUrlBySrc[key]) {
     return Promise.resolve(characterImageRenderUrlBySrc[key]);
   }
-  if (!shouldOptimizeMikuImageSource(key, img)) {
+  const naturalW = Number(img?.naturalWidth) || 0;
+  const naturalH = Number(img?.naturalHeight) || 0;
+  const targetMaxDimension = resolveMikuImageRenderMaxDimension(key, img);
+  if (!(Number.isFinite(targetMaxDimension) && targetMaxDimension > 0)) {
     characterImageRenderUrlBySrc[key] = key;
+    characterImageSourceSizeBySrc[key] = {
+      w: naturalW > 0 ? naturalW : 0,
+      h: naturalH > 0 ? naturalH : 0
+    };
     return Promise.resolve(key);
   }
-  return createDownscaledCharacterImageUrl(key, img).then((optimized) => {
-    const resolved = optimized || key;
+  return createDownscaledCharacterImageUrl(key, img, targetMaxDimension).then((optimized) => {
+    const resolved = optimized?.url || key;
+    const sourceW = Number(optimized?.sourceWidth);
+    const sourceH = Number(optimized?.sourceHeight);
     characterImageRenderUrlBySrc[key] = resolved;
+    characterImageSourceSizeBySrc[key] = {
+      w: Number.isFinite(sourceW) && sourceW > 0 ? sourceW : naturalW,
+      h: Number.isFinite(sourceH) && sourceH > 0 ? sourceH : naturalH
+    };
     return resolved;
   });
 }
@@ -1051,13 +1282,24 @@ async function resolveCharacterAtlasImageUrl(xmlPath, atlasImagePath) {
   const candidates = buildCharacterAtlasImageCandidates(xmlPath, atlasImagePath);
   for (const candidate of candidates) {
     const loaded = await preloadCharacterImage(candidate);
-    if (loaded) return getCharacterRenderImageUrl(candidate);
+    if (loaded) {
+      const sourceSize = getCharacterSourceImageSize(candidate);
+      return {
+        imageUrl: getCharacterRenderImageUrl(candidate),
+        sourceWidth: sourceSize.w,
+        sourceHeight: sourceSize.h
+      };
+    }
   }
 
   if (candidates.length > 0) {
     console.warn("character atlas image not found:", xmlPath, candidates);
   }
-  return "";
+  return {
+    imageUrl: "",
+    sourceWidth: 0,
+    sourceHeight: 0
+  };
 }
 
 function parseCharacterAtlas(xmlText) {
@@ -1153,6 +1395,16 @@ function mapPsychAnimKeyToInternal(animKey) {
   return raw;
 }
 
+function parsePsychPoint(rawValue, fallbackX = 0, fallbackY = 0) {
+  const list = Array.isArray(rawValue) ? rawValue : [];
+  const xRaw = Number(list[0]);
+  const yRaw = Number(list[1]);
+  return {
+    x: Number.isFinite(xRaw) ? xRaw : fallbackX,
+    y: Number.isFinite(yRaw) ? yRaw : fallbackY
+  };
+}
+
 function parseCharacterMetaJson(rawJson) {
   if (!rawJson || typeof rawJson !== "object") return null;
 
@@ -1163,6 +1415,7 @@ function parseCharacterMetaJson(rawJson) {
       : 1;
   const noAntialiasing = Boolean(rawJson.no_antialiasing);
   const offsetsByAnim = {};
+  const position = parsePsychPoint(rawJson.position, 0, 0);
 
   const list = Array.isArray(rawJson.animations) ? rawJson.animations : [];
   list.forEach((entry) => {
@@ -1181,6 +1434,7 @@ function parseCharacterMetaJson(rawJson) {
   return {
     scale,
     noAntialiasing,
+    position,
     offsetsByAnim
   };
 }
@@ -1204,6 +1458,7 @@ function getDefaultCharacterMeta() {
   return {
     scale: 1,
     noAntialiasing: false,
+    position: { x: 0, y: 0 },
     offsetsByAnim: {}
   };
 }
@@ -1216,10 +1471,38 @@ function cloneCharacterMeta(meta) {
         ? Number(source.scale)
         : 1,
     noAntialiasing: Boolean(source.noAntialiasing),
+    position: parsePsychPoint(source.position, 0, 0),
     offsetsByAnim: source.offsetsByAnim && typeof source.offsetsByAnim === "object"
       ? source.offsetsByAnim
       : {}
   };
+}
+
+function shouldUseCharacterJsonMeta(config) {
+  if (!config || typeof config !== "object") return false;
+  if (!config.characterJsonPath) return false;
+  if (typeof config.applyCharacterJsonMeta === "boolean") {
+    return config.applyCharacterJsonMeta;
+  }
+  // Default to Psych-style metadata when character json exists.
+  return true;
+}
+
+function shouldApplyCharacterJsonScale(config) {
+  if (!shouldUseCharacterJsonMeta(config)) return false;
+  if (typeof config.applyCharacterJsonScale === "boolean") {
+    return config.applyCharacterJsonScale;
+  }
+  return false;
+}
+
+function shouldApplyCharacterJsonAnimOffsets(config) {
+  if (!shouldUseCharacterJsonMeta(config)) return false;
+  if (typeof config.applyCharacterJsonAnimOffsets === "boolean") {
+    return config.applyCharacterJsonAnimOffsets;
+  }
+  // PsychEngine applies animation offsets by default.
+  return true;
 }
 
 function getCharacterConfigCacheKey(config) {
@@ -1234,9 +1517,9 @@ function getCharacterConfigCacheKey(config) {
   return [
     String(config.atlasXmlPath || ""),
     String(config.characterJsonPath || ""),
-    config.applyCharacterJsonMeta ? "1" : "0",
-    config.applyCharacterJsonScale ? "1" : "0",
-    config.applyCharacterJsonAnimOffsets ? "1" : "0",
+    shouldUseCharacterJsonMeta(config) ? "1" : "0",
+    shouldApplyCharacterJsonScale(config) ? "1" : "0",
+    shouldApplyCharacterJsonAnimOffsets(config) ? "1" : "0",
     aliasPart
   ].join("|");
 }
@@ -1252,7 +1535,7 @@ async function buildCharacterConfigRuntimeCache(config) {
   }
 
   characterConfigRuntimeBuildPromises[cacheKey] = (async () => {
-    const useJsonMeta = Boolean(config?.applyCharacterJsonMeta);
+    const useJsonMeta = shouldUseCharacterJsonMeta(config);
     const atlasPromise = loadCharacterAtlas(config?.atlasXmlPath);
     const metaPromise =
       useJsonMeta && config?.characterJsonPath
@@ -1274,8 +1557,19 @@ async function buildCharacterConfigRuntimeCache(config) {
     }
     if (!animations.idle) return null;
 
+    const atlasSourceW = Number(atlas.sourceWidth);
+    const atlasSourceH = Number(atlas.sourceHeight);
+    const backgroundSize =
+      Number.isFinite(atlasSourceW) &&
+      atlasSourceW > 0 &&
+      Number.isFinite(atlasSourceH) &&
+      atlasSourceH > 0
+        ? `${atlasSourceW}px ${atlasSourceH}px`
+        : "";
+
     const runtime = {
       imageUrl: atlas.imageUrl || "",
+      backgroundSize,
       animations,
       meta: cloneCharacterMeta(metaRaw)
     };
@@ -1319,14 +1613,15 @@ function ensureCharacterRuntimePrewarmHost() {
     host = document.createElement("div");
     host.id = "character-runtime-prewarm";
     host.style.position = "fixed";
-    host.style.left = "-200vw";
-    host.style.top = "-200vh";
+    host.style.left = "0";
+    host.style.top = "0";
     host.style.width = "1px";
     host.style.height = "1px";
-    host.style.opacity = "0";
+    // Keep almost invisible, but still paintable to warm GPU textures.
+    host.style.opacity = "0.001";
     host.style.pointerEvents = "none";
     host.style.overflow = "hidden";
-    host.style.zIndex = "-9999";
+    host.style.zIndex = "999999";
     document.body.appendChild(host);
   }
 
@@ -1414,12 +1709,12 @@ async function prewarmCharacterPresetRuntime(side, preset) {
       probeEl.style.top = "0";
       probeEl.style.pointerEvents = "none";
       probeEl.style.backgroundRepeat = "no-repeat";
-      probeEl.style.backgroundSize = "auto";
       host.appendChild(probeEl);
       characterRuntimePrewarmProbeByKey.set(key, probeEl);
     }
 
     probeEl.style.backgroundImage = `url('${runtime.imageUrl}')`;
+    probeEl.style.backgroundSize = runtime.backgroundSize || "auto";
 
     for (const frame of frames) {
       const frameWidth = Number.isFinite(Number(frame.frameWidth)) && Number(frame.frameWidth) > 0
@@ -1434,6 +1729,11 @@ async function prewarmCharacterPresetRuntime(side, preset) {
       probeEl.getBoundingClientRect();
       await new Promise((resolve) => requestAnimationFrame(() => resolve()));
     }
+    // Release prewarm probe to avoid pinning too many large atlases at once.
+    if (probeEl && probeEl.isConnected) {
+      probeEl.remove();
+    }
+    characterRuntimePrewarmProbeByKey.delete(key);
 
     characterRuntimePrewarmedKeys.add(key);
     return true;
@@ -1449,22 +1749,31 @@ async function prewarmCharacterPresetRuntime(side, preset) {
   return characterRuntimePrewarmPromises[key];
 }
 
-async function prewarmCharacterPresetsFromEvents(events = []) {
+async function prewarmCharacterPresetsFromEvents(events = [], options = {}) {
   if (!Array.isArray(events) || events.length <= 0) return;
+
+  const limitRaw = Number(options?.maxTimeMs);
+  const hasTimeLimit = Number.isFinite(limitRaw);
+  const timeLimit = hasTimeLimit ? Math.max(0, limitRaw) : Number.POSITIVE_INFINITY;
 
   const tasks = [];
   const seen = new Set();
-  events.forEach((evt) => {
-    if (!evt || evt.type !== "change_character") return;
+  for (const evt of events) {
+    if (!evt || evt.type !== "change_character") continue;
+    const evtTimeMs = Number(evt.timeMs);
+    if (hasTimeLimit && Number.isFinite(evtTimeMs) && evtTimeMs > timeLimit) {
+      break;
+    }
+
     const side = sideFromChartSlot(normalizeName(evt.slot));
-    if (!side) return;
+    if (!side) continue;
     const preset = resolvePresetFromCharacterName(side, evt.character);
-    if (!preset) return;
+    if (!preset) continue;
     const key = getCharacterRuntimePrewarmKey(side, preset);
-    if (seen.has(key)) return;
+    if (seen.has(key)) continue;
     seen.add(key);
     tasks.push(prewarmCharacterPresetRuntime(side, preset));
-  });
+  }
 
   if (tasks.length <= 0) return;
   await Promise.allSettled(tasks);
@@ -1581,6 +1890,118 @@ function collectPlayAnimationsByPresetForSide(side, events = []) {
   return animationsByPreset;
 }
 
+function collectUpcomingOpponentWarmTargets(
+  nowMs,
+  windowMs = OPPONENT_PRESET_LOOKAHEAD_PREWARM_MS,
+  maxTargets = OPPONENT_PRESET_LOOKAHEAD_MAX
+) {
+  if (!Array.isArray(characterChangeEvents) || characterChangeEvents.length <= 0) return [];
+
+  const startMs = Number(nowMs);
+  const now = Number.isFinite(startMs) ? startMs : 0;
+  const windowRaw = Number(windowMs);
+  const spanMs = Number.isFinite(windowRaw) ? Math.max(0, windowRaw) : OPPONENT_PRESET_LOOKAHEAD_PREWARM_MS;
+  const limitMs = now + spanMs;
+  const capRaw = Number(maxTargets);
+  const cap = Number.isFinite(capRaw) ? Math.max(1, Math.round(capRaw)) : OPPONENT_PRESET_LOOKAHEAD_MAX;
+
+  const targetsByPreset = new Map();
+  for (let i = Math.max(0, characterChangeEventIndex); i < characterChangeEvents.length; i += 1) {
+    const evt = characterChangeEvents[i];
+    if (!evt || evt.type !== "change_character") continue;
+    const triggerMs = getCharacterEventTriggerMs(evt);
+    if (triggerMs <= now) continue;
+    if (triggerMs > limitMs) break;
+    if (sideFromChartSlot(normalizeName(evt.slot)) !== "opponent") continue;
+
+    const preset = resolvePresetFromCharacterName("opponent", evt.character);
+    const key = normalizeCharacterPresetKey(preset);
+    if (!key || !shouldKeepPooledSpriteWarm("opponent", key)) continue;
+
+    let target = targetsByPreset.get(key);
+    if (!target) {
+      if (targetsByPreset.size >= cap) continue;
+      target = {
+        preset: key,
+        animationNames: new Set()
+      };
+      targetsByPreset.set(key, target);
+    }
+
+    const immediateAnim = normalizeName(evt.immediatePlayAnimation);
+    if (immediateAnim) {
+      target.animationNames.add(immediateAnim);
+    }
+  }
+
+  return Array.from(targetsByPreset.values()).map((target) => ({
+    preset: target.preset,
+    animationNames: Array.from(target.animationNames)
+  }));
+}
+
+function queueUpcomingOpponentPresetPrewarm(targets = []) {
+  if (!Array.isArray(targets) || targets.length <= 0) return;
+
+  targets.forEach((target) => {
+    const preset = normalizeCharacterPresetKey(target?.preset);
+    if (!preset) return;
+    const requiresFullWarm = shouldWarmAllAnimationsForPreset("opponent", preset);
+    const pooled = getPooledCharacterSprite("opponent", preset);
+    if (
+      pooled &&
+      pooled.ready &&
+      (!requiresFullWarm || pooled.prewarmAllAnimationsReady)
+    ) {
+      touchOpponentWarmPreset(preset);
+      return;
+    }
+    if (opponentPresetLookaheadPrewarmQueuedKeys.has(preset)) return;
+    opponentPresetLookaheadPrewarmQueuedKeys.add(preset);
+    opponentPresetLookaheadPrewarmQueue.push({
+      preset,
+      animationNames: Array.isArray(target?.animationNames) ? target.animationNames : []
+    });
+  });
+
+  if (opponentPresetLookaheadPrewarmRunning) return;
+  opponentPresetLookaheadPrewarmRunning = true;
+  (async () => {
+    try {
+      while (opponentPresetLookaheadPrewarmQueue.length > 0) {
+        const next = opponentPresetLookaheadPrewarmQueue.shift();
+        const preset = normalizeCharacterPresetKey(next?.preset);
+        if (!preset) continue;
+        opponentPresetLookaheadPrewarmQueuedKeys.delete(preset);
+
+        try {
+          const fallbackAnims =
+            opponentPlayAnimationsByPreset.get(preset) ||
+            (Array.isArray(next?.animationNames) ? next.animationNames : []);
+          const requiresFullWarm = shouldWarmAllAnimationsForPreset("opponent", preset);
+          await ensurePooledCharacterSprite("opponent", preset, {
+            prewarm: true,
+            warmAllAnimations: requiresFullWarm,
+            animationNames: fallbackAnims
+          });
+          touchOpponentWarmPreset(preset);
+          pruneOpponentWarmPool(preset);
+        } catch (err) {
+          console.warn("upcoming opponent preset prewarm failed:", preset, err);
+        }
+
+        // Yield to UI updates between heavy atlas operations.
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+    } finally {
+      opponentPresetLookaheadPrewarmRunning = false;
+      if (opponentPresetLookaheadPrewarmQueue.length > 0) {
+        queueUpcomingOpponentPresetPrewarm(opponentPresetLookaheadPrewarmQueue);
+      }
+    }
+  })();
+}
+
 async function waitForCharacterSpriteReady(side, timeoutMs = 8000) {
   const deadline = performance.now() + Math.max(0, Number(timeoutMs) || 0);
   while (performance.now() < deadline) {
@@ -1593,6 +2014,18 @@ async function waitForCharacterSpriteReady(side, timeoutMs = 8000) {
 
 async function prewarmCharacterSpritePaint(sprite, options = {}) {
   if (!sprite || !sprite.rootEl) return;
+  if (characterSprites[sprite.side] === sprite) {
+    // Active sprite must never be mutated by background prewarm.
+    sprite.prewarmPainted = true;
+    return;
+  }
+  const requestedAnimationNames = Array.isArray(options.animationNames)
+    ? options.animationNames
+    : [];
+  const warmAllAnimations = Boolean(options.warmAllAnimations);
+  if (warmAllAnimations && sprite.prewarmAllAnimationsReady && sprite.prewarmPainted) {
+    return;
+  }
   const rootEl = sprite.rootEl;
   const prevDisplay = rootEl.style.display;
   const prevVisibility = rootEl.style.visibility;
@@ -1617,29 +2050,55 @@ async function prewarmCharacterSpritePaint(sprite, options = {}) {
   rootEl.getBoundingClientRect();
   await new Promise((resolve) => requestAnimationFrame(() => resolve()));
 
-  const requestedAnimationNames = Array.isArray(options.animationNames)
-    ? options.animationNames
-    : [];
+  const candidateAnimationNames = [...requestedAnimationNames];
+  if (warmAllAnimations && sprite.animations && typeof sprite.animations === "object") {
+    Object.keys(sprite.animations).forEach((animName) => {
+      candidateAnimationNames.push(animName);
+    });
+    // Note-driven lanes can still be requested through resolver fallbacks.
+    candidateAnimationNames.push(
+      "sing-left", "sing-down", "sing-up", "sing-right",
+      "hold-left", "hold-down", "hold-up", "hold-right"
+    );
+  }
   const warmAnimationNames = [];
   const seenResolvedAnims = new Set();
-  requestedAnimationNames.forEach((animName) => {
+  candidateAnimationNames.forEach((animName) => {
     const normalizedAnim = normalizeName(animName);
     if (!normalizedAnim) return;
     const resolvedAnim = sprite.resolveAnimName(normalizedAnim);
     if (!resolvedAnim || resolvedAnim === "idle") return;
     if (seenResolvedAnims.has(resolvedAnim)) return;
+    if (sprite.prewarmedAnimations?.has(resolvedAnim)) return;
     seenResolvedAnims.add(resolvedAnim);
     warmAnimationNames.push(resolvedAnim);
   });
 
+  let prewarmCompleted = true;
   for (const animName of warmAnimationNames) {
+    if (characterSprites[sprite.side] === sprite) {
+      prewarmCompleted = false;
+      break;
+    }
     sprite.play(animName, {
       loop: false,
       restart: true,
       freezeOnFirstFrame: false
     });
+    if (sprite.prewarmedAnimations) {
+      sprite.prewarmedAnimations.add(animName);
+    }
     rootEl.getBoundingClientRect();
-    await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+    await new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    );
+  }
+
+  if (characterSprites[sprite.side] === sprite) {
+    // If this sprite became active while prewarm was running, do not restore
+    // captured inactive styles or animations.
+    sprite.prewarmPainted = true;
+    return;
   }
 
   const restoreAnim = sprite.animations?.[prevAnim] ? prevAnim : "idle";
@@ -1656,6 +2115,10 @@ async function prewarmCharacterSpritePaint(sprite, options = {}) {
   rootEl.style.opacity = prevOpacity;
   rootEl.style.pointerEvents = prevPointerEvents;
   rootEl.style.transition = prevTransition;
+  sprite.prewarmPainted = true;
+  if (warmAllAnimations && prewarmCompleted) {
+    sprite.prewarmAllAnimationsReady = true;
+  }
 }
 
 function getPooledCharacterSprite(side, preset) {
@@ -1667,6 +2130,69 @@ function getPooledCharacterSprite(side, preset) {
   return sprite || null;
 }
 
+function touchOpponentWarmPreset(preset) {
+  const key = normalizeCharacterPresetKey(preset);
+  if (!key) return;
+  opponentWarmPresetUseTick += 1;
+  opponentWarmPresetUseByKey.set(key, opponentWarmPresetUseTick);
+}
+
+function cleanupCharacterRuntimePrewarmProbe(side, preset) {
+  const key = getCharacterRuntimePrewarmKey(side, preset);
+  const probeEl = characterRuntimePrewarmProbeByKey.get(key);
+  if (probeEl && probeEl.isConnected) {
+    probeEl.remove();
+  }
+  characterRuntimePrewarmProbeByKey.delete(key);
+}
+
+function pruneOpponentWarmPool(activePreset = "", keepPresets = []) {
+  const pool = getCharacterSpritePool("opponent");
+  if (!pool) return;
+
+  const maxWarmRaw = Number(OPPONENT_WARM_POOL_MAX_SPRITES);
+  const maxWarm = Number.isFinite(maxWarmRaw)
+    ? Math.max(1, Math.round(maxWarmRaw))
+    : 4;
+
+  const warmEntries = [];
+  pool.forEach((sprite, key) => {
+    if (!shouldKeepPooledSpriteWarm("opponent", key)) return;
+    warmEntries.push({
+      key,
+      sprite,
+      lastUse: Number(opponentWarmPresetUseByKey.get(key)) || 0
+    });
+  });
+  if (warmEntries.length <= maxWarm) return;
+
+  const keep = new Set();
+  const activeKey = normalizeCharacterPresetKey(activePreset || characterPresetBySide.opponent);
+  if (activeKey) keep.add(activeKey);
+  const slotKey = normalizeCharacterPresetKey(characterSlotState.opponent?.preset);
+  if (slotKey) keep.add(slotKey);
+  (Array.isArray(keepPresets) ? keepPresets : []).forEach((value) => {
+    const key = normalizeCharacterPresetKey(value);
+    if (key) keep.add(key);
+  });
+
+  warmEntries.sort((a, b) => a.lastUse - b.lastUse);
+  let removeCount = warmEntries.length - maxWarm;
+  for (const entry of warmEntries) {
+    if (removeCount <= 0) break;
+    if (keep.has(entry.key)) continue;
+    if (entry.sprite === characterSprites.opponent) continue;
+
+    if (entry.sprite?.rootEl && entry.sprite.rootEl.isConnected) {
+      entry.sprite.rootEl.remove();
+    }
+    pool.delete(entry.key);
+    opponentWarmPresetUseByKey.delete(entry.key);
+    cleanupCharacterRuntimePrewarmProbe("opponent", entry.key);
+    removeCount -= 1;
+  }
+}
+
 function shouldKeepPooledSpriteWarm(side, preset) {
   if (normalizeName(side) !== "opponent") return false;
   const key = normalizeCharacterPresetKey(preset);
@@ -1674,31 +2200,56 @@ function shouldKeepPooledSpriteWarm(side, preset) {
   return OPPONENT_MIKU_WARM_POOL_PRESETS.has(key);
 }
 
+function shouldWarmAllAnimationsForPreset(side, preset) {
+  const normalizedSide = normalizeName(side);
+  const key = normalizeCharacterPresetKey(preset);
+  if (!normalizedSide || !key) return false;
+
+  if (normalizedSide === "opponent") {
+    if (key === "miku") return true;
+    if (shouldKeepPooledSpriteWarm(normalizedSide, key) && !isOpponentTimelineOnlyPreset(key)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function shouldDeferOpponentPresetLoadForSwitch(preset) {
   const key = normalizeCharacterPresetKey(preset);
   if (!key) return false;
-  return OPPONENT_MIKU_WARM_POOL_PRESETS.has(key);
+  // Split-layout presets (e.g. teto animation) are often switched together
+  // with Move Characters at the same chart timestamp. Deferring by 1 frame can
+  // cause a visible one-frame mismatch or flicker, so keep them immediate.
+  if (isOpponentPresetInSplitLayout(key)) return false;
+  // Note-reactive presets like miku must switch immediately so same-frame notes
+  // don't get consumed by the previous timeline-only sprite.
+  return isOpponentTimelineOnlyPreset(key);
 }
 
 function setPooledSpriteActiveState(sprite, active, side = "", preset = "") {
   if (!sprite || !sprite.rootEl) return;
   const root = sprite.rootEl;
+  const keepWarmWhenInactive = shouldKeepPooledSpriteWarm(side, preset);
   if (active) {
+    root.classList.remove("character--pooled-inactive");
     root.style.display = "";
     root.style.visibility = "visible";
     root.style.opacity = "";
     root.style.pointerEvents = "";
     return;
   }
-  if (shouldKeepPooledSpriteWarm(side, preset)) {
-    // Keep heavy Miku sprites in render tree with near-zero alpha.
-    // visibility:hidden can defer paint work until shown, causing switch stalls.
+  if (keepWarmWhenInactive) {
+    // Keep heavy presets in the render tree so GPU texture residency is stable.
+    root.classList.add("character--pooled-inactive");
     root.style.display = "";
-    root.style.visibility = "visible";
-    root.style.opacity = "0.0001";
+    root.style.visibility = "hidden";
+    root.style.opacity = "0";
     root.style.pointerEvents = "none";
     return;
   }
+  root.classList.remove("character--pooled-inactive");
+  // Non-heavy presets can be fully detached to minimize render cost.
   root.style.display = "none";
   root.style.visibility = "";
   root.style.opacity = "";
@@ -1711,6 +2262,10 @@ function cacheCharacterSprite(side, preset, sprite) {
   const key = normalizeCharacterPresetKey(preset);
   if (!key) return;
   pool.set(key, sprite);
+  if (normalizeName(side) === "opponent" && shouldKeepPooledSpriteWarm(side, key)) {
+    touchOpponentWarmPreset(key);
+    pruneOpponentWarmPool(key);
+  }
 }
 
 async function ensurePooledCharacterSprite(side, preset, options = {}) {
@@ -1719,7 +2274,7 @@ async function ensurePooledCharacterSprite(side, preset, options = {}) {
   const config = getPresetConfig(side, key);
   if (!config) return null;
 
-  const hostEl = options.hostEl || ensureCharacterLayer();
+  const hostEl = options.hostEl || ensureCharacterSlot(side);
   if (!hostEl) return null;
 
   const pooled = getPooledCharacterSprite(side, key);
@@ -1730,6 +2285,7 @@ async function ensurePooledCharacterSprite(side, preset, options = {}) {
     setCharacterAnchorModeForSprite(side, key, pooled);
     if (options.prewarm) {
       await prewarmCharacterSpritePaint(pooled, {
+        warmAllAnimations: Boolean(options.warmAllAnimations),
         animationNames: options.animationNames
       });
     }
@@ -1750,9 +2306,12 @@ async function ensurePooledCharacterSprite(side, preset, options = {}) {
   cacheCharacterSprite(side, key, sprite);
   if (options.prewarm) {
     await prewarmCharacterSpritePaint(sprite, {
+      warmAllAnimations: Boolean(options.warmAllAnimations),
       animationNames: options.animationNames
     });
-    setPooledSpriteActiveState(sprite, false, side, key);
+    if (characterSprites[side] !== sprite) {
+      setPooledSpriteActiveState(sprite, false, side, key);
+    }
   }
   return sprite;
 }
@@ -1760,21 +2319,53 @@ async function ensurePooledCharacterSprite(side, preset, options = {}) {
 function activatePooledCharacterSprite(side, preset, sprite) {
   if (!sprite || !sprite.rootEl) return false;
   const current = characterSprites[side];
-  if (current && current !== sprite && current.rootEl) {
-    setPooledSpriteActiveState(current, false, side, characterPresetBySide[side]);
-  }
-
-  const hostEl = ensureCharacterLayer();
+  const previousPreset = characterPresetBySide[side];
+  const activationSerial = (characterActivationSerialBySide[side] || 0) + 1;
+  characterActivationSerialBySide[side] = activationSerial;
+  const firstActivation = !characterSpriteActivatedOnce.has(sprite);
+  characterSpriteActivatedOnce.add(sprite);
+  const hostEl = ensureCharacterSlot(side);
   if (hostEl && sprite.rootEl.parentElement !== hostEl) {
     hostEl.appendChild(sprite.rootEl);
   }
 
+  // Slot owns position; sprites stay centered at the slot origin.
+  sprite.rootEl.style.left = "0px";
+  sprite.rootEl.style.top = "0px";
+  sprite.rootEl.style.transition = "";
+
   characterSprites[side] = sprite;
   characterPresetBySide[side] = preset;
+  if (side === "opponent" && shouldKeepPooledSpriteWarm(side, preset)) {
+    touchOpponentWarmPreset(preset);
+    pruneOpponentWarmPool(preset);
+  }
   setCharacterAnchorModeForSprite(side, preset, sprite);
   applyCharacterExtraScaleForSprite(side, preset, sprite);
   applyCharacterRenderOffset(side);
+  if (characterBridgePositionOnSwitchBySide[side]) {
+    bridgeCharacterSwitchOffsetForMove(side, current, sprite);
+    characterBridgePositionOnSwitchBySide[side] = false;
+  }
   setPooledSpriteActiveState(sprite, true, side, preset);
+  if (current && current !== sprite && current.rootEl) {
+    const hidePrevious = () => {
+      if (characterActivationSerialBySide[side] !== activationSerial) return;
+      if (characterSprites[side] !== sprite) return;
+      setPooledSpriteActiveState(current, false, side, previousPreset);
+    };
+    const skipFirstPaintBridge =
+      characterChartBatchApplying &&
+      normalizeName(side) === "opponent" &&
+      (isOpponentPresetInSplitLayout(preset) || isOpponentTimelineOnlyPreset(preset));
+    const needsFirstPaintBridge =
+      firstActivation && !sprite.prewarmPainted && !skipFirstPaintBridge;
+    if (needsFirstPaintBridge) {
+      requestAnimationFrame(hidePrevious);
+    } else {
+      hidePrevious();
+    }
+  }
   return true;
 }
 
@@ -1787,6 +2378,41 @@ function hideAllPooledCharacterSprites(side) {
   });
 }
 
+function waitForCharacterAnimationFrames(frameCount = 1) {
+  const total =
+    Number.isFinite(Number(frameCount)) && Number(frameCount) > 0
+      ? Math.round(Number(frameCount))
+      : 1;
+  return new Promise((resolve) => {
+    let remaining = total;
+    const step = () => {
+      remaining -= 1;
+      if (remaining <= 0) {
+        resolve();
+        return;
+      }
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+function captureInlineStyleSnapshot(el, properties = []) {
+  const snapshot = {};
+  if (!el) return snapshot;
+  properties.forEach((prop) => {
+    snapshot[prop] = el.style[prop] || "";
+  });
+  return snapshot;
+}
+
+function restoreInlineStyleSnapshot(el, snapshot) {
+  if (!el || !snapshot) return;
+  Object.keys(snapshot).forEach((prop) => {
+    el.style[prop] = snapshot[prop];
+  });
+}
+
 async function prewarmCharacterPresetSwitchesForGameplay() {
   if (characterPresetSwitchPrewarmed) return true;
   if (characterPresetSwitchPrewarmPromise) return characterPresetSwitchPrewarmPromise;
@@ -1794,7 +2420,9 @@ async function prewarmCharacterPresetSwitchesForGameplay() {
   characterPresetSwitchPrewarmPromise = (async () => {
     await prepareCharacterAssetsForGameplay();
     await loadCharacterChangeEvents();
-    await prewarmCharacterPresetsFromEvents(characterChangeEvents);
+    await prewarmCharacterPresetsFromEvents(characterChangeEvents, {
+      maxTimeMs: CHARACTER_RUNTIME_PREWARM_WINDOW_MS
+    });
 
     // Warm real preset swaps before gameplay starts.
     // Keep this focused on heavy Miku family presets to avoid side effects.
@@ -1811,38 +2439,48 @@ async function prewarmCharacterPresetSwitchesForGameplay() {
       cacheCharacterSprite(side, originalPreset, activeSprite);
     }
 
-    const presets = collectCharacterChangePresetsForSide(side, characterChangeEvents);
-    const orderedPresets = [];
-    const seenPresets = new Set();
-    const pushPreset = (value) => {
-      const key = normalizeCharacterPresetKey(value);
-      if (!key || seenPresets.has(key)) return;
-      seenPresets.add(key);
-      orderedPresets.push(key);
-    };
-    pushPreset(originalPreset);
-    presets.forEach((preset) => pushPreset(preset));
-
-    const warmPresets = orderedPresets.filter((preset) =>
-      shouldKeepPooledSpriteWarm(side, preset)
-    );
-    const warmAnimationsByPreset = collectPlayAnimationsByPresetForSide(
-      side,
-      characterChangeEvents
-    );
-    for (const preset of warmPresets) {
-      await ensurePooledCharacterSprite(side, preset, {
-        prewarm: true,
-        animationNames:
-          warmAnimationsByPreset.get(normalizeCharacterPresetKey(preset)) || []
-      });
-    }
-
     const earlyPresetsBySide = collectEarlyCharacterChangePresetsBySide(
       characterChangeEvents,
       EARLY_SWITCH_PREWARM_WINDOW_MS,
       EARLY_SWITCH_PREWARM_MAX_PER_SIDE
     );
+    const warmAnimationsByPreset = collectPlayAnimationsByPresetForSide(
+      side,
+      characterChangeEvents
+    );
+    const startupWarmPresets = [];
+    const startupSeenPresets = new Set();
+    const pushStartupWarmPreset = (value, options = {}) => {
+      const key = normalizeCharacterPresetKey(value);
+      if (!key || startupSeenPresets.has(key)) return;
+      if (!options.force && !shouldKeepPooledSpriteWarm(side, key)) return;
+      startupSeenPresets.add(key);
+      startupWarmPresets.push(key);
+    };
+    pushStartupWarmPreset(originalPreset);
+    OPPONENT_STARTUP_PREWARM_PRESETS.forEach((preset) =>
+      pushStartupWarmPreset(preset, { force: true })
+    );
+    const earlyOpponentPresets = Array.isArray(earlyPresetsBySide.opponent)
+      ? earlyPresetsBySide.opponent
+      : [];
+    earlyOpponentPresets.forEach((preset) => pushStartupWarmPreset(preset));
+
+    for (const preset of startupWarmPresets) {
+      const presetKey = normalizeCharacterPresetKey(preset);
+      const keepWarm = shouldKeepPooledSpriteWarm(side, presetKey);
+      await ensurePooledCharacterSprite(side, preset, {
+        prewarm: true,
+        warmAllAnimations: shouldWarmAllAnimationsForPreset(side, presetKey) || !keepWarm,
+        animationNames:
+          warmAnimationsByPreset.get(presetKey) || []
+      });
+      if (keepWarm) {
+        touchOpponentWarmPreset(preset);
+      }
+    }
+    pruneOpponentWarmPool(originalPreset, startupWarmPresets);
+
     const playAnimationsBySide = {
       player: collectPlayAnimationsByPresetForSide("player", characterChangeEvents),
       opponent: warmAnimationsByPreset,
@@ -1853,13 +2491,21 @@ async function prewarmCharacterPresetSwitchesForGameplay() {
         ? earlyPresetsBySide[warmSide]
         : [];
       for (const presetKey of presetList) {
+        if (warmSide === "opponent" && startupSeenPresets.has(normalizeCharacterPresetKey(presetKey))) {
+          continue;
+        }
         await ensurePooledCharacterSprite(warmSide, presetKey, {
           prewarm: true,
+          warmAllAnimations: shouldWarmAllAnimationsForPreset(warmSide, presetKey),
           animationNames:
             playAnimationsBySide[warmSide]?.get(normalizeCharacterPresetKey(presetKey)) || []
         });
+        if (warmSide === "opponent" && shouldKeepPooledSpriteWarm(warmSide, presetKey)) {
+          touchOpponentWarmPreset(presetKey);
+        }
       }
     }
+    pruneOpponentWarmPool(originalPreset);
 
     if (activeSprite && activeSprite.rootEl) {
       const restorePreset = normalizeCharacterPresetKey(originalPreset) || "shadow";
@@ -1889,6 +2535,118 @@ async function prewarmCharacterPresetSwitchesForGameplay() {
     });
 
   return characterPresetSwitchPrewarmPromise;
+}
+
+async function prewarmCharacterPresentationForGameplay() {
+  if (characterPresentationPrewarmed) return true;
+  if (characterPresentationPrewarmPromise) return characterPresentationPrewarmPromise;
+
+  characterPresentationPrewarmPromise = (async () => {
+    await prepareCharacterAssetsForGameplay();
+    await prewarmCharacterPresetSwitchesForGameplay();
+
+    const body = document.body;
+    if (!body) {
+      characterPresentationPrewarmed = true;
+      return true;
+    }
+
+    const originalFloatClass = body.classList.contains("character-float-on");
+    const slotEntries = ["player", "opponent", "gf"]
+      .map((side) => {
+        const slotEl = getCharacterPositionRoot(side);
+        const spriteEl = characterSprites[side]?.rootEl || null;
+        if (!slotEl) return null;
+        return {
+          side,
+          slotEl,
+          spriteEl,
+          slotStyles: captureInlineStyleSnapshot(slotEl, [
+            "left",
+            "top",
+            "transition",
+            "animation",
+            "willChange"
+          ]),
+          spriteStyles: captureInlineStyleSnapshot(spriteEl, [
+            "display",
+            "visibility",
+            "opacity",
+            "pointerEvents",
+            "transition",
+            "willChange"
+          ]),
+          x: readCharacterRootAxisPx(slotEl, "left"),
+          y: readCharacterRootAxisPx(slotEl, "top")
+        };
+      })
+      .filter(Boolean);
+
+    if (!slotEntries.length) {
+      characterPresentationPrewarmed = true;
+      return true;
+    }
+
+    try {
+      slotEntries.forEach(({ slotEl, spriteEl, x, y }) => {
+        slotEl.style.transition = "none";
+        slotEl.style.willChange = "left, top";
+        if (Number.isFinite(x)) slotEl.style.left = `${x}px`;
+        if (Number.isFinite(y)) slotEl.style.top = `${y}px`;
+        slotEl.getBoundingClientRect();
+
+        if (!spriteEl) return;
+        spriteEl.style.display = "";
+        spriteEl.style.visibility = "visible";
+        spriteEl.style.opacity = "0.001";
+        spriteEl.style.pointerEvents = "none";
+        spriteEl.style.transition = "none";
+        spriteEl.style.willChange = "transform, opacity";
+      });
+
+      await waitForCharacterAnimationFrames(1);
+
+      slotEntries.forEach(({ slotEl, x, y }) => {
+        if (Number.isFinite(x)) {
+          slotEl.style.left = `${x + CHARACTER_PRESENTATION_PREWARM_NUDGE_PX}px`;
+        }
+        if (Number.isFinite(y)) {
+          slotEl.style.top = `${y + CHARACTER_PRESENTATION_PREWARM_NUDGE_PX}px`;
+        }
+      });
+
+      await waitForCharacterAnimationFrames(1);
+
+      body.classList.add("character-float-on");
+      await waitForCharacterAnimationFrames(2);
+
+      slotEntries.forEach(({ slotEl, x, y }) => {
+        if (Number.isFinite(x)) slotEl.style.left = `${x}px`;
+        if (Number.isFinite(y)) slotEl.style.top = `${y}px`;
+      });
+      body.classList.toggle("character-float-on", originalFloatClass);
+
+      await waitForCharacterAnimationFrames(1);
+
+      characterPresentationPrewarmed = true;
+      return true;
+    } finally {
+      body.classList.toggle("character-float-on", originalFloatClass);
+      slotEntries.forEach(({ slotEl, spriteEl, slotStyles, spriteStyles }) => {
+        restoreInlineStyleSnapshot(slotEl, slotStyles);
+        restoreInlineStyleSnapshot(spriteEl, spriteStyles);
+      });
+    }
+  })()
+    .catch((err) => {
+      console.warn("character presentation prewarm failed:", err);
+      return false;
+    })
+    .finally(() => {
+      characterPresentationPrewarmPromise = null;
+    });
+
+  return characterPresentationPrewarmPromise;
 }
 
 function annotateImmediatePlayAfterChangeEvents(events = []) {
@@ -2106,13 +2864,18 @@ function parseCharacterChartEvents(chartJson) {
         return;
       }
       if (commandName === "move characters") {
+        const durationSecondsRaw = Number(cmd[4]);
+        const durationSeconds = Number.isFinite(durationSecondsRaw)
+          ? durationSecondsRaw
+          : MOVE_CHARACTERS_DEFAULT_DURATION_SEC;
         parsed.push({
           type: "move_characters",
           timeMs,
           slot: normalizeName(cmd[1]),
           x: Number(cmd[2]),
           y: Number(cmd[3]),
-          durationSeconds: Number.NaN,
+          durationSeconds,
+          easing: MOVE_CHARACTERS_EASING,
           order
         });
         return;
@@ -2240,6 +3003,19 @@ function getCharacterPresetScaleMultiplier(side, preset) {
   return raw;
 }
 
+function getCharacterJsonAnimOffsetMultiplier(side, preset) {
+  const normalizedSide = normalizeName(side);
+  const normalizedPreset = normalizeName(preset);
+  if (!normalizedSide || !normalizedPreset) return 1;
+
+  const sideMap = CHARACTER_JSON_ANIM_OFFSET_MULTIPLIERS[normalizedSide];
+  if (!sideMap) return 1;
+
+  const raw = Number(sideMap[normalizedPreset]);
+  if (!Number.isFinite(raw) || raw <= 0) return 1;
+  return raw;
+}
+
 function getCharacterPresetAnimOffset(side, preset, animName) {
   const normalizedSide = normalizeName(side);
   const normalizedPreset = normalizeName(preset);
@@ -2259,8 +3035,8 @@ function getCharacterPresetAnimOffset(side, preset, animName) {
 }
 
 function shouldUseBottomAnchorForPreset(side, preset) {
-  // Only plain "miku" should switch frame anchor to center-bottom.
-  return side === "opponent" && normalizeName(preset) === "miku";
+  // Keep center anchor and rely on Psych JSON animation offsets for alignment.
+  return false;
 }
 
 function getCharacterSpritePool(side) {
@@ -2500,14 +3276,137 @@ function preloadShowImageFhudImage(imagePath) {
   return showImageFhudImagePromises[imagePath];
 }
 
+function shouldSwapFinalAkageShowImageFhud(evt) {
+  if (!evt || !evt.enabled) return false;
+  const normalizedName = normalizeName(evt.imageName);
+  if (normalizedName !== "akage") return false;
+  const lastTime = Number(showImageFhudLastEnabledTimeByName[normalizedName]);
+  return Number.isFinite(lastTime) && Number(evt.timeMs) === lastTime;
+}
+
+function preloadSwappedAkageShowImageFhud(imagePath) {
+  if (!imagePath) return Promise.resolve("");
+  if (showImageFhudSwappedResolvedPaths[imagePath]) {
+    return Promise.resolve(showImageFhudSwappedResolvedPaths[imagePath]);
+  }
+  if (showImageFhudSwappedImagePromises[imagePath]) {
+    return showImageFhudSwappedImagePromises[imagePath];
+  }
+
+  showImageFhudSwappedImagePromises[imagePath] = preloadShowImageFhudImage(imagePath)
+    .then(() => new Promise((resolve) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.onload = () => {
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.naturalWidth || img.width;
+          canvas.height = img.naturalHeight || img.height;
+          const ctx = canvas.getContext("2d", { willReadFrequently: true });
+          if (!ctx || !canvas.width || !canvas.height) {
+            resolve(imagePath);
+            return;
+          }
+
+          ctx.imageSmoothingEnabled = true;
+          if ("imageSmoothingQuality" in ctx) {
+            ctx.imageSmoothingQuality = "high";
+          }
+          ctx.drawImage(img, 0, 0);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imageData.data;
+          const [swapR, swapG, swapB] = SHOW_IMAGE_FHUD_AKAGE_SWAP_RED_RGB;
+          const [whiteR, whiteG, whiteB] = SHOW_IMAGE_FHUD_AKAGE_SWAP_WHITE_RGB;
+
+          for (let i = 0; i < data.length; i += 4) {
+            const alpha = data[i + 3];
+            if (alpha <= 0) continue;
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            const isWhiteLike =
+              r >= SHOW_IMAGE_FHUD_AKAGE_SWAP_WHITE_MIN &&
+              g >= SHOW_IMAGE_FHUD_AKAGE_SWAP_WHITE_MIN &&
+              b >= SHOW_IMAGE_FHUD_AKAGE_SWAP_WHITE_MIN;
+            const whiteDistance =
+              Math.abs(r - whiteR) + Math.abs(g - whiteG) + Math.abs(b - whiteB);
+            const redDistance =
+              Math.abs(r - swapR) + Math.abs(g - swapG) + Math.abs(b - swapB);
+
+            if (isWhiteLike || whiteDistance <= SHOW_IMAGE_FHUD_AKAGE_SWAP_WHITE_DISTANCE) {
+              data[i] = swapR;
+              data[i + 1] = swapG;
+              data[i + 2] = swapB;
+              continue;
+            }
+
+            if (redDistance <= SHOW_IMAGE_FHUD_AKAGE_SWAP_RED_DISTANCE) {
+              data[i] = whiteR;
+              data[i + 1] = whiteG;
+              data[i + 2] = whiteB;
+              continue;
+            }
+
+            const nearWhite = whiteDistance <= SHOW_IMAGE_FHUD_AKAGE_SWAP_WHITE_SOFT_DISTANCE;
+            const nearRed = redDistance <= SHOW_IMAGE_FHUD_AKAGE_SWAP_RED_SOFT_DISTANCE;
+            if (!nearWhite && !nearRed) {
+              continue;
+            }
+
+            const swapTowardWhite =
+              nearRed && (!nearWhite || redDistance * 1.08 <= whiteDistance);
+            const targetR = swapTowardWhite ? whiteR : swapR;
+            const targetG = swapTowardWhite ? whiteG : swapG;
+            const targetB = swapTowardWhite ? whiteB : swapB;
+            const sourceDistance = swapTowardWhite ? redDistance : whiteDistance;
+            const sourceSoftLimit = swapTowardWhite
+              ? SHOW_IMAGE_FHUD_AKAGE_SWAP_RED_SOFT_DISTANCE
+              : SHOW_IMAGE_FHUD_AKAGE_SWAP_WHITE_SOFT_DISTANCE;
+            const mix = Math.max(0.42, Math.min(0.86, 1 - sourceDistance / sourceSoftLimit));
+
+            data[i] = Math.round(r + (targetR - r) * mix);
+            data[i + 1] = Math.round(g + (targetG - g) * mix);
+            data[i + 2] = Math.round(b + (targetB - b) * mix);
+          }
+
+          ctx.putImageData(imageData, 0, 0);
+          const dataUrl = canvas.toDataURL("image/png");
+          showImageFhudSwappedResolvedPaths[imagePath] = dataUrl;
+          resolve(dataUrl);
+        } catch (err) {
+          console.warn("failed to swap final akage FHUD image colors:", err);
+          resolve(imagePath);
+        }
+      };
+      img.onerror = () => resolve(imagePath);
+      img.src = imagePath;
+    }))
+    .catch(() => imagePath);
+
+  return showImageFhudSwappedImagePromises[imagePath];
+}
+
 function preloadShowImageFhudFromEvents(events = []) {
   if (!Array.isArray(events) || events.length <= 0) return;
   events.forEach((evt) => {
     if (!evt || evt.type !== "show_image_fhud" || !evt.enabled) return;
+    const normalizedName = normalizeName(evt.imageName);
+    if (normalizedName) {
+      const prevTime = Number(showImageFhudLastEnabledTimeByName[normalizedName]);
+      const nextTime = Number(evt.timeMs);
+      if (!Number.isFinite(prevTime) || nextTime >= prevTime) {
+        showImageFhudLastEnabledTimeByName[normalizedName] = nextTime;
+      }
+    }
     const path = resolveShowImageFhudPath(evt.imageName);
     if (!path) return;
     preloadShowImageFhudImage(path);
   });
+
+  const finalAkagePath = resolveShowImageFhudPath("akage");
+  if (finalAkagePath && Number.isFinite(Number(showImageFhudLastEnabledTimeByName.akage))) {
+    preloadSwappedAkageShowImageFhud(finalAkagePath);
+  }
 }
 
 function ensureShowImageFhudOverlay() {
@@ -2528,14 +3427,31 @@ function ensureShowImageFhudOverlay() {
   return showImageFhudOverlayEl;
 }
 
-function showShowImageFhudOverlay(imageName) {
+function showShowImageFhudOverlay(imageName, options = {}) {
   const path = resolveShowImageFhudPath(imageName);
   if (!path) return;
   const overlayEl = ensureShowImageFhudOverlay();
   if (!overlayEl) return;
 
+  const useSwappedAkage = Boolean(options.swapAkageColors) && normalizeName(imageName) === "akage";
   preloadShowImageFhudImage(path);
-  if (overlayEl.getAttribute("src") !== path) {
+  if (useSwappedAkage) {
+    const resolvedPath = showImageFhudSwappedResolvedPaths[path];
+    if (resolvedPath) {
+      if (overlayEl.getAttribute("src") !== resolvedPath) {
+        overlayEl.setAttribute("src", resolvedPath);
+      }
+    } else {
+      if (overlayEl.getAttribute("src") !== path) {
+        overlayEl.setAttribute("src", path);
+      }
+      preloadSwappedAkageShowImageFhud(path).then((swappedPath) => {
+        if (!swappedPath || !showImageFhudOverlayEl || showImageFhudOverlayEl !== overlayEl) return;
+        if (overlayEl.style.display === "none" || overlayEl.style.visibility === "hidden") return;
+        overlayEl.setAttribute("src", swappedPath);
+      });
+    }
+  } else if (overlayEl.getAttribute("src") !== path) {
     overlayEl.setAttribute("src", path);
   }
   overlayEl.style.display = "block";
@@ -2592,13 +3508,8 @@ function preloadJumpImage(imagePath) {
 
     const img = new Image();
     img.decoding = "async";
+    img.fetchPriority = "high";
     img.onload = () => {
-      if (typeof img.decode === "function") {
-        img.decode()
-          .then(() => finish(img))
-          .catch(() => finish(img));
-        return;
-      }
       finish(img);
     };
     img.onerror = () => finish(null);
@@ -2609,22 +3520,35 @@ function preloadJumpImage(imagePath) {
 }
 
 function preloadJumpImageFromEvents(events = []) {
-  if (!Array.isArray(events) || events.length <= 0) return;
+  if (!Array.isArray(events) || events.length <= 0) {
+    return Promise.resolve();
+  }
   const seenPaths = new Set();
+  const tasks = [];
   events.forEach((evt) => {
     if (!evt || evt.type !== "jump_image") return;
     const path = resolveJumpImagePath(evt.imageName);
     if (!path || seenPaths.has(path)) return;
     seenPaths.add(path);
-    preloadJumpImage(path).then((img) => {
-      const entry = ensureJumpImageSprite(path, img);
-      prewarmJumpImageSprite(entry);
-    });
+    const task = preloadJumpImage(path)
+      .then((img) => {
+        const entry = ensureJumpImageSprite(path, img);
+        return prewarmJumpImageSprite(entry);
+      })
+      .catch(() => false);
+    tasks.push(task);
   });
+  if (!tasks.length) return Promise.resolve();
+  return Promise.allSettled(tasks);
 }
 
 function clearJumpImageTimers(entry) {
   if (!entry) return;
+  entry.animToken = (Number(entry.animToken) || 0) + 1;
+  if (entry.jumpRafId) {
+    cancelAnimationFrame(entry.jumpRafId);
+    entry.jumpRafId = 0;
+  }
   if (entry.fallTimer) {
     clearTimeout(entry.fallTimer);
     entry.fallTimer = 0;
@@ -2653,6 +3577,9 @@ function ensureJumpImageSprite(path, loadedImg = null) {
   const el = document.createElement("img");
   el.alt = "";
   el.draggable = false;
+  el.loading = "eager";
+  el.decoding = "async";
+  el.fetchPriority = "high";
   el.src = path;
   el.style.position = "fixed";
   el.style.left = "0px";
@@ -2667,7 +3594,7 @@ function ensureJumpImageSprite(path, loadedImg = null) {
   el.style.backfaceVisibility = "hidden";
   el.style.contain = "layout paint style";
   el.style.display = "block";
-  el.style.visibility = "hidden";
+  el.style.visibility = "visible";
   document.body.appendChild(el);
 
   const entry = {
@@ -2684,11 +3611,75 @@ function ensureJumpImageSprite(path, loadedImg = null) {
     viewportH: 0,
     fallTimer: 0,
     hideTimer: 0,
+    jumpRafId: 0,
+    animToken: 0,
+    ready: false,
+    readyPromise: null,
     prewarmed: false,
     prewarmPromise: null
   };
   jumpImageState.spritesByPath.set(path, entry);
   return entry;
+}
+
+function ensureJumpImageElementReady(entry) {
+  if (!entry || !entry.el) return Promise.resolve(false);
+  if (entry.ready) return Promise.resolve(true);
+  if (entry.readyPromise) return entry.readyPromise;
+
+  const el = entry.el;
+  entry.readyPromise = new Promise((resolve) => {
+    let settled = false;
+    const finish = (ok) => {
+      if (settled) return;
+      settled = true;
+      const w = Number(el.naturalWidth) || Number(entry.naturalW) || 0;
+      const h = Number(el.naturalHeight) || Number(entry.naturalH) || 0;
+      if (w > 0 && h > 0) {
+        entry.naturalW = w;
+        entry.naturalH = h;
+      }
+      entry.ready = Boolean(ok && w > 0 && h > 0);
+      resolve(entry.ready);
+    };
+
+    const runDecode = () => {
+      if (typeof el.decode === "function") {
+        el.decode()
+          .then(() => finish(true))
+          .catch(() => finish(true));
+        return;
+      }
+      finish(true);
+    };
+
+    const currentW = Number(el.naturalWidth) || 0;
+    const currentH = Number(el.naturalHeight) || 0;
+    if (currentW > 0 && currentH > 0) {
+      runDecode();
+      return;
+    }
+
+    const onLoad = () => {
+      cleanup();
+      runDecode();
+    };
+    const onError = () => {
+      cleanup();
+      finish(false);
+    };
+    const cleanup = () => {
+      el.removeEventListener("load", onLoad);
+      el.removeEventListener("error", onError);
+    };
+
+    el.addEventListener("load", onLoad);
+    el.addEventListener("error", onError);
+  }).finally(() => {
+    entry.readyPromise = null;
+  });
+
+  return entry.readyPromise;
 }
 
 function layoutJumpImageSprite(entry) {
@@ -2705,7 +3696,13 @@ function layoutJumpImageSprite(entry) {
   entry.naturalW = naturalW;
   entry.naturalH = naturalH;
 
-  const scale = Math.min(viewportW / naturalW, viewportH / naturalH, 1);
+  const viewportScale = Math.min(viewportW / naturalW, viewportH / naturalH, 1);
+  const perfScale = Math.min(
+    JUMP_IMAGE_MAX_DRAW_WIDTH / naturalW,
+    JUMP_IMAGE_MAX_DRAW_HEIGHT / naturalH,
+    1
+  );
+  const scale = Math.min(viewportScale, perfScale);
   const drawW = Math.max(1, Math.round(naturalW * scale));
   const drawH = Math.max(1, Math.round(naturalH * scale));
   const posX = Math.round((viewportW - drawW) / 2);
@@ -2734,7 +3731,6 @@ function hideJumpImageSprite(entry) {
   clearJumpImageTimers(entry);
   entry.el.style.transition = "none";
   entry.el.style.opacity = "0";
-  entry.el.style.visibility = "hidden";
 }
 
 function prewarmJumpImageSprite(entry) {
@@ -2743,20 +3739,32 @@ function prewarmJumpImageSprite(entry) {
   if (entry.prewarmPromise) return entry.prewarmPromise;
 
   entry.prewarmPromise = (async () => {
+    const ready = await ensureJumpImageElementReady(entry);
+    if (!ready) return false;
     const layout = layoutJumpImageSprite(entry);
     if (!layout) return false;
 
     const warmOpacity = `${JUMP_IMAGE_WARM_OPACITY}`;
     entry.el.style.display = "block";
     entry.el.style.transition = "none";
-    entry.el.style.visibility = "visible";
     entry.el.style.opacity = warmOpacity;
+    // Keep prewarm in viewport so browser uploads texture on first load.
+    const warmY = Math.max(0, Math.round((entry.viewportH - entry.drawH) / 2));
+    entry.el.style.transform =
+      `translate3d(${layout.posX}px, ${warmY}px, 0)`;
+    // Let style + paint settle first.
+    await new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    );
+    // Tiny real movement warms compositor path before gameplay.
+    entry.el.style.transition = `transform ${JUMP_IMAGE_PREWARM_MOVE_MS}ms linear`;
+    entry.el.style.transform =
+      `translate3d(${layout.posX}px, ${warmY + 1}px, 0)`;
+    await new Promise((resolve) => setTimeout(resolve, JUMP_IMAGE_PREWARM_MOVE_MS + 8));
+    entry.el.style.transition = "none";
+    entry.el.style.opacity = "0";
     entry.el.style.transform =
       `translate3d(${layout.posX}px, ${layout.startY}px, 0)`;
-    entry.el.getBoundingClientRect();
-    await new Promise((resolve) => requestAnimationFrame(() => resolve()));
-    entry.el.style.opacity = "0";
-    entry.el.style.visibility = "hidden";
     entry.prewarmed = true;
     return true;
   })()
@@ -2785,12 +3793,30 @@ function clearJumpImages(remove = true) {
   }
 }
 
+function markJumpImageGhostPause(durationMs = 0) {
+  const now = performance.now();
+  const msRaw = Number(durationMs);
+  const ms = Number.isFinite(msRaw) ? Math.max(0, msRaw) : 0;
+  const until = now + ms;
+  if (until > jumpImageState.ghostPauseUntilPerf) {
+    jumpImageState.ghostPauseUntilPerf = until;
+  }
+}
+
 function startJumpImageAnimation(entry) {
   if (!entry || !entry.el || !entry.el.isConnected) return;
   const layout = layoutJumpImageSprite(entry);
   if (!layout) return;
 
+  markJumpImageGhostPause(
+    JUMP_IMAGE_FALL_DELAY_MS +
+      JUMP_IMAGE_FALL_MS +
+      JUMP_IMAGE_REMOVE_DELAY_MS +
+      JUMP_IMAGE_GHOST_ECHO_PAUSE_EXTRA_MS
+  );
+
   clearJumpImageTimers(entry);
+  const token = entry.animToken;
   entry.prewarmed = true;
   entry.el.style.display = "block";
   entry.el.style.visibility = "visible";
@@ -2798,10 +3824,11 @@ function startJumpImageAnimation(entry) {
   entry.el.style.transition = "none";
   entry.el.style.transform =
     `translate3d(${layout.posX}px, ${layout.startY}px, 0)`;
-  entry.el.getBoundingClientRect();
 
-  requestAnimationFrame(() => {
+  entry.jumpRafId = requestAnimationFrame(() => {
+    entry.jumpRafId = 0;
     if (!entry.el || !entry.el.isConnected) return;
+    if (entry.animToken !== token) return;
     entry.el.style.transition =
       `transform ${JUMP_IMAGE_JUMP_MS}ms cubic-bezier(0, 0.55, 0.45, 1)`;
     entry.el.style.transform =
@@ -2810,6 +3837,7 @@ function startJumpImageAnimation(entry) {
 
   entry.fallTimer = setTimeout(() => {
     if (!entry.el || !entry.el.isConnected) return;
+    if (entry.animToken !== token) return;
     entry.el.style.transition =
       `transform ${JUMP_IMAGE_FALL_MS}ms cubic-bezier(0.55, 0, 1, 0.45)`;
     entry.el.style.transform =
@@ -2818,9 +3846,9 @@ function startJumpImageAnimation(entry) {
 
   entry.hideTimer = setTimeout(() => {
     if (!entry.el || !entry.el.isConnected) return;
+    if (entry.animToken !== token) return;
     entry.el.style.transition = "none";
     entry.el.style.opacity = "0";
-    entry.el.style.visibility = "hidden";
     entry.el.style.transform =
       `translate3d(${layout.posX}px, ${layout.startY}px, 0)`;
   }, JUMP_IMAGE_FALL_DELAY_MS + JUMP_IMAGE_REMOVE_DELAY_MS);
@@ -2832,11 +3860,8 @@ function runJumpImageEvent(imageName) {
 
   const prepared = jumpImageState.spritesByPath.get(path);
   if (prepared && prepared.el?.isConnected) {
-    if (prepared.prewarmed) {
-      startJumpImageAnimation(prepared);
-      return;
-    }
-    prewarmJumpImageSprite(prepared).finally(() => {
+    ensureJumpImageElementReady(prepared).then((ok) => {
+      if (!ok) return;
       startJumpImageAnimation(prepared);
     });
     return;
@@ -2844,10 +3869,29 @@ function runJumpImageEvent(imageName) {
 
   preloadJumpImage(path).then((img) => {
     const entry = ensureJumpImageSprite(path, img);
-    prewarmJumpImageSprite(entry).finally(() => {
+    ensureJumpImageElementReady(entry).then((ok) => {
+      if (!ok) return;
       startJumpImageAnimation(entry);
     });
   });
+}
+
+function scheduleJumpImageEvent(imageName, frameDelay = 1) {
+  const safeDelay = Math.max(0, Number(frameDelay) || 0);
+  if (safeDelay <= 0) {
+    runJumpImageEvent(imageName);
+    return;
+  }
+  let remain = safeDelay;
+  const tick = () => {
+    if (remain <= 0) {
+      runJumpImageEvent(imageName);
+      return;
+    }
+    remain -= 1;
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
 }
 
 function pickLongestAtlasGroup(groups) {
@@ -2871,19 +3915,28 @@ function loadMikuGhostRuntime() {
       const atlas = parseCharacterAtlas(text);
       if (!atlas) return null;
 
-      const imageUrl = atlas.imagePath
+      const sourceImageUrl = atlas.imagePath
         ? resolveRelativeAssetUrl(MIKU_GHOST_XML_PATH, atlas.imagePath)
         : "";
-      return preloadCharacterImage(imageUrl).then(() => {
+      return preloadCharacterImage(sourceImageUrl).then(() => {
+        const sourceSize = getCharacterSourceImageSize(sourceImageUrl);
+        const imageUrl = sourceImageUrl
+          ? (getCharacterRenderImageUrl(sourceImageUrl) || sourceImageUrl)
+          : "";
         const sourceFrames = pickLongestAtlasGroup(atlas.groups);
         const frames = sourceFrames.filter((frame) => {
           const w = Number(frame?.w);
           const h = Number(frame?.h);
           return w > 0 && h > 0;
         });
+        const backgroundSize =
+          sourceSize.w > 0 && sourceSize.h > 0
+            ? `${sourceSize.w}px ${sourceSize.h}px`
+            : "";
 
         const runtime = {
           imageUrl,
+          backgroundSize,
           frames: frames.length > 0 ? frames : sourceFrames
         };
         mikuGhostState.runtime = runtime;
@@ -2916,8 +3969,10 @@ function ensureMikuGhostSprite() {
   const layerEl = ensureCharacterLayer();
   if (!layerEl) return null;
 
+  let created = false;
   let rootEl = document.getElementById("miku-ghost-sprite");
   if (!rootEl) {
+    created = true;
     rootEl = document.createElement("div");
     rootEl.id = "miku-ghost-sprite";
     rootEl.className = "character";
@@ -2944,15 +3999,18 @@ function ensureMikuGhostSprite() {
 
   mikuGhostState.rootEl = rootEl;
   mikuGhostState.frameEl = frameEl;
+  if (created) {
+    resetMikuGhostAppliedFrameStyle();
+  }
   return { rootEl, frameEl };
 }
 
 function getMikuGhostTargetTop() {
-  const opponentRoot = characterSprites.opponent?.rootEl;
-  if (opponentRoot && opponentRoot.isConnected) {
-    const inlineTop = String(opponentRoot.style.top || "").trim();
+  const positionRoot = getCharacterPositionRoot("opponent");
+  if (positionRoot && positionRoot.isConnected) {
+    const inlineTop = String(positionRoot.style.top || "").trim();
     if (inlineTop) return inlineTop;
-    const computedTop = String(getComputedStyle(opponentRoot).top || "").trim();
+    const computedTop = String(getComputedStyle(positionRoot).top || "").trim();
     if (computedTop && computedTop !== "auto") return computedTop;
   }
   return "50%";
@@ -2987,20 +4045,72 @@ function applyMikuGhostFrame(frame) {
   const frameHeight = frame.frameHeight || frame.h || 0;
   const w = frame.w || 0;
   const h = frame.h || 0;
+  const style = mikuGhostState.appliedFrameStyle || (mikuGhostState.appliedFrameStyle = {
+    rootWidth: "",
+    rootHeight: "",
+    frameWidth: "",
+    frameHeight: "",
+    left: "",
+    top: "",
+    backgroundImage: "",
+    backgroundPosition: "",
+    backgroundSize: "",
+    backgroundRepeat: ""
+  });
 
-  mikuGhostState.rootEl.style.width = `${frameWidth}px`;
-  mikuGhostState.rootEl.style.height = `${frameHeight}px`;
-  mikuGhostState.frameEl.style.width = `${w}px`;
-  mikuGhostState.frameEl.style.height = `${h}px`;
-  mikuGhostState.frameEl.style.left = `${-(frame.frameX || 0)}px`;
-  mikuGhostState.frameEl.style.top = `${-(frame.frameY || 0)}px`;
-  mikuGhostState.frameEl.style.backgroundImage =
+  const rootWidth = `${frameWidth}px`;
+  const rootHeight = `${frameHeight}px`;
+  const frameWidthPx = `${w}px`;
+  const frameHeightPx = `${h}px`;
+  const leftPx = `${-(frame.frameX || 0)}px`;
+  const topPx = `${-(frame.frameY || 0)}px`;
+  const bgImage =
     mikuGhostState.runtime.imageUrl
       ? `url('${mikuGhostState.runtime.imageUrl}')`
       : "";
-  mikuGhostState.frameEl.style.backgroundPosition = `${-frame.x}px ${-frame.y}px`;
-  mikuGhostState.frameEl.style.backgroundSize = "auto";
-  mikuGhostState.frameEl.style.backgroundRepeat = "no-repeat";
+  const bgPos = `${-frame.x}px ${-frame.y}px`;
+
+  if (style.rootWidth !== rootWidth) {
+    mikuGhostState.rootEl.style.width = rootWidth;
+    style.rootWidth = rootWidth;
+  }
+  if (style.rootHeight !== rootHeight) {
+    mikuGhostState.rootEl.style.height = rootHeight;
+    style.rootHeight = rootHeight;
+  }
+  if (style.frameWidth !== frameWidthPx) {
+    mikuGhostState.frameEl.style.width = frameWidthPx;
+    style.frameWidth = frameWidthPx;
+  }
+  if (style.frameHeight !== frameHeightPx) {
+    mikuGhostState.frameEl.style.height = frameHeightPx;
+    style.frameHeight = frameHeightPx;
+  }
+  if (style.left !== leftPx) {
+    mikuGhostState.frameEl.style.left = leftPx;
+    style.left = leftPx;
+  }
+  if (style.top !== topPx) {
+    mikuGhostState.frameEl.style.top = topPx;
+    style.top = topPx;
+  }
+  if (style.backgroundImage !== bgImage) {
+    mikuGhostState.frameEl.style.backgroundImage = bgImage;
+    style.backgroundImage = bgImage;
+  }
+  if (style.backgroundPosition !== bgPos) {
+    mikuGhostState.frameEl.style.backgroundPosition = bgPos;
+    style.backgroundPosition = bgPos;
+  }
+  const bgSize = mikuGhostState.runtime.backgroundSize || "auto";
+  if (style.backgroundSize !== bgSize) {
+    mikuGhostState.frameEl.style.backgroundSize = bgSize;
+    style.backgroundSize = bgSize;
+  }
+  if (style.backgroundRepeat !== "no-repeat") {
+    mikuGhostState.frameEl.style.backgroundRepeat = "no-repeat";
+    style.backgroundRepeat = "no-repeat";
+  }
 }
 
 function showMikuGhostSprite() {
@@ -3018,6 +4128,7 @@ function showMikuGhostSprite() {
     mikuGhostState.lastFrameTime = performance.now();
     mikuGhostState.lockedTop = "";
     mikuGhostState.lockedMarginTop = "0px";
+    resetMikuGhostAppliedFrameStyle();
     sprite.rootEl.style.display = "";
     syncMikuGhostPosition();
     applyMikuGhostFrame(runtime.frames[0]);
@@ -3039,6 +4150,7 @@ function hideMikuGhostSprite(remove = false) {
     rootEl.remove();
     mikuGhostState.rootEl = null;
     mikuGhostState.frameEl = null;
+    resetMikuGhostAppliedFrameStyle();
     return;
   }
 
@@ -3077,11 +4189,66 @@ function applyShowMikuGhostEvent(evt) {
   hideMikuGhostSprite(false);
 }
 
-function preloadMikuGhostFromEvents(events = []) {
-  if (!Array.isArray(events) || events.length <= 0) return;
+function resetMikuGhostAppliedFrameStyle() {
+  mikuGhostState.appliedFrameStyle = {
+    rootWidth: "",
+    rootHeight: "",
+    frameWidth: "",
+    frameHeight: "",
+    left: "",
+    top: "",
+    backgroundImage: "",
+    backgroundPosition: "",
+    backgroundSize: "",
+    backgroundRepeat: ""
+  };
+}
+
+async function preloadMikuGhostFromEvents(events = []) {
+  if (!Array.isArray(events) || events.length <= 0) return false;
   const hasEvent = events.some((evt) => evt?.type === "show_miku_ghost");
-  if (!hasEvent) return;
-  loadMikuGhostRuntime();
+  if (!hasEvent) return false;
+
+  const runtime = await loadMikuGhostRuntime();
+  if (!runtime || !Array.isArray(runtime.frames) || runtime.frames.length <= 0) {
+    return false;
+  }
+
+  const sprite = ensureMikuGhostSprite();
+  if (!sprite || !sprite.rootEl) return false;
+
+  const root = sprite.rootEl;
+  const prevDisplay = root.style.display;
+  const prevVisibility = root.style.visibility;
+  const prevOpacity = root.style.opacity;
+  const prevTransition = root.style.transition;
+  const prevPointerEvents = root.style.pointerEvents;
+
+  root.style.display = "";
+  root.style.visibility = "visible";
+  root.style.opacity = "0.001";
+  root.style.pointerEvents = "none";
+  root.style.transition = "none";
+
+  mikuGhostState.lockedTop = "";
+  mikuGhostState.lockedMarginTop = "0px";
+  resetMikuGhostAppliedFrameStyle();
+  syncMikuGhostPosition();
+  applyMikuGhostFrame(runtime.frames[0]);
+  await new Promise((resolve) =>
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+  );
+
+  root.style.display = "none";
+  root.style.visibility = prevVisibility;
+  root.style.opacity = prevOpacity;
+  root.style.pointerEvents = prevPointerEvents;
+  root.style.transition = prevTransition;
+  if (prevDisplay && prevDisplay !== "none") {
+    root.style.display = prevDisplay;
+  }
+
+  return true;
 }
 
 function easeGhostCubicIn(t) {
@@ -3150,8 +4317,8 @@ function ensureGhostEchoSprite(index) {
     return ghostEchoSprites[idx];
   }
 
-  const layerEl = ensureCharacterLayer();
-  if (!layerEl) return null;
+  const slotEl = ensureCharacterSlot("opponent");
+  if (!slotEl) return null;
 
   let root = document.getElementById(`ghost-echo-${idx + 1}`);
   if (!root) {
@@ -3167,7 +4334,9 @@ function ensureGhostEchoSprite(index) {
     frame.className = "character-frame";
     root.appendChild(frame);
 
-    layerEl.insertBefore(root, layerEl.firstChild || null);
+    slotEl.insertBefore(root, slotEl.firstChild || null);
+  } else if (root.parentElement !== slotEl) {
+    slotEl.insertBefore(root, slotEl.firstChild || null);
   }
 
   const frameEl = root.querySelector(".character-frame");
@@ -3182,6 +4351,10 @@ function ensureGhostEchoSprite(index) {
 function clearGhostEchoDadReturnState() {
   ghostEchoState.dadReturnUntilPerf = 0;
   ghostEchoState.dadReturnEasing = SCENE_CAMERA_EASING;
+  ghostEchoState.dadReturnStartPerf = 0;
+  ghostEchoState.dadReturnFromX = Number.NaN;
+  ghostEchoState.dadReturnToX = Number.NaN;
+  ghostEchoState.dadReturnDurationMs = 0;
 }
 
 function clearGhostEchoSprites(remove = true, options = {}) {
@@ -3253,9 +4426,15 @@ function setGhostEchoDadX(x, durationMs = 0, easing = null) {
       ? easing.trim()
       : SCENE_CAMERA_EASING;
 
+  const fromX = getOpponentCurrentXPx();
+  const startPerf = performance.now();
   if (safeDuration > 0) {
-    ghostEchoState.dadReturnUntilPerf = performance.now() + safeDuration;
+    ghostEchoState.dadReturnUntilPerf = startPerf + safeDuration;
     ghostEchoState.dadReturnEasing = easingValue;
+    ghostEchoState.dadReturnStartPerf = startPerf;
+    ghostEchoState.dadReturnFromX = fromX;
+    ghostEchoState.dadReturnToX = nextX;
+    ghostEchoState.dadReturnDurationMs = safeDuration;
   } else {
     clearGhostEchoDadReturnState();
   }
@@ -3269,19 +4448,18 @@ function setGhostEchoDadX(x, durationMs = 0, easing = null) {
 }
 
 function getOpponentCurrentXPx() {
-  const overrideX = Number(characterPositionOverrides.opponent.x);
-  if (Number.isFinite(overrideX)) return overrideX;
+  const overrideXRaw = characterPositionOverrides.opponent.x;
+  if (typeof overrideXRaw === "number" && Number.isFinite(overrideXRaw)) {
+    return overrideXRaw;
+  }
 
-  const opponent = characterSprites.opponent;
-  const root = opponent?.rootEl;
+  const root = getCharacterPositionRoot("opponent");
   if (!root) return 0;
-
-  const inlineLeft = Number.parseFloat(root.style.left || "");
-  if (Number.isFinite(inlineLeft)) return inlineLeft;
-
-  const computedLeft = Number.parseFloat(getComputedStyle(root).left || "");
-  if (Number.isFinite(computedLeft)) return computedLeft;
-  return 0;
+  let left = readCharacterRootAxisPx(root, "left");
+  if (!Number.isFinite(left)) {
+    left = readCharacterRootAxisPxFromRect(root, "left");
+  }
+  return Number.isFinite(left) ? left : 0;
 }
 
 function setGhostEchoBaseDadXFromCurrent() {
@@ -3300,6 +4478,23 @@ function getGhostEchoDadReturnRemainingMs() {
   const until = Number(ghostEchoState.dadReturnUntilPerf);
   if (!Number.isFinite(until) || until <= 0) return 0;
   return Math.max(0, until - performance.now());
+}
+
+function getGhostEchoDadRecentReturnStartX(maxAgeMs = 34) {
+  const remainingMs = getGhostEchoDadReturnRemainingMs();
+  if (remainingMs <= 0) return null;
+
+  const startPerf = Number(ghostEchoState.dadReturnStartPerf);
+  const fromX = Number(ghostEchoState.dadReturnFromX);
+  if (!Number.isFinite(startPerf) || !Number.isFinite(fromX)) return null;
+
+  const nowPerf = performance.now();
+  const elapsedMs = nowPerf - startPerf;
+  const limitRaw = Number(maxAgeMs);
+  const limitMs = Number.isFinite(limitRaw) ? Math.max(0, limitRaw) : 34;
+  if (elapsedMs < 0 || elapsedMs > limitMs) return null;
+
+  return fromX;
 }
 
 function applyGhostEchoEvent(evt) {
@@ -3369,6 +4564,7 @@ function applyGhostEchoEvent(evt) {
   }
 
   if (mode === "noghost") {
+    lastGhostEchoNoGhostPerf = performance.now();
     ghostEchoState.noGhostCount += 1;
     for (let i = 0; i < GHOST_ECHO_CLONE_COUNT; i += 1) {
       fadeOutGhostEchoClone(i, 100);
@@ -3400,6 +4596,9 @@ function isGhostEchoRuntimeActive() {
 
 function updateGhostEchoSprites() {
   if (!isGhostEchoRuntimeActive()) return;
+  if (performance.now() < (Number(jumpImageState.ghostPauseUntilPerf) || 0)) {
+    return;
+  }
 
   const opponent = characterSprites.opponent;
   if (!opponent || !opponent.ready || !opponent.rootEl || !opponent.frameEl) {
@@ -3415,6 +4614,9 @@ function updateGhostEchoSprites() {
   }
   const sourceMarginLeft = Number.parseFloat(sourceRoot.style.marginLeft || "0");
   const baseMarginLeft = Number.isFinite(sourceMarginLeft) ? sourceMarginLeft : 0;
+  const baseLeft = sourceRoot.style.left || "0px";
+  const baseTop = sourceRoot.style.top || "0px";
+  const sourceExtraScale = sourceRoot.style.getPropertyValue("--character-extra-scale");
 
   for (let i = 0; i < GHOST_ECHO_CLONE_COUNT; i += 1) {
     const alphaRaw = Number(ghostEchoState.alphas[i]);
@@ -3430,13 +4632,18 @@ function updateGhostEchoSprites() {
 
     sprite.root.style.display = "";
     sprite.root.style.opacity = `${alpha}`;
-    sprite.root.style.left = sourceRoot.style.left || "";
-    sprite.root.style.top = sourceRoot.style.top || "";
+    sprite.root.style.left = baseLeft;
+    sprite.root.style.top = baseTop;
     sprite.root.style.transform = sourceRoot.style.transform || "";
     sprite.root.style.width = sourceRoot.style.width || "";
     sprite.root.style.height = sourceRoot.style.height || "";
     sprite.root.style.marginLeft = `${baseMarginLeft + ghostEchoState.offsetsX[i]}px`;
     sprite.root.style.marginTop = sourceRoot.style.marginTop || "0px";
+    if (sourceExtraScale) {
+      sprite.root.style.setProperty("--character-extra-scale", sourceExtraScale);
+    } else {
+      sprite.root.style.removeProperty("--character-extra-scale");
+    }
 
     sprite.frameEl.style.backgroundImage = sourceFrame.style.backgroundImage || "";
     sprite.frameEl.style.backgroundPosition = sourceFrame.style.backgroundPosition || "";
@@ -3829,29 +5036,140 @@ function refreshCharacterPresentation() {
   setCharacterVisibility("opponent", false);
 }
 
+function readCharacterRootAxisPx(root, axis) {
+  if (!root) return Number.NaN;
+  const resolvePercentPx = (raw) => {
+    const pct = Number.parseFloat(raw);
+    if (!Number.isFinite(pct)) return Number.NaN;
+    const parent = root.offsetParent || root.parentElement;
+    if (!parent) return Number.NaN;
+    const rect = parent.getBoundingClientRect();
+    const size = axis === "top" ? rect.height : rect.width;
+    if (!Number.isFinite(size) || size <= 0) return Number.NaN;
+    return (size * pct) / 100;
+  };
+  const key = axis === "top" ? "top" : "left";
+  const inlineRaw = String(root.style[key] || "").trim();
+  if (inlineRaw) {
+    if (inlineRaw === "auto") return Number.NaN;
+    if (inlineRaw.includes("%")) {
+      const percentValue = resolvePercentPx(inlineRaw);
+      if (Number.isFinite(percentValue)) return percentValue;
+      return Number.NaN;
+    }
+    const inlineValue = Number.parseFloat(inlineRaw);
+    if (Number.isFinite(inlineValue)) return inlineValue;
+  }
+  const computedRaw = String(getComputedStyle(root)[key] || "").trim();
+  if (computedRaw) {
+    if (computedRaw === "auto") return Number.NaN;
+    if (computedRaw.includes("%")) {
+      const percentValue = resolvePercentPx(computedRaw);
+      if (Number.isFinite(percentValue)) return percentValue;
+      return Number.NaN;
+    }
+    const computedValue = Number.parseFloat(computedRaw);
+    if (Number.isFinite(computedValue)) return computedValue;
+  }
+  return Number.NaN;
+}
+
+function readCharacterRootAxisPxFromRect(root, axis) {
+  if (!root) return Number.NaN;
+  const parent = root.offsetParent || root.parentElement;
+  if (!parent) return Number.NaN;
+  const rootRect = root.getBoundingClientRect();
+  const parentRect = parent.getBoundingClientRect();
+  if (axis === "top") {
+    return rootRect.top - parentRect.top;
+  }
+  return rootRect.left - parentRect.left;
+}
+
+function updateCharacterSlotLastKnownPosition(side) {
+  const root = getCharacterPositionRoot(side);
+  if (!root) return;
+  const state = characterSlotLastKnownPx[side];
+  if (!state) return;
+  const nextX = readCharacterRootAxisPxFromRect(root, "left");
+  const nextY = readCharacterRootAxisPxFromRect(root, "top");
+  if (Number.isFinite(nextX)) state.x = nextX;
+  if (Number.isFinite(nextY)) state.y = nextY;
+}
+
+function canReadCharacterRect(root) {
+  if (!root) return false;
+  if (!root.offsetParent) return false;
+  const style = getComputedStyle(root);
+  if (style.display === "none") return false;
+  if (style.visibility === "hidden") return false;
+  return true;
+}
+
+function captureCharacterRootPositionPx(root) {
+  return {
+    left: readCharacterRootAxisPx(root, "left"),
+    top: readCharacterRootAxisPx(root, "top")
+  };
+}
+
+function resetCharacterPositionTweenState(side) {
+  const state = characterPositionTweenState[side];
+  if (!state) return;
+  state.active = false;
+  state.startPerf = 0;
+  state.endPerf = 0;
+  state.easing = "";
+  state.toX = Number.NaN;
+  state.toY = Number.NaN;
+}
+
+function getCharacterPositionTweenRemainingMs(side) {
+  const state = characterPositionTweenState[side];
+  if (!state || !state.active) return 0;
+  const remaining = Number(state.endPerf) - performance.now();
+  if (!Number.isFinite(remaining) || remaining <= 0) {
+    resetCharacterPositionTweenState(side);
+    return 0;
+  }
+  return remaining;
+}
+
+function getCharacterPositionTweenEasing(side) {
+  const state = characterPositionTweenState[side];
+  const easing =
+    typeof state?.easing === "string" && state.easing.trim()
+      ? state.easing.trim()
+      : SCENE_CAMERA_EASING;
+  return easing;
+}
+
 function applyCharacterRenderOffset(side) {
   const sprite = characterSprites[side];
   if (!sprite || !sprite.rootEl) return;
   const root = sprite.rootEl;
-  const preset = characterSlotState[side]?.preset || "";
+  const slotPreset = characterSlotState[side]?.preset || "";
+  const activePreset = characterPresetBySide[side] || "";
+  const preset = normalizeCharacterPresetKey(activePreset || slotPreset);
   const presetOffset =
     CHARACTER_PRESET_OFFSETS[side]?.[preset] || { x: 0, y: 0 };
   const transientOffset = characterTransientOffsets[side] || { x: 0, y: 0 };
-  const useJsonAnimOffsets = Boolean(sprite.config?.applyCharacterJsonAnimOffsets);
+  const useJsonAnimOffsets = shouldApplyCharacterJsonAnimOffsets(sprite.config);
   const animOffset = useJsonAnimOffsets && typeof sprite.getCurrentAnimOffset === "function"
     ? sprite.getCurrentAnimOffset()
     : { x: 0, y: 0 };
+  const animOffsetScale = getCharacterJsonAnimOffsetMultiplier(side, preset);
   const presetAnimOffset = getCharacterPresetAnimOffset(side, preset, sprite.currentAnim);
 
   const x =
     (Number.isFinite(Number(presetOffset.x)) ? Number(presetOffset.x) : 0) +
     (Number.isFinite(Number(transientOffset.x)) ? Number(transientOffset.x) : 0) +
-    (Number.isFinite(Number(animOffset.x)) ? Number(animOffset.x) : 0) +
+    (Number.isFinite(Number(animOffset.x)) ? Number(animOffset.x) * animOffsetScale : 0) +
     (Number.isFinite(Number(presetAnimOffset.x)) ? Number(presetAnimOffset.x) : 0);
   const y =
     (Number.isFinite(Number(presetOffset.y)) ? Number(presetOffset.y) : 0) +
     (Number.isFinite(Number(transientOffset.y)) ? Number(transientOffset.y) : 0) +
-    (Number.isFinite(Number(animOffset.y)) ? Number(animOffset.y) : 0) +
+    (Number.isFinite(Number(animOffset.y)) ? Number(animOffset.y) * animOffsetScale : 0) +
     (Number.isFinite(Number(presetAnimOffset.y)) ? Number(presetAnimOffset.y) : 0);
   const offsetState =
     sprite.appliedRenderOffset && typeof sprite.appliedRenderOffset === "object"
@@ -3870,9 +5188,14 @@ function applyCharacterRenderOffset(side) {
 
 function applyCharacterPositionOverride(side, options = {}) {
   const sprite = characterSprites[side];
-  if (!sprite || !sprite.rootEl) return;
-  const root = sprite.rootEl;
+  const root = getCharacterPositionRoot(side);
+  if (!root) return;
+  const transitionRestoreToken = (characterPositionTransitionRestoreToken[side] || 0) + 1;
+  characterPositionTransitionRestoreToken[side] = transitionRestoreToken;
   const override = characterPositionOverrides[side] || {};
+  const lastKnown = characterSlotLastKnownPx[side] || { x: Number.NaN, y: Number.NaN };
+  const lastKnownX = Number(lastKnown.x);
+  const lastKnownY = Number(lastKnown.y);
   const instant = Boolean(options.instant);
   const durationRaw = Number(options.durationMs);
   const durationMs = Number.isFinite(durationRaw)
@@ -3882,28 +5205,166 @@ function applyCharacterPositionOverride(side, options = {}) {
     typeof options.easing === "string" && options.easing.trim()
       ? options.easing.trim()
       : SCENE_CAMERA_EASING;
-  const transitionValue =
-    `left ${durationMs}ms ${easing}, top ${durationMs}ms ${easing}`;
+  const targetXRaw = override.x;
+  const targetYRaw = override.y;
+  const hasTargetX = typeof targetXRaw === "number" && Number.isFinite(targetXRaw);
+  const hasTargetY = typeof targetYRaw === "number" && Number.isFinite(targetYRaw);
+  const transitionParts = [];
+  if (hasTargetX) {
+    transitionParts.push(`left ${durationMs}ms ${easing}`);
+  }
+  if (hasTargetY) {
+    transitionParts.push(`top ${durationMs}ms ${easing}`);
+  }
+  const transitionValue = transitionParts.length > 0 ? transitionParts.join(", ") : "";
   if (root.style.transition !== transitionValue) {
     root.style.transition = transitionValue;
+  }
+
+  const targetX = hasTargetX ? targetXRaw : Number.NaN;
+  const targetY = hasTargetY ? targetYRaw : Number.NaN;
+  let fromX = hasTargetX ? readCharacterRootAxisPx(root, "left") : Number.NaN;
+  let fromY = hasTargetY ? readCharacterRootAxisPx(root, "top") : Number.NaN;
+  const tweenState = characterPositionTweenState[side];
+  if (tweenState && tweenState.active) {
+    if (hasTargetX && Number.isFinite(lastKnownX) && Math.abs(lastKnownX - fromX) > 1) {
+      fromX = lastKnownX;
+    }
+    if (hasTargetY && Number.isFinite(lastKnownY) && Math.abs(lastKnownY - fromY) > 1) {
+      fromY = lastKnownY;
+    }
+  }
+  if (hasTargetX && (!Number.isFinite(fromX) || (Math.abs(fromX) <= 1 && Math.abs(lastKnownX) > 1))) {
+    if (Number.isFinite(lastKnownX)) {
+      fromX = lastKnownX;
+    }
+  }
+  if (hasTargetY && (!Number.isFinite(fromY) || (Math.abs(fromY) <= 1 && Math.abs(lastKnownY) > 1))) {
+    if (Number.isFinite(lastKnownY)) {
+      fromY = lastKnownY;
+    }
+  }
+  let synthesizedStart = false;
+  if (!instant && (hasTargetX || hasTargetY) && canReadCharacterRect(root)) {
+    if (hasTargetX) {
+      const rectX = readCharacterRootAxisPxFromRect(root, "left");
+      const computedLeft = String(getComputedStyle(root).left || "").trim();
+      const preferLastKnownX =
+        Number.isFinite(lastKnownX) &&
+        Math.abs(lastKnownX) > 1 &&
+        (!Number.isFinite(rectX) || Math.abs(rectX) <= 1);
+      const bridgeX = preferLastKnownX ? lastKnownX : rectX;
+      const shouldBridgeX =
+        Number.isFinite(bridgeX) &&
+        (!Number.isFinite(fromX) ||
+          (Math.abs(fromX) <= 1 && Math.abs(bridgeX) > 1) ||
+          computedLeft === "auto" ||
+          computedLeft.includes("%"));
+      if (shouldBridgeX) {
+        root.style.left = `${bridgeX}px`;
+        fromX = bridgeX;
+        synthesizedStart = true;
+      }
+    }
+    if (hasTargetY) {
+      const rectY = readCharacterRootAxisPxFromRect(root, "top");
+      const computedTop = String(getComputedStyle(root).top || "").trim();
+      const preferLastKnownY =
+        Number.isFinite(lastKnownY) &&
+        Math.abs(lastKnownY) > 1 &&
+        (!Number.isFinite(rectY) || Math.abs(rectY) <= 1);
+      const bridgeY = preferLastKnownY ? lastKnownY : rectY;
+      const shouldBridgeY =
+        Number.isFinite(bridgeY) &&
+        (!Number.isFinite(fromY) ||
+          (Math.abs(fromY) <= 1 && Math.abs(bridgeY) > 1) ||
+          computedTop === "auto" ||
+          computedTop.includes("%"));
+      if (shouldBridgeY) {
+        root.style.top = `${bridgeY}px`;
+        fromY = bridgeY;
+        synthesizedStart = true;
+      }
+    }
+  }
+  if (hasTargetX && !Number.isFinite(fromX)) {
+    if (Number.isFinite(lastKnownX)) {
+      fromX = lastKnownX;
+      synthesizedStart = true;
+    }
+    if (!Number.isFinite(fromX)) {
+      const rectX = readCharacterRootAxisPxFromRect(root, "left");
+      if (Number.isFinite(rectX)) {
+        fromX = rectX;
+        synthesizedStart = true;
+      }
+    }
+  }
+  if (hasTargetY && !Number.isFinite(fromY)) {
+    if (Number.isFinite(lastKnownY)) {
+      fromY = lastKnownY;
+      synthesizedStart = true;
+    }
+    if (!Number.isFinite(fromY)) {
+      const rectY = readCharacterRootAxisPxFromRect(root, "top");
+      if (Number.isFinite(rectY)) {
+        fromY = rectY;
+        synthesizedStart = true;
+      }
+    }
+  }
+  const movingX =
+    hasTargetX &&
+    Number.isFinite(fromX) &&
+    Math.abs(targetX - fromX) > 0.01;
+  const movingY =
+    hasTargetY &&
+    Number.isFinite(fromY) &&
+    Math.abs(targetY - fromY) > 0.01;
+  const shouldTrackTween =
+    !instant &&
+    durationMs > 0 &&
+    (movingX || movingY);
+  if (shouldTrackTween) {
+    const state = characterPositionTweenState[side];
+    if (state) {
+      const startPerf = performance.now();
+      state.active = true;
+      state.startPerf = startPerf;
+      state.endPerf = startPerf + durationMs;
+      state.easing = easing;
+      state.toX = hasTargetX ? targetX : Number.NaN;
+      state.toY = hasTargetY ? targetY : Number.NaN;
+    }
+  } else {
+    resetCharacterPositionTweenState(side);
   }
 
   let prevTransition = "";
   if (instant) {
     prevTransition = transitionValue;
     root.style.transition = "none";
+  } else if (synthesizedStart) {
+    const prev = root.style.transition;
+    root.style.transition = "none";
+    if (hasTargetX && Number.isFinite(fromX)) {
+      root.style.left = `${fromX}px`;
+    }
+    if (hasTargetY && Number.isFinite(fromY)) {
+      root.style.top = `${fromY}px`;
+    }
+    root.getBoundingClientRect();
+    root.style.transition = prev || transitionValue;
   }
 
   applyCharacterRenderOffset(side);
 
-  root.style.left = Number.isFinite(override.x) ? `${override.x}px` : "";
-  root.style.top = Number.isFinite(override.y) ? `${override.y}px` : "";
+  root.style.left = hasTargetX ? `${targetX}px` : "";
+  root.style.top = hasTargetY ? `${targetY}px` : "";
 
   if (instant) {
-    const token = (characterPositionTransitionRestoreToken[side] || 0) + 1;
-    characterPositionTransitionRestoreToken[side] = token;
     requestAnimationFrame(() => {
-      if (characterPositionTransitionRestoreToken[side] !== token) return;
+      if (characterPositionTransitionRestoreToken[side] !== transitionRestoreToken) return;
       if (!root.isConnected) return;
       root.style.transition = prevTransition;
     });
@@ -3911,22 +5372,102 @@ function applyCharacterPositionOverride(side, options = {}) {
 }
 
 function shouldApplyCharacterPositionOverrideNow(side) {
-  const sprite = characterSprites[side];
-  const root = sprite?.rootEl || null;
+  const root = getCharacterPositionRoot(side);
   const override = characterPositionOverrides[side] || {};
   const hasOverride =
-    Number.isFinite(Number(override.x)) || Number.isFinite(Number(override.y));
+    (typeof override.x === "number" && Number.isFinite(override.x)) ||
+    (typeof override.y === "number" && Number.isFinite(override.y));
   if (hasOverride) return true;
   if (!root) return false;
   return Boolean(root.style.left || root.style.top);
 }
 
+function getCoTimedMoveEventForSide(evt, side) {
+  if (!evt || !side || !Array.isArray(characterChangeEvents) || characterChangeEvents.length <= 0) {
+    return null;
+  }
+  const timeMs = Number(evt.timeMs);
+  if (!Number.isFinite(timeMs)) return null;
+  const startIndex = Math.max(0, characterChangeEventIndex + 1);
+  for (let i = startIndex; i < characterChangeEvents.length; i += 1) {
+    const next = characterChangeEvents[i];
+    if (!next) continue;
+    const nextTime = Number(next.timeMs);
+    if (!Number.isFinite(nextTime)) continue;
+    if (nextTime !== timeMs) break;
+    if (next.type !== "move_characters") continue;
+    const nextSide = sideFromChartSlot(normalizeName(next.slot));
+    if (nextSide === side) return next;
+  }
+  return null;
+}
+
+function hasCoTimedMoveEventForSide(evt, side) {
+  return Boolean(getCoTimedMoveEventForSide(evt, side));
+}
+
+function shouldBridgeCharacterSwitchOffsetForCoTimedMove(evt) {
+  if (!evt) return false;
+  if (shouldForceInstantMoveEvent(evt)) return false;
+  return getCharacterMoveDurationMs(evt) > 0;
+}
+
+function bridgeCharacterSwitchOffsetForMove(side, previousSprite, nextSprite) {
+  if (!previousSprite || !nextSprite || previousSprite === nextSprite) return;
+  const root = getCharacterPositionRoot(side);
+  if (!root) return;
+
+  const previousOffsetX = Number.parseFloat(previousSprite.rootEl?.style.marginLeft || "0");
+  const previousOffsetY = Number.parseFloat(previousSprite.rootEl?.style.marginTop || "0");
+  const nextOffsetX = Number.parseFloat(nextSprite.rootEl?.style.marginLeft || "0");
+  const nextOffsetY = Number.parseFloat(nextSprite.rootEl?.style.marginTop || "0");
+  const deltaX =
+    (Number.isFinite(previousOffsetX) ? previousOffsetX : 0) -
+    (Number.isFinite(nextOffsetX) ? nextOffsetX : 0);
+  const deltaY =
+    (Number.isFinite(previousOffsetY) ? previousOffsetY : 0) -
+    (Number.isFinite(nextOffsetY) ? nextOffsetY : 0);
+
+  if (Math.abs(deltaX) > 0.01) {
+    let currentX = readCharacterRootAxisPx(root, "left");
+    if (!Number.isFinite(currentX)) {
+      currentX = readCharacterRootAxisPxFromRect(root, "left");
+    }
+    if (Number.isFinite(currentX)) {
+      root.style.left = `${currentX + deltaX}px`;
+    }
+  }
+
+  if (Math.abs(deltaY) > 0.01) {
+    let currentY = readCharacterRootAxisPx(root, "top");
+    if (!Number.isFinite(currentY)) {
+      currentY = readCharacterRootAxisPxFromRect(root, "top");
+    }
+    if (Number.isFinite(currentY)) {
+      root.style.top = `${currentY + deltaY}px`;
+    }
+  }
+}
+
 function applyCharacterPositionOnPresetSwitch(side) {
   if (!side) return;
+  if (characterSkipPositionApplyOnSwitchBySide[side]) {
+    characterSkipPositionApplyOnSwitchBySide[side] = false;
+    return;
+  }
 
   if (side === "opponent") {
     const remainingMs = getGhostEchoDadReturnRemainingMs();
     if (remainingMs > 0) {
+      const recentReturnStartX = getGhostEchoDadRecentReturnStartX();
+      const root = getCharacterPositionRoot(side);
+      if (Number.isFinite(recentReturnStartX) && root) {
+        // Ensure the new sprite is painted once at the return-start position.
+        // Without this, an immediate switch after noghost can skip interpolation.
+        root.style.transition = "none";
+        root.style.left = `${recentReturnStartX}px`;
+        root.getBoundingClientRect();
+      }
       applyCharacterPositionOverride(side, {
         durationMs: remainingMs,
         easing: ghostEchoState.dadReturnEasing,
@@ -3934,6 +5475,16 @@ function applyCharacterPositionOnPresetSwitch(side) {
       });
       return;
     }
+  }
+
+  const moveRemainingMs = getCharacterPositionTweenRemainingMs(side);
+  if (moveRemainingMs > 0) {
+    applyCharacterPositionOverride(side, {
+      durationMs: moveRemainingMs,
+      easing: getCharacterPositionTweenEasing(side),
+      instant: false
+    });
+    return;
   }
 
   if (shouldApplyCharacterPositionOverrideNow(side)) {
@@ -4083,6 +5634,12 @@ function tryActivateCharacterPresetImmediate(side, preset) {
   if (!normalizedPreset) return false;
   const sprite = getPooledCharacterSprite(side, normalizedPreset);
   if (!sprite || !sprite.ready) return false;
+  if (
+    shouldWarmAllAnimationsForPreset(side, normalizedPreset) &&
+    !sprite.prewarmAllAnimationsReady
+  ) {
+    return false;
+  }
 
   if (!activatePooledCharacterSprite(side, normalizedPreset, sprite)) {
     return false;
@@ -4104,6 +5661,7 @@ function tryActivateCharacterPresetImmediate(side, preset) {
 async function performCharacterPresetLoad(side, preset) {
   const normalizedPreset = normalizeCharacterPresetKey(preset);
   if (!normalizedPreset) return;
+  const requiresFullWarm = shouldWarmAllAnimationsForPreset(side, normalizedPreset);
 
   const previousActivePreset = normalizeCharacterPresetKey(characterPresetBySide[side]);
   const skipIdleApply = Boolean(characterSkipIdleApplyOnSwitchBySide[side]);
@@ -4123,8 +5681,15 @@ async function performCharacterPresetLoad(side, preset) {
 
   const token = ++characterLoadTokenBySide[side];
   let nextSprite = getPooledCharacterSprite(side, normalizedPreset);
-  if (!nextSprite || !nextSprite.ready) {
-    nextSprite = await ensurePooledCharacterSprite(side, normalizedPreset);
+  if (
+    !nextSprite ||
+    !nextSprite.ready ||
+    (requiresFullWarm && !nextSprite.prewarmAllAnimationsReady)
+  ) {
+    nextSprite = await ensurePooledCharacterSprite(side, normalizedPreset, {
+      prewarm: requiresFullWarm,
+      warmAllAnimations: requiresFullWarm
+    });
   }
 
   if (token !== characterLoadTokenBySide[side]) return;
@@ -4194,6 +5759,9 @@ function resetCharacterChangeTimelinePlayback() {
   characterChangeLastSongMs = 0;
   characterChartBatchApplying = false;
   characterRefreshDeferred = false;
+  opponentPresetLookaheadPrewarmRunning = false;
+  opponentPresetLookaheadPrewarmQueue.length = 0;
+  opponentPresetLookaheadPrewarmQueuedKeys.clear();
   clearDeferredOpponentPresetLoad();
   activeCharacterSide = null;
   characterSlotState.player.name = "";
@@ -4208,6 +5776,12 @@ function resetCharacterChangeTimelinePlayback() {
   characterSkipIdleApplyOnSwitchBySide.player = false;
   characterSkipIdleApplyOnSwitchBySide.opponent = false;
   characterSkipIdleApplyOnSwitchBySide.gf = false;
+  characterSkipPositionApplyOnSwitchBySide.player = false;
+  characterSkipPositionApplyOnSwitchBySide.opponent = false;
+  characterSkipPositionApplyOnSwitchBySide.gf = false;
+  characterBridgePositionOnSwitchBySide.player = false;
+  characterBridgePositionOnSwitchBySide.opponent = false;
+  characterBridgePositionOnSwitchBySide.gf = false;
   characterPresetLoadQueueState.player.pendingPreset = "";
   characterPresetLoadQueueState.opponent.pendingPreset = "";
   characterPresetLoadQueueState.gf.pendingPreset = "";
@@ -4217,6 +5791,15 @@ function resetCharacterChangeTimelinePlayback() {
   characterPositionOverrides.opponent.y = null;
   characterPositionOverrides.gf.x = null;
   characterPositionOverrides.gf.y = null;
+  characterSlotLastKnownPx.player.x = Number.NaN;
+  characterSlotLastKnownPx.player.y = Number.NaN;
+  characterSlotLastKnownPx.opponent.x = Number.NaN;
+  characterSlotLastKnownPx.opponent.y = Number.NaN;
+  characterSlotLastKnownPx.gf.x = Number.NaN;
+  characterSlotLastKnownPx.gf.y = Number.NaN;
+  resetCharacterPositionTweenState("player");
+  resetCharacterPositionTweenState("opponent");
+  resetCharacterPositionTweenState("gf");
   characterTransientOffsets.player.x = 0;
   characterTransientOffsets.player.y = 0;
   characterTransientOffsets.opponent.x = 0;
@@ -4235,7 +5818,8 @@ function resetCharacterChangeTimelinePlayback() {
   hideWhiteScreenInstant();
   hideShowImageOverlay(false);
   hideShowImageFhudOverlay(true);
-  clearJumpImages(true);
+  // Keep cached jump-image elements to avoid re-decode stutter on retries.
+  clearJumpImages(false);
   hideMikuGhostSprite(false);
   clearGhostEchoSprites(true);
   resetStageBackgroundState();
@@ -4259,6 +5843,10 @@ function applyCharacterChangeEvent(evt) {
   const preset = resolvePresetFromCharacterName(side, characterName);
   const previousSlotPreset = characterSlotState[side]?.preset || null;
   const immediatePlayAnimation = normalizeName(evt?.immediatePlayAnimation);
+  const coTimedMoveEvent = getCoTimedMoveEventForSide(evt, side);
+  characterSkipPositionApplyOnSwitchBySide[side] = Boolean(coTimedMoveEvent);
+  characterBridgePositionOnSwitchBySide[side] =
+    shouldBridgeCharacterSwitchOffsetForCoTimedMove(coTimedMoveEvent);
   characterPendingPlayAnimationBySide[side] = immediatePlayAnimation;
   characterSkipIdleApplyOnSwitchBySide[side] = Boolean(immediatePlayAnimation);
 
@@ -4266,6 +5854,8 @@ function applyCharacterChangeEvent(evt) {
   characterSlotState[side].preset = preset;
 
   if (side === "gf") {
+    characterSkipPositionApplyOnSwitchBySide.gf = false;
+    characterBridgePositionOnSwitchBySide.gf = false;
     clearCharacterTimer("gf");
     characterDisplayState.gf = { anim: "idle", loop: true, freeze: false };
     if (preset) {
@@ -4296,9 +5886,14 @@ function applyCharacterChangeEvent(evt) {
     characterDisplayState[side] = { anim: "idle", loop: true, freeze: false };
   }
 
+  if (!preset) {
+    characterSkipPositionApplyOnSwitchBySide[side] = false;
+    characterBridgePositionOnSwitchBySide[side] = false;
+  }
+
   let deferredPresetLoad = false;
   if (preset) {
-    let shouldDeferPresetLoad =
+    const shouldDeferPresetLoad =
       side === "opponent" &&
       characterChartBatchApplying &&
       !immediatePlayAnimation &&
@@ -4341,6 +5936,7 @@ function applyCharacterPlayAnimationEvent(evt) {
 function tryPlayCharacterAnimationEvent(side, animName) {
   if (!side || !animName) return "invalid";
   if (!characterSlotState[side]?.preset) return "no_preset";
+  if (shouldDelayCharacterVisualApplyUntilPresetActive(side)) return "not_ready";
 
   const sprite = characterSprites[side];
   if (!sprite || !sprite.ready) return "not_ready";
@@ -4395,7 +5991,9 @@ function flushQueuedCharacterPlayAnimation(side) {
 
 function applyCharacterCameraFollowPosEvent(evt) {
   if (!evt) return;
-  setSceneCameraFollowPos(evt.x, evt.y);
+  const scaledX = scaleChartCoordX(evt.x);
+  const scaledY = scaleChartCoordY(evt.y);
+  setSceneCameraFollowPos(scaledX, scaledY);
 }
 
 function applyMemeAppearEvent(evt) {
@@ -4438,7 +6036,9 @@ function applyShowImageEvent(evt) {
 function applyShowImageFhudEvent(evt) {
   if (!evt) return;
   if (evt.enabled) {
-    showShowImageFhudOverlay(evt.imageName);
+    showShowImageFhudOverlay(evt.imageName, {
+      swapAkageColors: shouldSwapFinalAkageShowImageFhud(evt)
+    });
     return;
   }
   hideShowImageFhudOverlay(true);
@@ -4447,13 +6047,19 @@ function applyShowImageFhudEvent(evt) {
 function applyJumpImageEvent(evt) {
   if (!evt) return;
   const imageName = evt.imageName;
-  if (characterChartBatchApplying) {
-    requestAnimationFrame(() => {
-      runJumpImageEvent(imageName);
-    });
-    return;
-  }
-  runJumpImageEvent(imageName);
+  const elapsedSinceNoGhost = performance.now() - Number(lastGhostEchoNoGhostPerf);
+  const inNoGhostWindow =
+    elapsedSinceNoGhost >= 0 && elapsedSinceNoGhost <= JUMP_IMAGE_NOGHOST_DELAY_WINDOW_MS;
+  // Pause ghost-sync slightly before the jump starts to avoid same-frame spikes.
+  markJumpImageGhostPause(
+    JUMP_IMAGE_FALL_DELAY_MS +
+      JUMP_IMAGE_FALL_MS +
+      JUMP_IMAGE_REMOVE_DELAY_MS +
+      JUMP_IMAGE_GHOST_ECHO_PAUSE_EXTRA_MS
+  );
+  // Keep jump start immediate by default; only defer when noghost just fired.
+  const delayFrames = inNoGhostWindow ? 1 : 0;
+  scheduleJumpImageEvent(imageName, delayFrames);
 }
 
 function applyGhostEchoChartEvent(evt) {
@@ -4465,17 +6071,89 @@ function applyScreenShakeEvent(evt) {
   triggerSceneScreenShake(evt.durationSeconds, evt.intensity, evt.timeMs);
 }
 
+function getCharacterMoveDurationMs(evt) {
+  const durationSeconds = Number(evt?.durationSeconds);
+  if (!Number.isFinite(durationSeconds)) return 0;
+  return Math.max(0, durationSeconds * 1000);
+}
+
+function getChartScaleAxisSize(axis) {
+  const gameEl = document.getElementById("game");
+  if (!gameEl) return 0;
+  return axis === "y"
+    ? Number(gameEl.clientHeight) || 0
+    : Number(gameEl.clientWidth) || 0;
+}
+
+function scaleChartCoordX(value) {
+  const raw = Number(value);
+  if (!Number.isFinite(raw)) return Number.NaN;
+  const width = getChartScaleAxisSize("x");
+  if (!Number.isFinite(width) || width <= 0) return raw;
+  const base = PSYCH_CHART_BASE_WIDTH;
+  if (!Number.isFinite(base) || base <= 0) return raw;
+  return (raw * width) / base;
+}
+
+function scaleChartCoordY(value) {
+  const raw = Number(value);
+  if (!Number.isFinite(raw)) return Number.NaN;
+  const height = getChartScaleAxisSize("y");
+  if (!Number.isFinite(height) || height <= 0) return raw;
+  const base = PSYCH_CHART_BASE_HEIGHT;
+  if (!Number.isFinite(base) || base <= 0) return raw;
+  return (raw * height) / base;
+}
+
+function shouldForceInstantMoveEvent(evt) {
+  if (!evt) return false;
+  const slot = normalizeName(evt.slot);
+  const timeMs = Number(evt.timeMs);
+  const x = Number(evt.x);
+  if (!slot || !Number.isFinite(timeMs) || !Number.isFinite(x)) return false;
+  return MOVE_CHARACTERS_FORCE_INSTANT.some((entry) => {
+    if (!entry) return false;
+    if (normalizeName(entry.slot) !== slot) return false;
+    if (!Number.isFinite(Number(entry.timeMs))) return false;
+    if (!Number.isFinite(Number(entry.x))) return false;
+    if (Math.abs(timeMs - Number(entry.timeMs)) > MOVE_CHARACTERS_INSTANT_EPSILON_MS) {
+      return false;
+    }
+    return Math.abs(x - Number(entry.x)) <= MOVE_CHARACTERS_INSTANT_EPSILON_PX;
+  });
+}
+
 function applyCharacterMoveEvent(evt) {
   if (!evt) return;
   const side = sideFromChartSlot(normalizeName(evt.slot));
   if (!side) return;
+  if (characterChartBatchApplying && characterRefreshDeferred) {
+    characterRefreshDeferred = false;
+    refreshCharacterPresentation();
+  }
 
-  const nextX = Number(evt.x);
-  const nextY = Number(evt.y);
-  const durationSeconds = Number(evt.durationSeconds);
-  const durationMs = Number.isFinite(durationSeconds)
-    ? Math.max(0, durationSeconds * 1000)
-    : undefined;
+  const nextX = scaleChartCoordX(evt.x);
+  const nextY = scaleChartCoordY(evt.y);
+  const requestedDurationMs = getCharacterMoveDurationMs(evt);
+  const forceInstant = shouldForceInstantMoveEvent(evt);
+  let durationMs = forceInstant ? 0 : requestedDurationMs;
+  if (MOVE_CHARACTERS_USE_ARRIVAL_TIME && requestedDurationMs > 0) {
+    const judgeOffsetMsRaw =
+      typeof window.getJudgeOffsetMs === "function"
+        ? Number(window.getJudgeOffsetMs())
+        : 0;
+    const judgeOffsetMs = Number.isFinite(judgeOffsetMsRaw) ? judgeOffsetMsRaw : 0;
+    const arrivalRaw = Number(evt.timeMs);
+    const arrivalMs = Number.isFinite(arrivalRaw) ? arrivalRaw + judgeOffsetMs : Number.NaN;
+    const nowRaw =
+      typeof window.getSongTimeMs === "function"
+        ? Number(window.getSongTimeMs())
+        : Number.NaN;
+    if (Number.isFinite(arrivalMs) && Number.isFinite(nowRaw)) {
+      const remainingMs = Math.max(0, arrivalMs - nowRaw);
+      durationMs = remainingMs > 0 ? Math.min(requestedDurationMs, remainingMs) : requestedDurationMs;
+    }
+  }
   if (Number.isFinite(nextX)) {
     characterPositionOverrides[side].x = nextX;
   }
@@ -4484,7 +6162,8 @@ function applyCharacterMoveEvent(evt) {
   }
   applyCharacterPositionOverride(side, {
     durationMs,
-    instant: durationMs === 0
+    easing: typeof evt?.easing === "string" && evt.easing.trim() ? evt.easing : undefined,
+    instant: durationMs <= 0
   });
 }
 
@@ -4568,19 +6247,30 @@ function getCharacterEventTriggerMs(evt) {
   if (
     evt.type === "screen_shake" ||
     evt.type === "white_screen" ||
-    evt.type === "show_miku_ghost"
+    evt.type === "show_miku_ghost" ||
+    evt.type === "camera_follow_pos"
   ) {
     return triggerMs;
   }
 
-  // Keep character-side chart events aligned in the same timing domain.
-  const judgeOffsetMs =
-    typeof window.getJudgeOffsetMs === "function"
-      ? Number(window.getJudgeOffsetMs())
-      : 0;
-  if (Number.isFinite(judgeOffsetMs)) {
-    triggerMs += judgeOffsetMs;
+  if (CHARACTER_CHART_USE_JUDGE_OFFSET) {
+    // Optional: align chart events with judge offset (non-Psych behavior).
+    const judgeOffsetMs =
+      typeof window.getJudgeOffsetMs === "function"
+        ? Number(window.getJudgeOffsetMs())
+        : 0;
+    if (Number.isFinite(judgeOffsetMs)) {
+      triggerMs += judgeOffsetMs;
+    }
   }
+
+  // Optionally shift "Move Characters" to arrival-time semantics.
+  if (evt.type === "move_characters" && MOVE_CHARACTERS_USE_ARRIVAL_TIME) {
+    triggerMs -= getCharacterMoveDurationMs(evt);
+  }
+
+  if (!Number.isFinite(triggerMs)) return 0;
+  if (triggerMs < 0) return 0;
 
   return triggerMs;
 }
@@ -4610,6 +6300,11 @@ function updateCharacterChangeByChart(nowMs) {
       refreshCharacterPresentation();
     }
   }
+
+  const upcomingOpponentTargets = collectUpcomingOpponentWarmTargets(nowMs);
+  if (upcomingOpponentTargets.length > 0) {
+    queueUpcomingOpponentPresetPrewarm(upcomingOpponentTargets);
+  }
 }
 
 async function loadCharacterChangeEvents() {
@@ -4620,16 +6315,23 @@ async function loadCharacterChangeEvents() {
       const res = await fetch(CHARACTER_CHART_PATH);
       const json = await res.json();
       characterChangeEvents = parseCharacterChartEvents(json);
+      opponentPlayAnimationsByPreset = collectPlayAnimationsByPresetForSide(
+        "opponent",
+        characterChangeEvents
+      );
       preloadStageBackgroundFromEvents(characterChangeEvents);
-      preloadMikuGhostFromEvents(characterChangeEvents);
+      await preloadMikuGhostFromEvents(characterChangeEvents);
       preloadShowImageFromEvents(characterChangeEvents);
       preloadShowImageFhudFromEvents(characterChangeEvents);
-      preloadJumpImageFromEvents(characterChangeEvents);
-      await prewarmCharacterPresetsFromEvents(characterChangeEvents);
+      await preloadJumpImageFromEvents(characterChangeEvents);
+      await prewarmCharacterPresetsFromEvents(characterChangeEvents, {
+        maxTimeMs: CHARACTER_RUNTIME_PREWARM_WINDOW_MS
+      });
       characterChangeEventsReady = true;
       resetCharacterChangeTimelinePlayback();
     } catch (err) {
       characterChangeEvents = [];
+      opponentPlayAnimationsByPreset = new Map();
       characterChangeEventsReady = false;
       console.warn("character change events load failed:", err);
     }
@@ -4646,10 +6348,15 @@ function loadCharacterAtlas(xmlPath) {
     .then(async (text) => {
       const atlas = parseCharacterAtlas(text);
       if (!atlas) return null;
-      const imageUrl = await resolveCharacterAtlasImageUrl(xmlPath, atlas.imagePath);
+      const imageInfo = await resolveCharacterAtlasImageUrl(xmlPath, atlas.imagePath);
+      const imageUrl = imageInfo?.imageUrl || "";
+      const sourceWidth = Number(imageInfo?.sourceWidth);
+      const sourceHeight = Number(imageInfo?.sourceHeight);
       return {
         imageUrl,
         groups: atlas.groups,
+        sourceWidth: Number.isFinite(sourceWidth) && sourceWidth > 0 ? sourceWidth : 0,
+        sourceHeight: Number.isFinite(sourceHeight) && sourceHeight > 0 ? sourceHeight : 0,
         imageReadyPromise: imageUrl ? preloadCharacterImage(imageUrl) : Promise.resolve(null)
       };
     })
@@ -4667,14 +6374,14 @@ function preloadCharacterAtlases() {
   Object.values(CHARACTER_PRESETS).forEach((presetGroup) => {
     Object.values(presetGroup || {}).forEach((config) => {
       if (config?.atlasXmlPath) paths.add(config.atlasXmlPath);
-      if (config?.applyCharacterJsonMeta && config?.characterJsonPath) {
+      if (shouldUseCharacterJsonMeta(config) && config?.characterJsonPath) {
         jsonPaths.add(config.characterJsonPath);
       }
     });
   });
   Object.values(GF_CHARACTER_PRESETS).forEach((config) => {
     if (config?.atlasXmlPath) paths.add(config.atlasXmlPath);
-    if (config?.applyCharacterJsonMeta && config?.characterJsonPath) {
+    if (shouldUseCharacterJsonMeta(config) && config?.characterJsonPath) {
       jsonPaths.add(config.characterJsonPath);
     }
   });
@@ -4708,7 +6415,7 @@ function prepareCharacterAssetsForGameplay() {
 
 function applyCharacterExtraScaleForSprite(side, preset, sprite) {
   if (!sprite || !sprite.rootEl) return;
-  const useJsonScale = Boolean(sprite.config?.applyCharacterJsonScale);
+  const useJsonScale = shouldApplyCharacterJsonScale(sprite.config);
   const metaScale = Number(sprite.meta?.scale);
   const baseScale =
     useJsonScale && Number.isFinite(metaScale) && metaScale > 0
@@ -4736,6 +6443,7 @@ class CharacterSprite {
     this.meta = {
       scale: 1,
       noAntialiasing: false,
+      position: { x: 0, y: 0 },
       offsetsByAnim: {}
     };
     this.appliedFrameStyle = {
@@ -4745,12 +6453,16 @@ class CharacterSprite {
       frameHeight: "",
       left: "",
       top: "",
-      backgroundPosition: ""
+      backgroundPosition: "",
+      backgroundSize: ""
     };
     this.appliedRenderOffset = {
       x: null,
       y: null
     };
+    this.prewarmPainted = false;
+    this.prewarmAllAnimationsReady = false;
+    this.prewarmedAnimations = new Set();
 
     this.rootEl = document.createElement("div");
     this.rootEl.className = `character character--${side}`;
@@ -4764,6 +6476,9 @@ class CharacterSprite {
 
   async load(presetForScale = null) {
     this.ready = false;
+    this.prewarmPainted = false;
+    this.prewarmAllAnimationsReady = false;
+    this.prewarmedAnimations = new Set();
     const scalePreset = presetForScale || characterPresetBySide[this.side];
     const runtime = await buildCharacterConfigRuntimeCache(this.config);
     if (!runtime) {
@@ -4775,6 +6490,9 @@ class CharacterSprite {
     applyCharacterExtraScaleForSprite(this.side, scalePreset, this);
     this.frameEl.style.imageRendering = this.meta.noAntialiasing ? "pixelated" : "";
     this.frameEl.style.backgroundImage = runtime.imageUrl ? `url('${runtime.imageUrl}')` : "";
+    const backgroundSize = runtime.backgroundSize || "auto";
+    this.frameEl.style.backgroundSize = backgroundSize;
+    this.appliedFrameStyle.backgroundSize = backgroundSize;
     this.animations = runtime.animations || {};
 
     if (!this.animations.idle) {
@@ -4810,18 +6528,76 @@ class CharacterSprite {
     return "";
   }
 
-  getCurrentAnimOffset() {
+  resolveAnimOffset(animName) {
     const offsets = this.meta?.offsetsByAnim || {};
-    const current = offsets[this.currentAnim];
-    if (current) return current;
+    const normalizedAnim = normalizeName(animName);
+    if (!normalizedAnim) return null;
 
-    if (String(this.currentAnim || "").startsWith("miss-")) {
-      const lane = String(this.currentAnim).split("-")[1] || "";
+    const exact = offsets[normalizedAnim];
+    if (exact) return exact;
+
+    if (
+      normalizedAnim.startsWith("miss-") ||
+      normalizedAnim.startsWith("hold-")
+    ) {
+      const lane = normalizedAnim.split("-")[1] || "";
       const fallback = offsets[`sing-${lane}`];
       if (fallback) return fallback;
     }
 
-    return { x: 0, y: 0 };
+    return null;
+  }
+
+  getAnimReferenceSize(animName) {
+    const resolvedAnim = this.resolveAnimName(animName);
+    const frames = this.animations[resolvedAnim];
+    const frame = Array.isArray(frames) && frames.length > 0 ? frames[0] : null;
+    if (!frame) return { w: 0, h: 0 };
+
+    const wRaw = Number(frame.frameWidth || frame.w);
+    const hRaw = Number(frame.frameHeight || frame.h);
+    return {
+      w: Number.isFinite(wRaw) ? wRaw : 0,
+      h: Number.isFinite(hRaw) ? hRaw : 0
+    };
+  }
+
+  getCurrentFrameSize() {
+    const frame =
+      Array.isArray(this.currentFrames) && this.currentFrames.length > 0
+        ? this.currentFrames[this.currentFrameIndex] || this.currentFrames[0]
+        : null;
+    if (!frame) return { w: 0, h: 0 };
+
+    const wRaw = Number(frame.frameWidth || frame.w);
+    const hRaw = Number(frame.frameHeight || frame.h);
+    return {
+      w: Number.isFinite(wRaw) ? wRaw : 0,
+      h: Number.isFinite(hRaw) ? hRaw : 0
+    };
+  }
+
+  getCurrentAnimOffset() {
+    const idle = this.resolveAnimOffset("idle");
+    const current = this.resolveAnimOffset(this.currentAnim) || idle;
+    const idleSize = this.getAnimReferenceSize("idle");
+    const currentSize = this.getCurrentFrameSize();
+    const currentX = Number(current?.x);
+    const currentY = Number(current?.y);
+    const idleX = Number(idle?.x);
+    const idleY = Number(idle?.y);
+    const centerFixX = (Number(currentSize.w) - Number(idleSize.w)) * 0.5;
+    const centerFixY = (Number(currentSize.h) - Number(idleSize.h)) * 0.5;
+    return {
+      x:
+        (Number.isFinite(idleX) ? idleX : 0) -
+        (Number.isFinite(currentX) ? currentX : 0) +
+        (Number.isFinite(centerFixX) ? centerFixX : 0),
+      y:
+        (Number.isFinite(idleY) ? idleY : 0) -
+        (Number.isFinite(currentY) ? currentY : 0) +
+        (Number.isFinite(centerFixY) ? centerFixY : 0)
+    };
   }
 
   applyFrame(frame) {
@@ -4864,6 +6640,12 @@ class CharacterSprite {
     if (this.appliedFrameStyle.backgroundPosition !== bgPos) {
       this.frameEl.style.backgroundPosition = bgPos;
       this.appliedFrameStyle.backgroundPosition = bgPos;
+    }
+
+    // Keep center-anchored renderer aligned with Psych-style per-animation offsets
+    // when frame box size changes during animation playback.
+    if (characterSprites[this.side] === this) {
+      applyCharacterRenderOffset(this.side);
     }
   }
 
@@ -4953,6 +6735,41 @@ function ensureCharacterLayer() {
   return layerEl;
 }
 
+function normalizeCharacterSlotKey(side) {
+  const key = normalizeName(side);
+  if (key === "player" || key === "bf" || key === "boyfriend") return "player";
+  if (key === "opponent" || key === "dad") return "opponent";
+  if (key === "gf") return "gf";
+  return null;
+}
+
+function ensureCharacterSlot(side) {
+  const slotKey = normalizeCharacterSlotKey(side);
+  if (!slotKey) return null;
+  const layerEl = ensureCharacterLayer();
+  if (!layerEl) return null;
+
+  let slotEl = characterSlotEls[slotKey];
+  if (!slotEl || !slotEl.isConnected) {
+    slotEl = document.getElementById(`character-slot-${slotKey}`);
+    if (!slotEl) {
+      slotEl = document.createElement("div");
+      slotEl.id = `character-slot-${slotKey}`;
+      slotEl.className = `character-slot character-slot--${slotKey}`;
+    }
+    characterSlotEls[slotKey] = slotEl;
+  }
+
+  if (slotEl.parentElement !== layerEl) {
+    layerEl.appendChild(slotEl);
+  }
+  return slotEl;
+}
+
+function getCharacterPositionRoot(side) {
+  return ensureCharacterSlot(side);
+}
+
 function tickCharacterSprites(now) {
   const player = characterSprites.player;
   const opponent = characterSprites.opponent;
@@ -4972,6 +6789,9 @@ function tickCharacterSprites(now) {
   updateMikuGhostSprite(now);
   updateGhostEchoSprites();
   updateCharacterBounce(nowSongMs);
+  updateCharacterSlotLastKnownPosition("player");
+  updateCharacterSlotLastKnownPosition("opponent");
+  updateCharacterSlotLastKnownPosition("gf");
 
   characterRenderRafId = requestAnimationFrame(tickCharacterSprites);
 }
@@ -4995,7 +6815,13 @@ function resetCharacterChartStateForRetry() {
 window.updateCharacterChartEvents = updateCharacterChartEventsFromTimeline;
 window.prepareCharacterAssetsForGameplay = prepareCharacterAssetsForGameplay;
 window.prewarmCharacterPresetSwitchesForGameplay = prewarmCharacterPresetSwitchesForGameplay;
+window.prewarmCharacterPresentationForGameplay = prewarmCharacterPresentationForGameplay;
 window.resetCharacterChartStateForRetry = resetCharacterChartStateForRetry;
+window.setCharacterAtlasDownscaleEnabled = (enabled) => {
+  CHARACTER_ATLAS_DOWNSCALE_ENABLED = Boolean(enabled);
+  return CHARACTER_ATLAS_DOWNSCALE_ENABLED;
+};
+window.getCharacterAtlasDownscaleEnabled = () => CHARACTER_ATLAS_DOWNSCALE_ENABLED;
 window.setMikuDownOffsetY = (value) => {
   const next = Number(value);
   MIKU_DOWN_EXTRA_OFFSET_Y = Number.isFinite(next) ? next : 0;
@@ -5068,10 +6894,18 @@ function showOnlyCharacterSide(side) {
   setCharacterVisibility("opponent", side === "opponent");
 }
 
+function shouldDelayCharacterVisualApplyUntilPresetActive(side) {
+  const activePreset = normalizeCharacterPresetKey(characterPresetBySide[side]);
+  const targetPreset = normalizeCharacterPresetKey(characterSlotState[side]?.preset);
+  if (!activePreset || !targetPreset) return false;
+  return activePreset !== targetPreset;
+}
+
 function applyCharacterDisplayState(side, forceRestart = false) {
   const sprite = characterSprites[side];
   const state = characterDisplayState[side];
   if (!sprite || !state) return;
+  if (shouldDelayCharacterVisualApplyUntilPresetActive(side)) return;
 
   const frameDurationRaw = Number(state.frameDurationMs);
   const frameDurationMs =
@@ -5220,8 +7054,10 @@ function scheduleHoldFinalRun(side, lane, holdAnim, extra = {}) {
 }
 
 async function initializeCharacterSprites() {
-  const layerEl = ensureCharacterLayer();
-  if (!layerEl) return;
+  const playerSlot = ensureCharacterSlot("player");
+  const opponentSlot = ensureCharacterSlot("opponent");
+  const gfSlot = ensureCharacterSlot("gf");
+  if (!playerSlot || !opponentSlot || !gfSlot) return;
 
   const initialPlayerPreset = characterPresetBySide.player || "shadow";
   const initialOpponentPreset = characterPresetBySide.opponent || "shadow";
@@ -5233,9 +7069,9 @@ async function initializeCharacterSprites() {
   const initialGfConfig =
     getPresetConfig("gf", initialGfPreset) || GF_CHARACTER_PRESETS.bgthing;
 
-  characterSprites.player = new CharacterSprite("player", initialPlayerConfig, layerEl);
-  characterSprites.opponent = new CharacterSprite("opponent", initialOpponentConfig, layerEl);
-  characterSprites.gf = new CharacterSprite("gf", initialGfConfig, layerEl);
+  characterSprites.player = new CharacterSprite("player", initialPlayerConfig, playerSlot);
+  characterSprites.opponent = new CharacterSprite("opponent", initialOpponentConfig, opponentSlot);
+  characterSprites.gf = new CharacterSprite("gf", initialGfConfig, gfSlot);
   setCharacterVisibility("gf", false);
 
   await Promise.all([
@@ -5457,10 +7293,8 @@ function characterOnNoteEvent(side, lane, type, extra = {}) {
       });
     }
 
-    // Opponent has no keyup, so return to idle automatically.
-    if (side !== "player" || runtime.releaseRequested) {
-      queueCharacterIdleAt(side, runtime.holdReadyPerf);
-    }
+    // Always schedule idle at hold end to avoid player getting stuck when keyup is missed.
+    queueCharacterIdleAt(side, runtime.holdReadyPerf);
     return;
   }
 

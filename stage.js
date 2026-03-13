@@ -158,6 +158,13 @@ function stompWave(phase){
 }
 
 let introPlaying = false;
+let introPrepared = false;
+let introPreparePromise = null;
+let introSessionToken = 0;
+let introFadeTimer = null;
+let introFinishTimer = null;
+let introSongStartDelayTimer = null;
+const introStepTimers = [];
 
 const introAudios = [
   document.getElementById("intro-3"),
@@ -197,7 +204,7 @@ function preloadIntroImage(src) {
   return introImageCache[src];
 }
 
-function waitCanPlayWithTimeout(audioEl, timeoutMs = 800) {
+function waitCanPlayWithTimeout(audioEl, timeoutMs = 6000) {
   if (!audioEl) return Promise.resolve();
   return Promise.race([
     waitCanPlay(audioEl),
@@ -205,9 +212,135 @@ function waitCanPlayWithTimeout(audioEl, timeoutMs = 800) {
   ]);
 }
 
+function isIntroAudioReady(audioEl) {
+  return Boolean(audioEl && audioEl.readyState >= 2);
+}
+
+function areIntroAudiosReadyForPlayback() {
+  return introAudios.every((audioEl) => !audioEl || isIntroAudioReady(audioEl));
+}
+
+function ensureIntroAudioReady(audioEl, timeoutMs = 1200) {
+  if (!audioEl) return Promise.resolve(true);
+  if (isIntroAudioReady(audioEl)) return Promise.resolve(true);
+  try { audioEl.load(); } catch (e) {}
+  return waitCanPlayWithTimeout(audioEl, timeoutMs).then(() => isIntroAudioReady(audioEl));
+}
+
+async function warmIntroAudioPlayback(audioEl, timeoutMs = 220) {
+  if (!audioEl) return;
+  const prevMuted = audioEl.muted;
+  const prevVolume = audioEl.volume;
+  const prevRate = audioEl.playbackRate || 1;
+  try {
+    audioEl.muted = true;
+    audioEl.volume = 0;
+    audioEl.playbackRate = 1;
+    audioEl.currentTime = 0;
+    const p = audioEl.play();
+    if (p && typeof p.catch === "function") {
+      p.catch(() => {});
+    }
+    await waitForPlaying(audioEl, timeoutMs);
+  } catch (e) {
+  } finally {
+    try { audioEl.pause(); } catch (e) {}
+    try { audioEl.currentTime = 0; } catch (e) {}
+    audioEl.muted = prevMuted;
+    audioEl.volume = prevVolume;
+    audioEl.playbackRate = prevRate;
+  }
+}
+
+async function warmIntroAudiosForPlayback() {
+  for (const audioEl of introAudios) {
+    await warmIntroAudioPlayback(audioEl);
+  }
+}
+
+function clearIntroPlaybackTimers() {
+  if (introFadeTimer) {
+    clearTimeout(introFadeTimer);
+    introFadeTimer = null;
+  }
+  if (introFinishTimer) {
+    clearTimeout(introFinishTimer);
+    introFinishTimer = null;
+  }
+  if (introSongStartDelayTimer) {
+    clearTimeout(introSongStartDelayTimer);
+    introSongStartDelayTimer = null;
+  }
+  introStepTimers.forEach((timerId) => clearTimeout(timerId));
+  introStepTimers.length = 0;
+}
+
+function resetIntroImageState() {
+  const img = document.getElementById("intro-image");
+  if (!img) return;
+  img.onload = null;
+  img.classList.remove("show", "fade");
+  img.style.opacity = 0;
+}
+
+function stopStageIntroPlayback() {
+  introSessionToken += 1;
+  introPlaying = false;
+  clearIntroPlaybackTimers();
+  introAudios.forEach((audioEl) => {
+    if (!audioEl) return;
+    try {
+      audioEl.pause();
+      audioEl.currentTime = 0;
+    } catch (e) {}
+  });
+  resetIntroImageState();
+}
+
+function prepareStageIntroAssetsForPlayback() {
+  if (introPrepared && areIntroAudiosReadyForPlayback()) {
+    return Promise.resolve(true);
+  }
+  if (introPreparePromise) return introPreparePromise;
+
+  const audioReadyTasks = introAudios.map((audioEl) => ensureIntroAudioReady(audioEl));
+  const imageReadyTasks = introImages.filter(Boolean).map((src) => preloadIntroImage(src));
+
+  introPreparePromise = Promise.all([
+    ...audioReadyTasks,
+    ...imageReadyTasks
+  ])
+    .then(() => {
+      if (introPrepared) return true;
+      return warmIntroAudiosForPlayback().then(() => true);
+    })
+    .then(() => {
+      introPrepared = true;
+      return true;
+    })
+    .catch((err) => {
+      console.warn("intro prepare failed:", err);
+      return false;
+    })
+    .finally(() => {
+      introPreparePromise = null;
+    });
+
+  return introPreparePromise;
+}
+
+window.stopStageIntroPlayback = stopStageIntroPlayback;
+window.prepareStageIntroAssetsForPlayback = prepareStageIntroAssetsForPlayback;
+
 function safePlayAudio(audioEl) {
   if (!audioEl) return;
   try {
+    // Avoid queued delayed playback: if not ready yet, skip this step.
+    if (audioEl.readyState < 2) {
+      try { audioEl.load(); } catch (e) {}
+      return;
+    }
+    audioEl.pause();
     audioEl.currentTime = 0;
     const p = audioEl.play();
     if (p && typeof p.catch === "function") {
@@ -239,7 +372,9 @@ function waitForPlaying(audioEl, timeoutMs = 1200) {
 }
 
 function playIntroAndStartSong(){
+  stopStageIntroPlayback();
   introPlaying = true;
+  const introToken = introSessionToken;
 
 
   let imgs = document.getElementById("intro-image");
@@ -259,15 +394,8 @@ function playIntroAndStartSong(){
   const FADE_MS = 20;
   const INTRO_STEPS = 4;
 
-  let introToken = 0;
-  let introFadeTimer = null;
-  const introStepTimers = [];
-  let introFinishTimer = null;
-
   function showIntroImage(src) {
-    introToken++;
-    const token = introToken;
-
+    if (introToken !== introSessionToken) return;
     if (introFadeTimer) {
       clearTimeout(introFadeTimer);
       introFadeTimer = null;
@@ -281,15 +409,16 @@ function playIntroAndStartSong(){
     img.src = src;
 
     const reveal = () => {
-      if (token !== introToken) return;
+      if (!introPlaying || introToken !== introSessionToken) return;
       img.classList.remove("fade");
       img.classList.add("show");
       img.style.opacity = "1";
 
       introFadeTimer = setTimeout(() => {
-        if (token !== introToken) return;
+        if (!introPlaying || introToken !== introSessionToken) return;
         img.classList.add("fade");
         img.style.opacity = "0";
+        introFadeTimer = null;
       }, BEAT_MS * SHOW_RATIO);
     };
 
@@ -300,19 +429,13 @@ function playIntroAndStartSong(){
     }
   }
 
-  function clearIntroTimers() {
-    introStepTimers.forEach((t) => clearTimeout(t));
-    introStepTimers.length = 0;
-    if (introFinishTimer) {
-      clearTimeout(introFinishTimer);
-      introFinishTimer = null;
-    }
-  }
-
   function finishIntroAndStartSong() {
+    if (!introPlaying || introToken !== introSessionToken) return;
     img.classList.add("fade");
 
-    setTimeout(() => {
+    introSongStartDelayTimer = setTimeout(() => {
+      introSongStartDelayTimer = null;
+      if (!introPlaying || introToken !== introSessionToken) return;
       img.classList.remove("show", "fade");
       img.style.opacity = 0;
 
@@ -323,6 +446,7 @@ function playIntroAndStartSong(){
         waitCanPlay(song),
         waitCanPlay(song2)
       ]).then(() => {
+        if (!introPlaying || introToken !== introSessionToken) return;
         song.currentTime = 0;
         if (song2) song2.currentTime = 0;
 
@@ -336,22 +460,27 @@ function playIntroAndStartSong(){
           ]);
         });
       }).then(() => {
+        if (!introPlaying || introToken !== introSessionToken) return;
         if (song2) {
           const instStartTime = Math.max(0, song.currentTime || 0);
           const voicesStartTime = Math.max(0, song2.currentTime || 0);
-          const alignedStartTime = instStartTime;
-          if (Math.abs(instStartTime - voicesStartTime) >= 0.02) {
-            song2.currentTime = alignedStartTime;
+          const voicesOffsetSec =
+            typeof window.getVoicesSyncOffsetSec === "function"
+              ? Number(window.getVoicesSyncOffsetSec()) || 0
+              : 0;
+          const alignedVoicesTime = Math.max(0, instStartTime + voicesOffsetSec);
+          if (Math.abs(alignedVoicesTime - voicesStartTime) >= 0.02) {
+            song2.currentTime = alignedVoicesTime;
           }
           song2.playbackRate = song.playbackRate || 1;
           if (typeof startSongTimeline === "function") {
-            startSongTimeline(alignedStartTime);
+            startSongTimeline(instStartTime);
           }
 
           if (typeof forceSyncSongTracksNow === "function") {
             forceSyncSongTracksNow();
           } else {
-            song2.currentTime = alignedStartTime;
+            song2.currentTime = alignedVoicesTime;
           }
 
           requestAnimationFrame(() => {
@@ -370,6 +499,7 @@ function playIntroAndStartSong(){
           beginTrackSyncBoost(1000);
         }
         setupJudgeImages();
+        clearIntroPlaybackTimers();
         lastBarIndex = -1;
         barZoomSkipUntilMs = BAR_ZOOM_SKIP_AFTER_GO_MS;
         started = true;
@@ -387,44 +517,44 @@ function playIntroAndStartSong(){
 
   function startIntroTimeline() {
     const introStart = performance.now();
+    const MAX_STEP_LATE_MS = Math.max(16, BEAT_MS * 0.9);
 
     function runStep(stepIndex) {
-      if (!introPlaying) return;
+      if (!introPlaying || introToken !== introSessionToken) return;
       safePlayAudio(introAudios[stepIndex]);
       if (introImages[stepIndex]) {
         showIntroImage(introImages[stepIndex]);
       }
     }
 
-    function scheduleStep(stepIndex) {
-      if (stepIndex >= INTRO_STEPS) {
-        const target = introStart + BEAT_MS * INTRO_STEPS;
-        const delay = Math.max(0, target - performance.now());
-        introFinishTimer = setTimeout(() => {
-          finishIntroAndStartSong();
-        }, delay);
-        return;
-      }
-
+    for (let stepIndex = 0; stepIndex < INTRO_STEPS; stepIndex += 1) {
       const target = introStart + BEAT_MS * stepIndex;
       const delay = Math.max(0, target - performance.now());
       const timer = setTimeout(() => {
+        if (!introPlaying || introToken !== introSessionToken) return;
+        const lateMs = performance.now() - target;
+        if (stepIndex !== 0 && lateMs > MAX_STEP_LATE_MS) return;
         runStep(stepIndex);
-        scheduleStep(stepIndex + 1);
       }, delay);
       introStepTimers.push(timer);
     }
 
-    scheduleStep(0);
+    const finishTarget = introStart + BEAT_MS * INTRO_STEPS;
+    const finishDelay = Math.max(0, finishTarget - performance.now());
+    introFinishTimer = setTimeout(() => {
+      introFinishTimer = null;
+      if (!introPlaying || introToken !== introSessionToken) return;
+      finishIntroAndStartSong();
+    }, finishDelay);
   }
 
-  clearIntroTimers();
-  Promise.all([
-    ...introAudios.map((a) => waitCanPlayWithTimeout(a)),
-    ...introImages.filter(Boolean).map((src) => preloadIntroImage(src))
-  ]).finally(() => {
-    if (!introPlaying) return;
-    startIntroTimeline();
+  clearIntroPlaybackTimers();
+  prepareStageIntroAssetsForPlayback().finally(() => {
+    if (!introPlaying || introToken !== introSessionToken) return;
+    ensureIntroAudioReady(introAudios[0], Math.max(600, Math.round(BEAT_MS))).finally(() => {
+      if (!introPlaying || introToken !== introSessionToken) return;
+      startIntroTimeline();
+    });
   });
 }
 

@@ -1,5 +1,0 @@
-Ghost Echo
-
-
-1:on/off
-2:ghostleft1, ghostleft2... ghostright1... etc.

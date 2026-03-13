@@ -1,3 +1,0 @@
-Show Image FHUD
-1: image name
-2: on/off

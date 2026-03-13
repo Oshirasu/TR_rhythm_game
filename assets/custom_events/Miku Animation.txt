@@ -1,4 +1,0 @@
-Miku Animation
-
-1: animation name
-2: on/off

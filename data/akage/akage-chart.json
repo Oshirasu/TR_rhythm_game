@@ -1896,8 +1896,8 @@
 		[
 			11076.9230769231,
 			[
-				["move dad", "225", "0.1"],
-				["Move Characters", "bf", "1050"]
+				["move dad", "240", "0"],
+				["Move Characters", "bf", "1020"]
 			]
 		],
 		[
@@ -1922,7 +1922,7 @@
 		[
 			29538.4615384615,
 			[
-				["Move Characters", "dad", "-200"],
+				["Move Characters", "dad", "-220"],
 				["Move Characters", "bf", "1200"]
 			]
 		],
@@ -1984,7 +1984,7 @@
 		[
 			30769.2307692308,
 			[
-				["move dad", "170", "0"]
+				["move dad", "120", "0"]
 			]
 		],
 		[
@@ -2355,7 +2355,7 @@
 		[
 			60303.8461538462,
 			[
-				["Screen Shake", " 9.6192307692308, 0.01", ""]
+				["Screen Shake", " 9.6192307692308, 0.0115", ""]
 			]
 		],
 		[
@@ -2634,8 +2634,8 @@
 			69384.6153846155,
 			[
 				["Camera Follow Pos", "0", ""],
-				["Move Characters", "bf", "1050"],
-				["Move Characters", "dad", "225"]
+				["Move Characters", "bf", "1020"],
+				["Move dad", "240", "0.1"]
 			]
 		],
 		[
@@ -2845,7 +2845,7 @@
 		[
 			113923.076923077,
 			[
-				["Move Characters", "dad", "600"],
+				["Move dad", "240", "0.1"],
 				["Move Characters", "bf", "1200"],
 				["Camera Follow Pos", "-470", "0"],
 				["Change Notes", "Akage_Notes", "Akage_Splashes"]
@@ -2886,7 +2886,7 @@
 		[
 			114153.846153846,
 			[
-				["move dad", "200", "0"]
+				["move dad", "120", "0"]
 			]
 		],
 		[

@@ -82,7 +82,7 @@ function preloadJudgeDigits() {
 // ===============
 // ノートスプラッシュ
 // ===============
-const SPLASH_SCALE = 1.2;
+const SPLASH_SCALE = 1.15;
 const SPLASH_FRAME_MS = 24;
 const SPLASH_COLOR_BY_LANE = ["purple", "blue", "green", "red"];
 const SPLASH_XML_BY_SKIN = {
@@ -289,7 +289,7 @@ const SUSTAIN_FRAMES = {
 // ========================
 const BASE_SPEED = 1000;
 
-const NOTE_SPEED = 1.3;
+const NOTE_SPEED = 1.33;
 let speedMultiplier = NOTE_SPEED;
 
 
@@ -303,14 +303,14 @@ const JUDGE = {
 SICK: 45,
 GOOD: 90,
 BAD: 135,
-SHIT: 300,
-FRAME_MS: 1000 / 60,
+SHIT: 10000 / 30,
+FRAME_MS: 10000 / 30,
 
 get MAX() { return this.SHIT; }
 };
 
 
-let JUDGE_OFFSET = -45;
+let JUDGE_OFFSET = -20;
 
 function setJudgeOffset(ms) {
 	JUDGE_OFFSET = Number(ms) || 0;
@@ -345,6 +345,8 @@ let flashCameraLastSongMs = 0;
 let flashCameraOverlayEl = null;
 let flashCameraAnimToken = 0;
 let flashCameraAnimRafId = 0;
+let flashCameraPrewarmed = false;
+let flashCameraPrewarmPromise = null;
 
 function normalizeChartEventName(name) {
   return String(name || "").trim().toLowerCase();
@@ -364,6 +366,68 @@ function ensureFlashCameraOverlay() {
 
   flashCameraOverlayEl = el;
   return flashCameraOverlayEl;
+}
+
+function waitForAnimationFrames(frameCount = 1) {
+  const total =
+    Number.isFinite(Number(frameCount)) && Number(frameCount) > 0
+      ? Math.round(Number(frameCount))
+      : 1;
+  return new Promise((resolve) => {
+    let remaining = total;
+    const step = () => {
+      remaining -= 1;
+      if (remaining <= 0) {
+        resolve();
+        return;
+      }
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+function prewarmFlashCameraForStart() {
+  if (flashCameraPrewarmed) return Promise.resolve(true);
+  if (flashCameraPrewarmPromise) return flashCameraPrewarmPromise;
+
+  flashCameraPrewarmPromise = (async () => {
+    const el = ensureFlashCameraOverlay();
+    const previousStyles = {
+      transition: el.style.transition || "",
+      opacity: el.style.opacity || "",
+      willChange: el.style.willChange || ""
+    };
+
+    try {
+      el.style.willChange = "opacity";
+      el.style.transition = "none";
+      el.style.opacity = "0";
+      el.getBoundingClientRect();
+
+      await waitForAnimationFrames(1);
+
+      el.style.transition = "opacity 16ms linear";
+      el.style.opacity = "0.001";
+      await waitForAnimationFrames(2);
+
+      el.style.opacity = "0";
+      await waitForAnimationFrames(1);
+
+      flashCameraPrewarmed = true;
+      return true;
+    } catch (err) {
+      console.warn("flash camera prewarm failed:", err);
+      return false;
+    } finally {
+      el.style.transition = previousStyles.transition;
+      el.style.opacity = previousStyles.opacity;
+      el.style.willChange = previousStyles.willChange;
+      flashCameraPrewarmPromise = null;
+    }
+  })();
+
+  return flashCameraPrewarmPromise;
 }
 
 function parseFlashCameraEvents(eventList) {
@@ -621,6 +685,7 @@ function spawnNote(note, nowMs = getSongTimeMs()) {
     console.warn("lane not found", groupSelector, note.lane);
     return;
   }
+  note._laneEl = laneEl;
 
 
   const el = document.createElement("div");
@@ -669,10 +734,10 @@ function spawnNote(note, nowMs = getSongTimeMs()) {
 }
 
 const LANE_JUDGE_Y_OFFSET = {
-  0: -100,   // left
-  1: -100,   // down
-  2: -100,   // up
-  3: -100    // right
+  0: -110,   // left
+  1: -110,   // down
+  2: -110,   // up
+  3: -110    // right
 };
 // ======================================
 // メイン更新ループ
@@ -697,8 +762,30 @@ function requestUpdateFrame() {
 function update() {
   const nowMs = getSongTimeMs();
   const gameRect = document.getElementById("game").getBoundingClientRect();
+  const sustainClipLineLocalByLane = Object.create(null);
+  const sustainClipLineViewByLane = Object.create(null);
 
   if (!started || introPlaying) {
+    if (
+      !introPlaying &&
+      !songResultShown &&
+      !gameOverTriggered &&
+      !gameOverEnding &&
+      song
+    ) {
+      const durationSec = Number(song.duration);
+      const currentSec = Math.max(0, Number(song.currentTime) || 0);
+      if (Number.isFinite(durationSec) && durationSec > 0) {
+        if (currentSec >= durationSec - 0.2) {
+          onSongFinished();
+        }
+      }
+    }
+    requestUpdateFrame();
+    return;
+  }
+
+  if (checkSongFinished(nowMs)) {
     requestUpdateFrame();
     return;
   }
@@ -726,7 +813,7 @@ function update() {
   // ===== opponent notes auto remove ====
 if (!note.isPlayer) {
 
-  if (!note.isSustain && nowMs >= note.time + (JUDGE_OFFSET || 0)) {
+  if (!note.isSustain && nowMs >= note.time) {
     emitCharacterNoteEvent("opponent", note.lane, "tap", { note });
     removeNote(note);
     i--;
@@ -768,15 +855,18 @@ if (
   note.el.style.pointerEvents = "none";
 }
 
-  // ===== opponent sustain head auto remove =====
-if (!note.isPlayer && note.isSustain && note.el) {
-  if (nowMs >= note.time + (JUDGE_OFFSET || 0)) {
+  // ===== opponent sustain start =====
+if (!note.isPlayer && note.isSustain) {
+  const sustainStartTime = note.time;
+  if (nowMs >= sustainStartTime) {
     if (!note._opponentHoldStarted) {
       note._opponentHoldStarted = true;
       emitCharacterNoteEvent("opponent", note.lane, "hold_start", { note });
     }
-    note.el.remove();
-    note.el = null;
+    if (note.el) {
+      note.el.remove();
+      note.el = null;
+    }
   }
 }
 
@@ -884,6 +974,7 @@ if (
 
     if (!note.finishQueued) {
       note.finishQueued = true;
+      note.holdEndedAtMs = nowMs;
       emitCharacterNoteEvent("player", note.lane, "hold_end", { note });
 
       note.el?.remove();
@@ -912,7 +1003,7 @@ if (
         }
       }
 
-      continue;
+      // Do not remove immediately; let sustain visuals clip out smoothly.
     }
   }
 }
@@ -948,7 +1039,7 @@ if (
 if (note.ended) {
   continue;
 }
-    if (note.sustainTiles.length > 0) {
+    if (note.sustainTiles.length > 0 || note.tailEl) {
 
 
       const displayBaseTime = note.time + (JUDGE_OFFSET || 0);
@@ -976,86 +1067,120 @@ const headBottomY =
 
       for (let t = 0; t < note.sustainTiles.length; t++) {
         const tile = note.sustainTiles[t];
-
         const tileBottom = headBottomY - (tile._spawnOffsetPx ?? (t * step));
         const h = tile._renderH || (note.sustainFrame.body.h * NOTE_SCALE);
-        tile.style.top = `${tileBottom - h}px`;
+        const tileTop = tileBottom - h;
+        tile._topPx = tileTop;
+        tile.style.top = `${tileTop}px`;
       }
-
 
       if (note.tailEl) {
         const tail = note.tailEl;
         const tailCount = note._sustainTileCount ?? note.sustainTiles.length;
         const tailBottom = headBottomY - (tail._spawnOffsetPx ?? (tailCount * step));
         const th = tail._renderH || (note.sustainFrame.end.h * NOTE_SCALE);
-        tail.style.top = `${tailBottom - th}px`;
+        const tailTop = tailBottom - th;
+        tail._topPx = tailTop;
+        tail.style.top = `${tailTop}px`;
       }
 
+      // ===== smooth sustain clipping near judge line =====
+      // Apply clipping not only on clean hits but also on finish/miss routes,
+      // otherwise tail can linger below the receptor line.
+      if (note.hit || note.finishQueued || note.headMissed) {
+        const lineKey = `${note.isPlayer ? "p" : "o"}:${note.lane}`;
+        const laneEl =
+          note._laneEl ||
+          note.el?.closest(".lane") ||
+          document.querySelector(
+            `${note.isPlayer ? ".lane-group.player" : ".lane-group.opponent"} .lane[data-lane="${note.lane}"]`
+          );
+        const judgeEl = judgeImages[note.lane] || null;
+        let lineYLocal = Number(sustainClipLineLocalByLane[lineKey]);
+        let lineYView = Number(sustainClipLineViewByLane[lineKey]);
+        if (!Number.isFinite(lineYLocal) || !Number.isFinite(lineYView)) {
+          lineYLocal = HIT_Y + laneOffset + SUSTAIN_CLIP_LINE_OFFSET_Y;
+          lineYView = gameRect.top + lineYLocal;
+          if (laneEl && judgeEl) {
+            const laneRect = laneEl.getBoundingClientRect();
+            const judgeRect = judgeEl.getBoundingClientRect();
+            lineYLocal = (judgeRect.top - laneRect.top) + SUSTAIN_CLIP_LINE_OFFSET_Y;
+            lineYView = judgeRect.top + SUSTAIN_CLIP_LINE_OFFSET_Y;
+          }
+          sustainClipLineLocalByLane[lineKey] = lineYLocal;
+          sustainClipLineViewByLane[lineKey] = lineYView;
+        }
+        const offscreenYLocal = gameRect.height + 70;
+        const offscreenYView = gameRect.bottom + 70;
 
-// ===== sustain tile (clip by judge line) =====
-if (note.sustainTiles.length > 0) {
-  const judgeLineY =
-    judgeImages[note.lane]?.getBoundingClientRect().top;
+        for (let t = 0; t < note.sustainTiles.length; t++) {
+          const tile = note.sustainTiles[t];
+          const tileTop = Number.isFinite(Number(tile._topPx))
+            ? Number(tile._topPx)
+            : (parseFloat(tile.style.top) || 0);
+          const fullRenderH = tile._renderH || (note.sustainFrame.body.h * NOTE_SCALE);
+          const fullRawH = note.sustainFrame.body.h;
+          const visibleRenderH = Math.min(
+            fullRenderH,
+            Math.max(0, lineYLocal - tileTop)
+          );
+          const visibleRawH = Math.min(fullRawH, Math.max(0, visibleRenderH / NOTE_SCALE));
+          const clipBottom = Math.max(0, fullRawH - visibleRawH);
+          if (visibleRawH <= 0.01) {
+            tile.remove();
+            note.sustainTiles.splice(t, 1);
+            t--;
+            continue;
+          }
+          tile.style.opacity = "0.87";
+          tile.style.clipPath = `inset(0px 0px ${clipBottom}px 0px)`;
 
-  if (judgeLineY !== undefined && note.hit) {
-    const lineY = judgeLineY + 70;
-    const offscreenY = gameRect.bottom + 70;
+          if (tileTop > offscreenYLocal) {
+            tile.remove();
+            note.sustainTiles.splice(t, 1);
+            t--;
+          }
+        }
 
-    for (let t = 0; t < note.sustainTiles.length; t++) {
-      const tile = note.sustainTiles[t];
-      const rect = tile.getBoundingClientRect();
-      const fullH = tile._renderH || (note.sustainFrame.body.h * NOTE_SCALE);
-      const visible = Math.min(fullH, Math.max(0, lineY - rect.top));
+        if (note.tailEl) {
+          const tail = note.tailEl;
+          const tailLineYView = lineYView - SUSTAIN_TAIL_CLIP_EXTRA_UP_Y;
+          const tailRect = tail.getBoundingClientRect();
+          const fullRenderH = tail._renderH || (note.sustainFrame.end.h * NOTE_SCALE);
+          const fullRawH = note.sustainFrame.end.h;
+          const visibleRenderH = Math.min(
+            fullRenderH,
+            Math.max(0, tailLineYView - tailRect.top)
+          );
+          const visibleRawH = Math.min(fullRawH, Math.max(0, visibleRenderH / NOTE_SCALE));
+          // Tail is rotated; use transformed viewport geometry for line matching.
+          if (tailRect.top >= tailLineYView - 0.5 || visibleRawH <= 0.01) {
+            tail.remove();
+            note.tailEl = null;
+          } else {
+            // tail is rendered upside-down; clip from source top.
+            const clipTop = Math.max(0, fullRawH - visibleRawH);
+            tail.style.opacity = "0.87";
+            tail.style.clipPath = `inset(${clipTop}px 0px 0px 0px)`;
+          }
 
-      if (visible <= 0) {
-        tile.style.height = "0px";
-        tile.style.opacity = "0";
-      } else {
-        tile.style.height = `${visible / NOTE_SCALE}px`;
-        tile.style.opacity = "0.87";
+          if (note.tailEl && tailRect.top > offscreenYView) {
+            tail.remove();
+            note.tailEl = null;
+          }
+        }
       }
+    }
 
-      if (rect.top > offscreenY) {
-        tile.remove();
-        note.sustainTiles.splice(t, 1);
-        t--;
+    if (note.isPlayer && note.isSustain && note.finishQueued) {
+      const sustainEnd = note.time + note.sustain + (JUDGE_OFFSET || 0);
+      const noVisuals = note.sustainTiles.length <= 0 && !note.tailEl;
+      const forceCleanupMs = sustainEnd + SUSTAIN_FORCE_CLEANUP_EXTRA_MS;
+      if (noVisuals || nowMs >= forceCleanupMs) {
+        removeNote(note);
+        i--;
+        continue;
       }
-    }
-  }
-}
-// ===== sustain tail (clip by judge line) =====
-if (note.tailEl) {
-  const judgeLineY = note.isPlayer
-    ? judgeImages[note.lane]?.getBoundingClientRect().top
-    : HIT_Y;
-
-  if (judgeLineY !== undefined && note.hit) {
-    const lineY = judgeLineY + 70;
-    const offscreenY = gameRect.bottom + 70;
-    const tail = note.tailEl;
-    const rect = tail.getBoundingClientRect();
-    const fullRenderH = tail._renderH || (note.sustainFrame.end.h * NOTE_SCALE);
-    const fullRawH = note.sustainFrame.end.h;
-    const visibleRenderH = Math.min(fullRenderH, Math.max(0, lineY - rect.top));
-
-    if (visibleRenderH <= 0) {
-      tail.style.opacity = "0";
-      tail.style.clipPath = `inset(${fullRawH}px 0px 0px 0px)`;
-    } else {
-      // tail is drawn with rotate(180deg), so hide from source-top to clip
-      // from the judge-line side smoothly.
-      const visibleRawH = visibleRenderH / NOTE_SCALE;
-      const clipTop = Math.max(0, fullRawH - visibleRawH);
-      tail.style.opacity = "0.87";
-      tail.style.clipPath = `inset(${clipTop}px 0px 0px 0px)`;
-    }
-
-    if (rect.top > offscreenY) {
-      tail.remove();
-      note.tailEl = null;
-    }
-  }
-}
     }
   }
 
@@ -1361,7 +1486,7 @@ const lossSfx = new Audio("assets/sounds/fnf_loss_sfx.ogg");
 const gameOverBgm = new Audio("assets/music/gameOver.ogg");
 const gameOverEndBgm = new Audio("assets/music/gameOverEnd.ogg");
 const MASTER_VOLUME_STORAGE_KEY = "tr_master_volume";
-const DEFAULT_MASTER_VOLUME = 0.1;
+const DEFAULT_MASTER_VOLUME = 1;
 let masterVolume = DEFAULT_MASTER_VOLUME;
 let gameOverTriggered = false;
 let gameOverEnding = false;
@@ -1369,10 +1494,14 @@ let gameOverReturnScheduled = false;
 let gameOverEndTimer = null;
 let gameOverOverlapTimer = null;
 let screenCurtainTimer = null;
-const SCREEN_CURTAIN_DROP_MS = 900;
-const SCREEN_CURTAIN_LIFT_MS = 450;
-const SCREEN_RETURN_DELAY_MS = 300;
+let screenCurtainAnimToken = 0;
+const SCREEN_CURTAIN_DROP_MS = 500;
+const SCREEN_CURTAIN_LIFT_MS = 500;
+const SCREEN_CURTAIN_HOLD_MS = 120;
+const SCREEN_RETURN_DELAY_MS = 200;
 let gameOverRestartTimer = null;
+let songResultShown = false;
+let songResultReturnTransitioning = false;
 gameOverBgm.loop = true;
 
 function clamp01(value) {
@@ -1446,6 +1575,7 @@ function ensureScreenCurtain() {
 }
 
 function clearScreenCurtainTimer() {
+  screenCurtainAnimToken += 1;
   if (screenCurtainTimer) {
     clearTimeout(screenCurtainTimer);
     screenCurtainTimer = null;
@@ -1474,6 +1604,7 @@ function resetScreenCurtain() {
 function dropScreenCurtain(durationMs = SCREEN_CURTAIN_DROP_MS, onDone) {
   const el = ensureScreenCurtain();
   clearScreenCurtainTimer();
+  const token = screenCurtainAnimToken;
   el.style.setProperty("--curtain-ms", `${durationMs}ms`);
   el.classList.remove(
     "screen-curtain--lift",
@@ -1484,17 +1615,35 @@ function dropScreenCurtain(durationMs = SCREEN_CURTAIN_DROP_MS, onDone) {
   el.classList.remove("screen-curtain--solid");
   void el.offsetWidth;
   el.classList.add("screen-curtain--drop");
-  screenCurtainTimer = setTimeout(() => {
+
+  let settled = false;
+  const finish = () => {
+    if (settled) return;
+    settled = true;
+    el.removeEventListener("animationend", onAnimEnd);
+    if (token !== screenCurtainAnimToken) return;
+    if (screenCurtainTimer) {
+      clearTimeout(screenCurtainTimer);
+      screenCurtainTimer = null;
+    }
     el.classList.remove("screen-curtain--drop");
     el.classList.add("screen-curtain--hold");
-    el.classList.add("screen-curtain--solid");
+    el.classList.remove("screen-curtain--solid");
     if (typeof onDone === "function") onDone();
-  }, durationMs);
+  };
+  const onAnimEnd = (event) => {
+    if (!event || event.target !== el) return;
+    if (event.animationName !== "screen-curtain-drop") return;
+    finish();
+  };
+  el.addEventListener("animationend", onAnimEnd);
+  screenCurtainTimer = setTimeout(finish, Math.max(0, durationMs) + 120);
 }
 
 function liftScreenCurtain(durationMs = SCREEN_CURTAIN_LIFT_MS) {
   const el = ensureScreenCurtain();
   clearScreenCurtainTimer();
+  const token = screenCurtainAnimToken;
   el.style.setProperty("--curtain-ms", `${durationMs}ms`);
   el.classList.remove(
     "screen-curtain--drop",
@@ -1505,10 +1654,27 @@ function liftScreenCurtain(durationMs = SCREEN_CURTAIN_LIFT_MS) {
   el.classList.remove("screen-curtain--solid");
   void el.offsetWidth;
   el.classList.add("screen-curtain--lift");
-  screenCurtainTimer = setTimeout(() => {
+
+  let settled = false;
+  const finish = () => {
+    if (settled) return;
+    settled = true;
+    el.removeEventListener("animationend", onAnimEnd);
+    if (token !== screenCurtainAnimToken) return;
+    if (screenCurtainTimer) {
+      clearTimeout(screenCurtainTimer);
+      screenCurtainTimer = null;
+    }
     el.classList.remove("screen-curtain--lift");
     el.classList.add("screen-curtain--hidden");
-  }, durationMs);
+  };
+  const onAnimEnd = (event) => {
+    if (!event || event.target !== el) return;
+    if (event.animationName !== "screen-curtain-lift") return;
+    finish();
+  };
+  el.addEventListener("animationend", onAnimEnd);
+  screenCurtainTimer = setTimeout(finish, Math.max(0, durationMs) + 120);
 }
 
 let audioPrimed = false;
@@ -1524,14 +1690,16 @@ let songTimelineAnchorSec = 0;
 let songTimelineAnchorPerf = 0;
 let songTimelineRate = 1;
 let songTimelineRunning = false;
-const SYNC_CHECK_INTERVAL = 60;
-const SYNC_SOFT_THRESHOLD = 0.003;
-const SYNC_BAR_ADJUST_THRESHOLD = 0.015;
-const SYNC_HARD_RESYNC_THRESHOLD = 0.12;
-const SYNC_RATE_MAX_DELTA = 0.02;
-const SYNC_RATE_SMOOTH = 0.25;
+const SYNC_CHECK_INTERVAL = 20;
+const SYNC_SOFT_THRESHOLD = 0.002;
+const SYNC_BAR_ADJUST_THRESHOLD = 0.008;
+const SYNC_HARD_RESYNC_THRESHOLD = 0.04;
+const SYNC_HARD_RESYNC_COOLDOWN_MS = 220;
+const SYNC_RATE_MAX_DELTA = 0.015;
+const SYNC_RATE_SMOOTH = 0.35;
 let voicesSyncOffsetSec = 0;
 let lastSyncCheck = 0;
+let lastHardResyncPerf = -Infinity;
 let syncEventHooksInstalled = false;
 let syncLastAdjustBarIndexVoices = -1;
 let syncVoicesRateDelta = 0;
@@ -1608,6 +1776,7 @@ function resetSongTimeline(timeSec = 0) {
   songTimelineRate = song ? (song.playbackRate || 1) : 1;
   syncLastAdjustBarIndexVoices = -1;
   syncVoicesRateDelta = 0;
+  lastHardResyncPerf = -Infinity;
 }
 
 window.getSongTimeSec = getSongTimeSec;
@@ -1724,12 +1893,19 @@ async function prepareInitialSongStart() {
 
 function prepareVisualAssetsForStart() {
   const tasks = [];
+  if (typeof window.prepareStageIntroAssetsForPlayback === "function") {
+    tasks.push(window.prepareStageIntroAssetsForPlayback());
+  }
   if (typeof window.prepareCharacterAssetsForGameplay === "function") {
     tasks.push(window.prepareCharacterAssetsForGameplay());
   }
   if (typeof window.prewarmCharacterPresetSwitchesForGameplay === "function") {
     tasks.push(window.prewarmCharacterPresetSwitchesForGameplay());
   }
+  if (typeof window.prewarmCharacterPresentationForGameplay === "function") {
+    tasks.push(window.prewarmCharacterPresentationForGameplay());
+  }
+  tasks.push(prewarmFlashCameraForStart());
   if (!tasks.length) return Promise.resolve();
   return Promise.allSettled(tasks);
 }
@@ -1758,6 +1934,7 @@ function setVoicesSyncOffsetSec(value) {
   voicesSyncOffsetSec = Number.isFinite(n) ? n : 0;
   syncLastAdjustBarIndexVoices = -1;
   syncVoicesRateDelta = 0;
+  lastHardResyncPerf = -Infinity;
   syncSong2Immediate(false);
   return voicesSyncOffsetSec;
 }
@@ -1770,6 +1947,7 @@ function forceSyncSongTracksNow() {
   // Keep API name for compatibility: force a re-check/re-align only.
   syncLastAdjustBarIndexVoices = -1;
   syncVoicesRateDelta = 0;
+  lastHardResyncPerf = -Infinity;
   syncSongTracks();
 }
 
@@ -1799,17 +1977,30 @@ function installTrackSyncEventHooks() {
   });
   song.addEventListener("play", () => {
     startSongTimeline(song.currentTime || 0);
-    if (song2 && song2.paused) {
+    if (song2) {
+      const targetVoicesTime = Math.max(
+        0,
+        (Number(song.currentTime) || 0) + (Number(voicesSyncOffsetSec) || 0)
+      );
+      if (Math.abs((Number(song2.currentTime) || 0) - targetVoicesTime) > SYNC_SOFT_THRESHOLD) {
+        song2.currentTime = targetVoicesTime;
+      }
       song2.playbackRate = song.playbackRate || 1;
-      const p = song2.play();
-      if (p && typeof p.catch === "function") p.catch(() => {});
+      if (song2.paused) {
+        const p = song2.play();
+        if (p && typeof p.catch === "function") p.catch(() => {});
+      }
     }
+  });
+  song.addEventListener("ended", () => {
+    onSongFinished();
   });
 }
 
 function beginTrackSyncBoost(durationMs = 2500) {
   syncLastAdjustBarIndexVoices = -1;
   syncVoicesRateDelta = 0;
+  lastHardResyncPerf = -Infinity;
   if (song2 && song) {
     song2.playbackRate = song.playbackRate || 1;
   }
@@ -1852,8 +2043,6 @@ function syncSongTracks() {
   if (now - lastSyncCheck < SYNC_CHECK_INTERVAL) return;
   lastSyncCheck = now;
   const nowSongSec = Math.max(0, getSongTimeSec());
-  const nowSongMs = nowSongSec * 1000;
-  const currentBarIndex = getSyncBarIndex(nowSongMs);
   const masterRate = song.playbackRate || 1;
 
   // Keep voices in the same playback-rate domain as inst.
@@ -1877,9 +2066,12 @@ function syncSongTracks() {
     return;
   }
 
-  // Large drift: do a single bar-gated resync to avoid repeated glitches.
-  if (absVoicesDiff >= SYNC_HARD_RESYNC_THRESHOLD && currentBarIndex !== syncLastAdjustBarIndexVoices) {
-    syncLastAdjustBarIndexVoices = currentBarIndex;
+  // Large drift: seek voices immediately with a short cooldown.
+  if (
+    absVoicesDiff >= SYNC_HARD_RESYNC_THRESHOLD &&
+    (now - lastHardResyncPerf >= SYNC_HARD_RESYNC_COOLDOWN_MS || absVoicesDiff >= 0.2)
+  ) {
+    lastHardResyncPerf = now;
     syncVoicesRateDelta = 0;
     song2.currentTime = voicesTargetTime;
     song2.playbackRate = masterRate;
@@ -1935,11 +2127,16 @@ function playMissSound() {
 function startGame() {
 	console.log("startGame called");
   if (gameOverTriggered) return;
+  if (songResultReturnTransitioning) return;
   if (started || introPlaying) return;
   if (startPrepareInProgress) return;
 
+  hideSongResultOverlay();
 	setupJudgeImages();
   primeAudioElements();
+  if (typeof window.stopStageIntroPlayback === "function") {
+    window.stopStageIntroPlayback();
+  }
   resetSongTimeline(0);
 
   startPrepareInProgress = true;
@@ -1960,11 +2157,14 @@ function startGame() {
 
 document.addEventListener("keydown", e => {
 	if (e.repeat) return;
+  if (songResultReturnTransitioning) return;
 
 
 	if (e.key === "Enter") {
     if (gameOverTriggered) {
       startGameOverEnd();
+    } else if (songResultShown) {
+      returnFromSongResultToInitialState();
     } else {
       startGame();
     }
@@ -2045,6 +2245,9 @@ function applyJudge(judge, options = {}){
     hitNotes++;
     ratingSum += RATING_WEIGHT[judge];
   }
+  if (Object.prototype.hasOwnProperty.call(judgeCounts, judge)) {
+    judgeCounts[judge] += 1;
+  }
   const doMissSound = options.playMissSound !== false;
 
   switch(judge){
@@ -2081,6 +2284,9 @@ function applyJudge(judge, options = {}){
     combo = 0;
   } else {
     combo++;
+    if (combo > maxCombo) {
+      maxCombo = combo;
+    }
   }
 
   updateRating();
@@ -2118,6 +2324,8 @@ function changeHealth(amount, options = {}){
 function gameOver(){
   if (gameOverTriggered) return;
   gameOverTriggered = true;
+  songResultShown = false;
+  hideSongResultOverlay();
 
   started = false;
   introPlaying = false;
@@ -2224,13 +2432,17 @@ function startGameOverEnd(){
       song2.currentTime = 0;
     }
   } catch (e) {}
-  introAudios.forEach(a => {
-    try {
-      if (!a) return;
-      a.pause();
-      a.currentTime = 0;
-    } catch (e) {}
-  });
+  if (typeof window.stopStageIntroPlayback === "function") {
+    window.stopStageIntroPlayback();
+  } else {
+    introAudios.forEach(a => {
+      try {
+        if (!a) return;
+        a.pause();
+        a.currentTime = 0;
+      } catch (e) {}
+    });
+  }
 
   try {
     gameOverBgm.pause();
@@ -2290,15 +2502,250 @@ function resumeFromGameOver(){
 
     gameOverTriggered = false;
     resetGameState();
-    liftScreenCurtain(SCREEN_CURTAIN_LIFT_MS);
-    clearGameOverRestartTimer();
-    gameOverRestartTimer = setTimeout(() => {
-      startGame();
-    }, SCREEN_CURTAIN_LIFT_MS + SCREEN_RETURN_DELAY_MS);
+    clearScreenCurtainTimer();
+    screenCurtainTimer = setTimeout(() => {
+      liftScreenCurtain(SCREEN_CURTAIN_LIFT_MS);
+      clearGameOverRestartTimer();
+      gameOverRestartTimer = setTimeout(() => {
+        startGame();
+      }, SCREEN_CURTAIN_LIFT_MS + SCREEN_RETURN_DELAY_MS);
+    }, SCREEN_CURTAIN_HOLD_MS);
   });
 }
 
+function ensureSongResultOverlay() {
+  let overlay = document.getElementById("song-result-overlay");
+  if (overlay) return overlay;
+
+  console.warn("song-result-overlay was not found in index.html");
+  return null;
+}
+
+function setSongResultVideoActive(active) {
+  const iframe = document.getElementById("song-result-video");
+  if (!iframe) return;
+  const nextSrc = iframe.dataset.src || "";
+  const currentSrc = iframe.getAttribute("src") || "";
+
+  if (active) {
+    if (nextSrc && currentSrc !== nextSrc) {
+      iframe.setAttribute("src", nextSrc);
+    }
+    return;
+  }
+
+  if (currentSrc) {
+    iframe.removeAttribute("src");
+  }
+}
+
+function hideSongResultOverlay() {
+  const overlay = document.getElementById("song-result-overlay");
+  if (!overlay) return;
+  setSongResultVideoActive(false);
+  overlay.classList.remove("is-visible");
+  overlay.setAttribute("aria-hidden", "true");
+  overlay.style.display = "none";
+  overlay.style.visibility = "hidden";
+  overlay.style.opacity = "0";
+}
+
+function returnFromSongResultToInitialState() {
+  if (!songResultShown || songResultReturnTransitioning) return;
+
+  songResultReturnTransitioning = true;
+  clearScreenCurtainTimer();
+  clearGameOverRestartTimer();
+
+  dropScreenCurtain(SCREEN_CURTAIN_DROP_MS, () => {
+    try {
+      if (song) {
+        song.pause();
+        song.currentTime = 0;
+      }
+    } catch (e) {}
+
+    try {
+      if (song2) {
+        song2.pause();
+        song2.currentTime = 0;
+      }
+    } catch (e) {}
+
+    if (typeof window.stopStageIntroPlayback === "function") {
+      window.stopStageIntroPlayback();
+    } else {
+      introAudios.forEach((a) => {
+        try {
+          if (!a) return;
+          a.pause();
+          a.currentTime = 0;
+        } catch (e) {}
+      });
+    }
+
+    resetSongTimeline(0);
+    resetGameState();
+    clearScreenCurtainTimer();
+    screenCurtainTimer = setTimeout(() => {
+      liftScreenCurtain(SCREEN_CURTAIN_LIFT_MS);
+
+      setTimeout(() => {
+        songResultReturnTransitioning = false;
+      }, SCREEN_CURTAIN_LIFT_MS + SCREEN_RETURN_DELAY_MS);
+    }, SCREEN_CURTAIN_HOLD_MS);
+  });
+}
+
+function formatResultValue(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "0";
+  return n.toLocaleString();
+}
+
+function getSongResultCharStyle(ch, index, text) {
+  const safeIndex = Number.isFinite(index) ? index : 0;
+  const safeText = typeof text === "string" ? text : "";
+  const code = (safeText.charCodeAt(safeIndex) || 0) + safeIndex * 17 + safeText.length * 11;
+  const rotate = ((code % 5) - 2) * 0.38;
+  const shiftY = (((code >> 3) % 3) - 1) * 0.65;
+  const shiftX = (((code >> 5) % 3) - 1) * 0.3;
+  const skewX = (((code >> 2) % 3) - 1) * 0.6;
+  const scaleY = 1 + (((code >> 4) % 3) - 1) * 0.012;
+  return {
+    rotate,
+    shiftY,
+    shiftX,
+    skewX,
+    scaleY,
+  };
+}
+
+function setSongResultText(id, value) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const text = String(value ?? "");
+  el.textContent = "";
+  el.setAttribute("aria-label", text);
+  el.dataset.rawValue = text;
+
+  const fragment = document.createDocumentFragment();
+  const chars = Array.from(text);
+  chars.forEach((ch, index) => {
+    const span = document.createElement("span");
+    const style = getSongResultCharStyle(ch, index, text);
+    span.className = "song-result-value-char";
+    if (/[^0-9A-Za-z]/.test(ch)) {
+      span.classList.add("song-result-value-char--symbol");
+    }
+    span.setAttribute("aria-hidden", "true");
+    span.textContent = ch === " " ? "\u00A0" : ch;
+    span.style.setProperty("--result-char-rotate", `${style.rotate}deg`);
+    span.style.setProperty("--result-char-shift-y", `${style.shiftY}px`);
+    span.style.setProperty("--result-char-shift-x", `${style.shiftX}px`);
+    span.style.setProperty("--result-char-skew-x", `${style.skewX}deg`);
+    span.style.setProperty("--result-char-scale-y", `${style.scaleY}`);
+    fragment.appendChild(span);
+  });
+
+  el.appendChild(fragment);
+}
+
+function showSongResultOverlay() {
+  const overlay = ensureSongResultOverlay();
+  if (!overlay) return;
+  if (overlay.parentElement !== document.body) {
+    document.body.appendChild(overlay);
+  } else {
+    // Move to DOM tail so same-z overlays cannot stay above it.
+    document.body.appendChild(overlay);
+  }
+  overlay.style.position = "fixed";
+  overlay.style.inset = "0";
+  // Keep result above FHUD images (9997) but below screen-curtain (10000).
+  overlay.style.zIndex = "9998";
+  overlay.style.background = "";
+  const ratingInfo = getRatingInfo();
+  const clearStatus = ratingInfo.clearStatus || "-";
+  const accuracyText =
+    ratingInfo.percent === null
+      ? "N/A"
+      : `${ratingInfo.percent.toFixed(2)}% (${clearStatus})`;
+
+  setSongResultText("result-score", formatResultValue(score));
+  setSongResultText("result-misses", formatResultValue(misses));
+  setSongResultText("result-accuracy", accuracyText);
+  setSongResultText("result-max-combo", formatResultValue(maxCombo));
+  setSongResultText("result-judge-sick", formatResultValue(judgeCounts.SICK));
+  setSongResultText("result-judge-good", formatResultValue(judgeCounts.GOOD));
+  setSongResultText("result-judge-bad", formatResultValue(judgeCounts.BAD));
+  setSongResultText("result-judge-shit", formatResultValue(judgeCounts.SHIT));
+  setSongResultText("result-judge-miss", formatResultValue(judgeCounts.MISS));
+  setSongResultVideoActive(true);
+
+  overlay.classList.add("is-visible");
+  overlay.style.display = "flex";
+  overlay.style.visibility = "visible";
+  overlay.style.opacity = "1";
+  overlay.style.alignItems = "center";
+  overlay.style.justifyContent = "center";
+  overlay.style.pointerEvents = "auto";
+  overlay.setAttribute("aria-hidden", "false");
+}
+
+function onSongFinished() {
+  if (songResultShown || gameOverTriggered || gameOverEnding || introPlaying) {
+    return;
+  }
+
+  songResultShown = true;
+  started = false;
+  introPlaying = false;
+  pauseSongTimeline();
+
+  try {
+    if (song && !song.paused) song.pause();
+  } catch (e) {}
+
+  try {
+    if (song2 && !song2.paused) song2.pause();
+  } catch (e) {}
+
+  showSongResultOverlay();
+}
+
+function checkSongFinished(nowMs) {
+  if (!started || introPlaying || songResultShown || gameOverTriggered || gameOverEnding) {
+    return false;
+  }
+
+  if (!song) return false;
+
+  if (song.ended) {
+    onSongFinished();
+    return true;
+  }
+
+  const durationSec = Number(song.duration);
+  if (Number.isFinite(durationSec) && durationSec > 0) {
+    const durationMs = durationSec * 1000;
+    const mediaMs = Math.max(0, Number(song.currentTime) || 0) * 1000;
+    const currentMs = Math.max(nowMs, mediaMs);
+    // Fallback when `ended` is missed: finalize slightly before the hard end.
+    const nearEndThresholdMs = durationMs - 30;
+    if (currentMs >= nearEndThresholdMs) {
+      onSongFinished();
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function resetGameState(){
+  if (typeof window.stopStageIntroPlayback === "function") {
+    window.stopStageIntroPlayback();
+  }
   if (typeof window.resetCharacterChartStateForRetry === "function") {
     window.resetCharacterChartStateForRetry();
   }
@@ -2312,12 +2759,18 @@ function resetGameState(){
   NEXT_NOTE_ID = 1;
   buildNotes();
 
+  songResultShown = false;
+  songResultReturnTransitioning = false;
+  hideSongResultOverlay();
+
   score = 0;
   misses = 0;
   combo = 0;
+  maxCombo = 0;
   hitNotes = 0;
   ratingSum = 0;
   rating = "N/A";
+  resetJudgeCounts();
   hasGood = false;
   hasBad = false;
   hasShit = false;
@@ -2347,12 +2800,28 @@ changeHealth(-5);
 let score = 0;
 let misses = 0;
 let combo = 0;
+let maxCombo = 0;
 const COMBO_SHOW_MIN = 8;
 const COMBO_FLOAT_V = -2;
 const COMBO_FLOAT_A = 0.08;
 let hitNotes = 0;
 let ratingSum = 0;
 let rating = "N/A"
+const judgeCounts = {
+  SICK: 0,
+  GOOD: 0,
+  BAD: 0,
+  SHIT: 0,
+  MISS: 0
+};
+
+function resetJudgeCounts() {
+  judgeCounts.SICK = 0;
+  judgeCounts.GOOD = 0;
+  judgeCounts.BAD = 0;
+  judgeCounts.SHIT = 0;
+  judgeCounts.MISS = 0;
+}
 
 const UI_VISIBILITY = {
   scoreboard: true,
@@ -2373,30 +2842,44 @@ function setUiVisibility(next = {}) {
   applyUiVisibility();
 }
 
-function updateRating(){
+function getRankFromPercent(percent) {
+  if (!Number.isFinite(percent)) return "N/A";
+  if (percent >= 100) return "perfect!!";
+  if (percent >= 90) return "sick!";
+  if (percent >= 80) return "great";
+  if (percent >= 70) return "good";
+  if (percent >= 65) return "nice";
+  if (percent >= 50) return "meh";
+  if (percent >= 40) return "bruh";
+  if (percent >= 20) return "bad";
+  return "shit";
+}
+
+function getRatingInfo() {
   if (hitNotes === 0) {
-    rating = "N/A";
-    return;
+    return {
+      percent: null,
+      rank: "N/A",
+      clearStatus: getClearStatus(),
+      text: "N/A"
+    };
   }
 
   const percentRaw = (ratingSum / hitNotes) * 100;
-
-
   const percent = Number(percentRaw.toFixed(2));
+  const rank = getRankFromPercent(percent);
+  const clearStatus = getClearStatus();
+  return {
+    percent,
+    rank,
+    clearStatus,
+    text: `${rank} (${percent}%)${clearStatus ? ` - ${clearStatus}` : ""}`
+  };
+}
 
-  let rank = "shit";
-
-  if (percent >= 100) rank = "perfect!!";
-  else if (percent >= 90) rank = "sick!";
-  else if (percent >= 80) rank = "great";
-  else if (percent >= 70) rank = "good";
-  else if (percent >= 65) rank = "nice";
-  else if (percent >= 50) rank = "meh";
-  else if (percent >= 40) rank = "bruh";
-  else if (percent >= 20) rank = "bad";
-  else rank = "shit";
-
-  rating = `${rank} (${percent}%) - ${getClearStatus()}`;
+function updateRating(){
+  const info = getRatingInfo();
+  rating = info.text;
 }
 
 function getClearStatus(){
@@ -2683,7 +3166,10 @@ function receptorPress(lane) {
 // =======================
 // 長押し生成
 // =======================
-const NOTE_SCALE = 0.75;
+const NOTE_SCALE = 0.7;
+const SUSTAIN_CLIP_LINE_OFFSET_Y = 50;
+const SUSTAIN_TAIL_CLIP_EXTRA_UP_Y = -15;
+const SUSTAIN_FORCE_CLEANUP_EXTRA_MS = 1200;
 
 // ======================
 // 長押し本体生成
@@ -2803,6 +3289,7 @@ const totalPx =
     tile.style.left = "50%";
     tile.style.transform = `translateX(-50%) scale(${NOTE_SCALE})`;
     tile.style.transformOrigin = "center bottom";
+    tile.style.willChange = "top, clip-path";
 
     tile.style.zIndex = "7";
 
@@ -2814,7 +3301,8 @@ const totalPx =
 
 
     const tileBottom = headBottomY - tile._spawnOffsetPx;
-    tile.style.top = `${tileBottom - tile._renderH}px`;
+    tile._topPx = tileBottom - tile._renderH;
+    tile.style.top = `${tile._topPx}px`;
 
     container.appendChild(tile);
     note.sustainTiles.push(tile);
@@ -2835,6 +3323,7 @@ const totalPx =
 
   tail.style.transform = `translateX(-50%) scale(${NOTE_SCALE}) rotate(180deg)`;
   tail.style.transformOrigin = "center bottom";
+  tail.style.willChange = "top, clip-path";
   tail.style.zIndex = "7";
 
 
@@ -2858,11 +3347,12 @@ tail._spawnOffsetPx =
   right: 10
 };
 
-tail._spawnOffsetPx += TAIL_Y_FIX[dir] || 0;
+  tail._spawnOffsetPx += TAIL_Y_FIX[dir] || 0;
 
 
   const tailBottom = headBottomY - tail._spawnOffsetPx;
-  tail.style.top = `${tailBottom - tail._renderH}px`;
+  tail._topPx = tailBottom - tail._renderH;
+  tail.style.top = `${tail._topPx}px`;
 
   container.appendChild(tail);
   note.tailEl = tail;

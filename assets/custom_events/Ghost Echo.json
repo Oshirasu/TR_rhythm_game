@@ -1,5 +1,0 @@
-{
-  "event": "Ghost Echo",
-  "description": "Este evento solo pasa los valores para que el script en data lo maneje",
-  "handler": "No necesitas poner nada más aquí si ya todo está manejado en el otro script"
-}

@@ -1,4 +1,0 @@
-Play Video
-
-1: on/off
-2: video name

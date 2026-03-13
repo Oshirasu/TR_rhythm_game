@@ -1,3 +1,0 @@
-colorbg
-
-1: on/off
